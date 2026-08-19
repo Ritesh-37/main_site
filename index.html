@@ -1,789 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>Birthday Party For Tisha ❤️</title>
 
-    <title>For My Birthday Girl ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="page2.css"
-    >
+    <link rel="stylesheet" href="page2.css">
 </head>
 
 <body>
 
-    <!-- =====================================================
-         BACKGROUND
-    ====================================================== -->
-
     <div class="background-glow"></div>
 
-    <div class="floating-hearts">
-        <span>♥</span>
+    <div class="floating-decor">
         <span>✦</span>
         <span>♥</span>
         <span>✧</span>
         <span>♥</span>
         <span>✦</span>
+        <span>✧</span>
+        <span>♥</span>
+        <span>✦</span>
     </div>
 
+    <div class="birthday-rope">
+        <div class="rope-line"></div>
+        <span>🎈</span>
+        <span>🎀</span>
+        <span>🎈</span>
+        <span>🎀</span>
+        <span>🎈</span>
+        <span>🎀</span>
+        <span>🎈</span>
+        <span>🎀</span>
+        <span>🎈</span>
+    </div>
 
-    <!-- =====================================================
-         AUDIO
-    ====================================================== -->
+    <button id="music-button" class="music-button" aria-label="Music">
+        ♫
+    </button>
 
-    <audio
-        id="camera-sound"
-        preload="auto"
-    >
-        <source
-            src="camera-click.mp3"
-            type="audio/mpeg"
-        >
+    <audio id="birthday-music" loop preload="auto">
+        <source src="birthday-song.mp3" type="audio/mpeg">
     </audio>
 
-    <audio
-        id="wine-sound"
-        preload="auto"
-    >
-        <source
-            src="wine-pour.mp3"
-            type="audio/mpeg"
-        >
+    <audio id="candle-sound" preload="auto">
+        <source src="candle-out.mp3" type="audio/mpeg">
     </audio>
 
-    <audio
-        id="glass-sound"
-        preload="auto"
-    >
-        <source
-            src="glass-clink.mp3"
-            type="audio/mpeg"
-        >
+    <audio id="balloon-pop-sound" preload="auto">
+        <source src="balloon-pop.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="popper-sound" preload="auto">
+        <source src="popper-pop.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="crackle-sound" preload="auto">
+        <source src="diwali-crackle.mp3" type="audio/mpeg">
     </audio>
 
 
-    <!-- =====================================================
-         MAIN PAGE
-    ====================================================== -->
+    <main id="party-page">
 
-    <main id="page3">
+        <!-- =========================
+             WELCOME
+        ========================== -->
 
+        <section id="welcome-section" class="party-section active">
 
-        <!-- =================================================
-             INTRO
-        ================================================== -->
+            <div id="welcome-step-1" class="welcome-step active">
 
-        <section
-            id="intro-section"
-            class="page-section active"
-        >
+                <div class="birthday-crown">👑</div>
 
-            <div
-                id="intro-1"
-                class="intro-card active"
-            >
-
-                <div class="intro-number">
-                    01
+                <div class="welcome-small">
+                    A LITTLE MESSAGE FOR YOU
                 </div>
 
-                <div class="intro-icon">
+                <h1>
+                    Welcome,
+                    <span>Tisha</span> ❤️
+                </h1>
+
+                <p>
+                    Come sweetheart...
+                    your party is waiting for you. 🥹🎀
+                </p>
+
+                <button class="party-button welcome-next" data-next="2">
+                    COME HERE ❤️
+                </button>
+
+            </div>
+
+
+            <div id="welcome-step-2" class="welcome-step">
+
+                <div class="welcome-big-icon">
+                    😏
+                </div>
+
+                <div class="welcome-small">
+                    EXCUSE ME, BIRTHDAY GIRL...
+                </div>
+
+                <h1>
+                    You're late
+                    <span>to your own party!</span> 😂
+                </h1>
+
+                <p>
+                    We've been waiting for you...
+                    and honestly, sweetheart,
+                    you took your sweet time. 👀❤️
+                </p>
+
+                <button class="party-button welcome-next" data-next="3">
+                    I'M HERE NOW 🥹
+                </button>
+
+            </div>
+
+
+            <div id="welcome-step-3" class="welcome-step">
+
+                <div class="welcome-big-icon">
+                    🎂✨
+                </div>
+
+                <div class="welcome-small">
+                    FINALLY...
+                </div>
+
+                <h1>
+                    Come sweetheart...
+                </h1>
+
+                <h2>
+                    It's time to cut the cake. ❤️
+                </h2>
+
+                <p>
+                    Your birthday celebration
+                    officially starts now. 🎉
+                </p>
+
+                <button id="start-cake" class="party-button">
+                    LET'S GO 🎂
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CAKE SECTION
+        ========================== -->
+
+        <section id="cake-section" class="party-section">
+
+            <div class="cake-heading">
+
+                <div class="cake-heading-icon">
                     ✦
                 </div>
 
-                <p class="eyebrow">
-                    WAIT A SECOND, BIRTHDAY GIRL
-                </p>
-
-                <h1>
-                    A party like this
-                    <span>needs one thing...</span>
-                </h1>
-
-                <p class="intro-text">
-                    And I think you already know
-                    exactly what I'm talking about. ❤️
-                </p>
-
-                <button class="premium-button intro-next">
-                    TELL ME MORE
-                </button>
-
-            </div>
-
-
-            <div
-                id="intro-2"
-                class="intro-card"
-            >
-
-                <div class="intro-number">
-                    02
-                </div>
-
-                <div class="intro-icon">
-                    ✦
-                </div>
-
-                <p class="eyebrow">
-                    THINK ABOUT IT
-                </p>
-
-                <h1>
-                    Every birthday
-                    <span>needs a memory.</span>
-                </h1>
-
-                <p class="intro-text">
-                    Something we can look back at
-                    and smile about years from now. 🥹
-                </p>
-
-                <button class="premium-button intro-next">
-                    I AGREE ❤️
-                </button>
-
-            </div>
-
-
-            <div
-                id="intro-3"
-                class="intro-card"
-            >
-
-                <div class="intro-number">
-                    03
-                </div>
-
-                <div class="intro-icon">
-                    ♡
-                </div>
-
-                <p class="eyebrow">
-                    ONE LAST THING
-                </p>
-
-                <h1>
-                    The party is incomplete
-                    <span>without the birthday girl's pic.</span>
-                </h1>
-
-                <p class="intro-text">
-                    So sweetheart...
-                    there's something we need to do first.
-                </p>
-
-                <button class="premium-button intro-next">
-                    WHAT IS IT?
-                </button>
-
-            </div>
-
-
-            <div
-                id="intro-4"
-                class="intro-card"
-            >
-
-                <div class="intro-number">
-                    04
-                </div>
-
-                <div class="intro-icon camera-mini">
-                    ◎
-                </div>
-
-                <p class="eyebrow">
-                    READY, SWEETHEART?
-                </p>
-
-                <h1>
-                    Time for
-                    <span>your picture. ❤️</span>
-                </h1>
-
-                <p class="intro-text">
-                    Come on, gorgeous.
-                    Let's capture this moment.
-                </p>
-
-                <button
-                    id="start-camera"
-                    class="premium-button"
-                >
-                    I'M READY 📸
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             CAMERA
-        ================================================== -->
-
-        <section
-            id="camera-section"
-            class="page-section"
-        >
-
-            <div class="camera-content">
-
-                <p class="eyebrow">
-                    A LITTLE MEMORY
-                </p>
-
                 <h2>
-                    Smile,
-                    <span>beautiful.</span>
+                    MAKE A WISH,
+                    <span>MY LOVE</span>
                 </h2>
 
-                <p class="section-description">
-                    Give me your prettiest smile.
-                </p>
-
-
-                <!-- CAMERA -->
-
-                <button
-                    id="camera"
-                    class="camera"
-                    aria-label="Take photograph"
-                >
-
-                    <div class="camera-top"></div>
-
-                    <div class="camera-body">
-
-                        <div class="camera-lens">
-
-                            <div class="lens-ring"></div>
-
-                            <div class="lens-inner"></div>
-
-                            <div class="lens-shine"></div>
-
-                        </div>
-
-                        <div class="camera-flash"></div>
-
-                        <div class="camera-viewfinder"></div>
-
-                    </div>
-
-                    <div class="camera-grip"></div>
-
-                </button>
-
-
-                <p
-                    id="camera-instruction"
-                    class="interaction-text"
-                >
-                    Click the camera ❤️
+                <p>
+                    Put out every candle,
+                    birthday girl. 🕯️❤️
                 </p>
 
             </div>
 
 
-            <!-- COUNTDOWN -->
+            <!-- CSS CAKE -->
 
-            <div
-                id="countdown"
-                class="countdown-overlay"
-            >
+            <div class="cake-stage">
 
-                <div
-                    id="countdown-number"
-                    class="countdown-number"
-                >
-                    3
-                </div>
+                <div class="cake-wrapper">
 
-            </div>
+                    <!-- CANDLES -->
 
+                    <div class="cake-candles">
 
-            <!-- CAMERA FLASH -->
-
-            <div
-                id="flash"
-                class="flash-overlay"
-            ></div>
-
-
-            <!-- PHOTO -->
-
-            <div
-                id="photo-result"
-                class="photo-result"
-            >
-
-                <div class="photo-frame">
-
-                    <div class="photo-frame-top">
-                        ✦ &nbsp; A MOMENT TO REMEMBER &nbsp; ✦
-                    </div>
-
-                    <div class="photo-container">
-
-                        <!-- CHANGE THIS IMAGE NAME IF NEEDED -->
-                        <img
-                            src="tisha-photo.jpg"
-                            alt="Tisha"
-                        >
-
-                    </div>
-
-                    <div class="photo-caption">
-                        There's my sexy lady
-                        <span>👠✨</span>
-                    </div>
-
-                    <div class="photo-date">
-                        BIRTHDAY • MEMORIES • LOVE
-                    </div>
-
-                </div>
-
-                <button
-                    id="photo-continue"
-                    class="premium-button"
-                >
-                    I HAVE SOMETHING ELSE FOR YOU ❤️
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             BOUQUET
-        ================================================== -->
-
-        <section
-            id="bouquet-section"
-            class="page-section"
-        >
-
-            <div class="bouquet-content">
-
-                <p class="eyebrow">
-                    SOMETHING BEAUTIFUL
-                </p>
-
-                <h2>
-                    These are
-                    <span>for you.</span>
-                </h2>
-
-                <p class="section-description">
-                    A little bouquet for the girl
-                    who deserves much more.
-                </p>
-
-
-                <!-- CODED BOUQUET -->
-
-                <button
-                    id="bouquet"
-                    class="bouquet"
-                    aria-label="Interact with bouquet"
-                >
-
-                    <div class="bouquet-glow"></div>
-
-                    <div class="bouquet-paper">
-
-                        <div class="paper-fold"></div>
-
-                    </div>
-
-
-                    <!-- STEMS -->
-
-                    <div class="stem stem-1"></div>
-                    <div class="stem stem-2"></div>
-                    <div class="stem stem-3"></div>
-                    <div class="stem stem-4"></div>
-                    <div class="stem stem-5"></div>
-                    <div class="stem stem-6"></div>
-                    <div class="stem stem-7"></div>
-
-
-                    <!-- LEAVES -->
-
-                    <div class="leaf leaf-1"></div>
-                    <div class="leaf leaf-2"></div>
-                    <div class="leaf leaf-3"></div>
-                    <div class="leaf leaf-4"></div>
-                    <div class="leaf leaf-5"></div>
-                    <div class="leaf leaf-6"></div>
-
-
-                    <!-- ROSES -->
-
-                    <div class="rose rose-1">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-2">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-3">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-4">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-5">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-6">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                    <div class="rose rose-7">
-                        <i></i><i></i><i></i><i></i><i></i>
-                    </div>
-
-                </button>
-
-
-                <p
-                    id="bouquet-text"
-                    class="interaction-text"
-                >
-                    Click the bouquet ✦
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             LETTER
-        ================================================== -->
-
-        <section
-            id="letter-section"
-            class="page-section"
-        >
-
-            <div class="letter-content">
-
-                <p class="eyebrow">
-                    ONE MORE THING
-                </p>
-
-                <h2>
-                    I have something
-                    <span>else for you.</span>
-                </h2>
-
-
-                <!-- ENVELOPE -->
-
-                <button
-                    id="envelope"
-                    class="envelope"
-                    aria-label="Open letter"
-                >
-
-                    <div class="envelope-shadow"></div>
-
-                    <div class="envelope-body"></div>
-
-                    <div class="envelope-paper"></div>
-
-                    <div class="envelope-flap"></div>
-
-                    <div class="wax-seal">
-                        R
-                    </div>
-
-                </button>
-
-
-                <p
-                    id="envelope-text"
-                    class="interaction-text"
-                >
-                    There's a little letter inside... ❤️
-                </p>
-
-
-                <!-- POSTCARD -->
-
-                <div
-                    id="postcard"
-                    class="postcard"
-                >
-
-                    <div class="postcard-inner">
-
-                        <div class="postcard-top">
-                            A LITTLE NOTE FOR YOU
-                        </div>
-
-                        <div class="postcard-divider">
-                            <span></span>
-                            ✦
-                            <span></span>
-                        </div>
-
-                        <h3>
-                            To my
-                            <span>birthday girl</span>
-                        </h3>
-
-                        <p>
-                            Today is your day,
-                            but somehow you are still
-                            the best thing that happened
-                            to mine.
-                        </p>
-
-                        <p>
-                            I hope this little surprise
-                            reminds you just how special
-                            you are to me.
-                        </p>
-
-                        <p>
-                            Keep smiling.
-                            Keep being beautiful.
-                            And never forget that
-                            someone out here is
-                            completely crazy about you. ❤️
-                        </p>
-
-                        <div class="postcard-signature">
-                            With all my love,
-                            <strong>R</strong>
-                        </div>
-
-                    </div>
-
-                    <button
-                        id="wine-continue"
-                        class="premium-button"
-                    >
-                        NOW... ONE LAST THING 🍷
-                    </button>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             WINE
-        ================================================== -->
-
-        <section
-            id="wine-section"
-            class="page-section"
-        >
-
-            <div class="wine-content">
-
-                <p class="eyebrow">
-                    AND NOW...
-                </p>
-
-                <h2>
-                    A little toast
-                    <span>to you.</span>
-                </h2>
-
-                <p
-                    id="wine-instruction"
-                    class="section-description"
-                >
-                    Let's have one together. ❤️
-                </p>
-
-
-                <!-- WINE TABLE -->
-
-                <div class="wine-table">
-
-
-                    <!-- BOTTLE -->
-
-                    <button
-                        id="wine-bottle"
-                        class="wine-bottle"
-                        aria-label="Pour wine"
-                    >
-
-                        <div class="bottle-neck">
-                            <div class="bottle-foil"></div>
-                        </div>
-
-                        <div class="bottle-body">
-
-                            <div class="bottle-liquid"></div>
-
-                            <div class="bottle-label">
-
-                                <strong>
-                                    TISHA
-                                </strong>
-
-                                <small>
-                                    BIRTHDAY RESERVE
-                                </small>
-
-                                <span>
-                                    ♥
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </button>
-
-
-                    <!-- GLASSES -->
-
-                    <div class="glasses">
-
-                        <button
-                            class="wine-glass"
-                            data-glass="1"
-                            aria-label="Glass one"
-                        >
-
-                            <div class="glass-bowl">
-
-                                <div class="glass-wine"></div>
-
-                            </div>
-
-                            <div class="glass-stem"></div>
-
-                            <div class="glass-base"></div>
-
+                        <button class="candle" aria-label="Blow candle 1">
+                            <span class="flame"></span>
+                            <span class="wick"></span>
+                            <span class="candle-stick"></span>
                         </button>
 
+                        <button class="candle" aria-label="Blow candle 2">
+                            <span class="flame"></span>
+                            <span class="wick"></span>
+                            <span class="candle-stick"></span>
+                        </button>
 
-                        <button
-                            class="wine-glass"
-                            data-glass="2"
-                            aria-label="Glass two"
-                        >
+                        <button class="candle" aria-label="Blow candle 3">
+                            <span class="flame"></span>
+                            <span class="wick"></span>
+                            <span class="candle-stick"></span>
+                        </button>
 
-                            <div class="glass-bowl">
+                        <button class="candle" aria-label="Blow candle 4">
+                            <span class="flame"></span>
+                            <span class="wick"></span>
+                            <span class="candle-stick"></span>
+                        </button>
 
-                                <div class="glass-wine"></div>
-
-                            </div>
-
-                            <div class="glass-stem"></div>
-
-                            <div class="glass-base"></div>
-
+                        <button class="candle" aria-label="Blow candle 5">
+                            <span class="flame"></span>
+                            <span class="wick"></span>
+                            <span class="candle-stick"></span>
                         </button>
 
                     </div>
 
+
+                    <!-- CAKE -->
+
+                    <div class="birthday-cake">
+
+                        <div class="cake-top-layer">
+
+                            <div class="cream-drip drip-one"></div>
+                            <div class="cream-drip drip-two"></div>
+                            <div class="cream-drip drip-three"></div>
+                            <div class="cream-drip drip-four"></div>
+
+                            <div class="berry berry-one"></div>
+                            <div class="berry berry-two"></div>
+                            <div class="berry berry-three"></div>
+
+                        </div>
+
+
+                        <div class="cake-middle-layer">
+
+                            <div class="cream-line"></div>
+
+                            <div class="cake-decoration">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="cake-bottom-layer">
+
+                            <div class="bottom-cream-line"></div>
+
+                        </div>
+
+
+                        <div class="cake-plate"></div>
+
+                    </div>
+
                 </div>
-
-
-                <div
-                    id="wine-counter"
-                    class="wine-counter"
-                >
-                    POUR 1 / 5
-                </div>
-
-                <p class="wine-hint">
-                    Click the bottle to pour.
-                    Click either glass to drink.
-                </p>
 
             </div>
 
 
-            <!-- DRUNK EFFECT -->
+            <p id="cake-instruction" class="cake-instruction">
+                Click the candles to blow them out. 🥹❤️
+            </p>
 
-            <div
-                id="drunk-overlay"
-                class="drunk-overlay"
-            >
 
-                <div class="drunk-ring ring-1"></div>
-                <div class="drunk-ring ring-2"></div>
-                <div class="drunk-ring ring-3"></div>
+            <!-- CELEBRATION -->
+
+            <div id="celebration-layer" class="celebration-layer">
+
+                <div class="celebration-flash"></div>
+
+                <div class="celebration-title">
+                    🎉
+                </div>
 
             </div>
 
 
             <!-- FINAL POPUP -->
 
-            <div
-                id="drunk-popup"
-                class="drunk-popup"
-            >
+            <div id="birthday-popup" class="birthday-popup">
 
-                <div class="drunk-icon">
-                    🍷
+                <div class="popup-sparkles">
+                    ✦ ✧ ✦
                 </div>
 
-                <p class="eyebrow">
-                    WELL...
-                </p>
+                <div class="popup-icon">
+                    ✨
+                </div>
 
                 <h2>
-                    Looks like my girl
-                    is completely drunk. 😂❤️
+                    HAPPY BIRTHDAY,
+                    <span>TISHA</span>
                 </h2>
 
+                <div class="popup-divider"></div>
+
                 <p>
-                    And somehow,
-                    you're even cuter now.
+                    The birthday girl has officially
+                    started the party! 🥳✨
                 </p>
 
-                <button
-                    id="next-page"
-                    class="premium-button"
-                >
-                    LET'S KEEP GOING ❤️
+                <p class="popup-love">
+                    Now let the real celebration begin... ❤️
+                </p>
+
+                <button id="page3-button" class="party-button">
+                    CONTINUE ❤️
                 </button>
 
             </div>
@@ -796,5 +337,4 @@
     <script src="page2.js"></script>
 
 </body>
-
 </html>
