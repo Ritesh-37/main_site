@@ -1,1032 +1,786 @@
-/* =====================================================
-   PAGE 2 — ANDROID FRIENDLY JAVASCRIPT
-===================================================== */
-
-"use strict";
-
-
-/* =====================================================
-   HELPER
-===================================================== */
-
-function showScene(scene) {
-
-    document
-        .querySelectorAll(".scene")
-        .forEach(function (item) {
-
-            item.classList.remove("active");
-
-        });
-
-    scene.classList.add("active");
-}
-
-
-/* =====================================================
-   SECTION 1 — WELCOME
-===================================================== */
-
-const startButton =
-    document.getElementById("startButton");
-
-const welcomeScene =
-    document.getElementById("welcomeScene");
-
-const partyScene =
-    document.getElementById("partyScene");
-
-
-startButton.addEventListener(
-    "pointerup",
+document.addEventListener(
+    "DOMContentLoaded",
     function () {
 
-        showScene(partyScene);
+        /* =====================================================
+           HELPERS
+        ===================================================== */
 
-    }
-);
-
-
-/* =====================================================
-   SECTION 2 — CANDLES
-===================================================== */
-
-const candles =
-    document.querySelectorAll(".candle");
-
-const candleInstruction =
-    document.getElementById("candleInstruction");
-
-const wishOverlay =
-    document.getElementById("wishOverlay");
-
-const cake =
-    document.getElementById("cake");
+        function get(id) {
+            return document.getElementById(id);
+        }
 
 
-let extinguishedCandles = 0;
-let celebrationFinished = false;
+        function playSound(audio, volume) {
 
-
-candles.forEach(function (candle) {
-
-    candle.addEventListener(
-        "pointerup",
-        function (event) {
-
-            event.stopPropagation();
-
-            if (
-                candle.classList.contains(
-                    "extinguished"
-                )
-            ) {
+            if (!audio) {
                 return;
             }
 
-            candle.classList.add(
-                "extinguished"
-            );
+            try {
 
-            extinguishedCandles++;
+                audio.pause();
 
-            if (
-                extinguishedCandles ===
-                candles.length
-            ) {
+                audio.currentTime = 0;
 
-                triggerBirthdayCelebration();
+                audio.volume = volume || 0.5;
 
+                const promise = audio.play();
+
+                if (promise) {
+                    promise.catch(function () {});
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+
+        /* =====================================================
+           AUDIO
+        ===================================================== */
+
+        const music = get("page3-music");
+        const musicButton = get("music-button");
+
+        const cameraSound = get("camera-sound");
+        const wineSound = get("wine-pour-sound");
+        const glassSound = get("glass-sound");
+
+
+        function startMusic() {
+
+            if (!music) {
+                return;
             }
 
+            music.volume = 0.32;
+
+            const promise = music.play();
+
+            if (promise) {
+
+                promise
+                    .then(function () {
+                        musicButton.textContent = "♫";
+                    })
+                    .catch(function () {
+                        musicButton.textContent = "🔇";
+                    });
+
+            }
         }
-    );
-
-});
 
 
-/* =====================================================
-   CELEBRATION
-===================================================== */
+        musicButton.addEventListener(
+            "click",
+            function () {
 
-function triggerBirthdayCelebration() {
+                if (!music) {
+                    return;
+                }
 
-    if (celebrationFinished) {
-        return;
-    }
+                if (music.paused) {
 
-    celebrationFinished = true;
+                    music.play()
+                        .then(function () {
+                            musicButton.textContent = "♫";
+                        })
+                        .catch(function () {});
 
-    candleInstruction.style.opacity = "0";
+                } else {
 
-    cake.classList.add("ready");
+                    music.pause();
 
-    popAllBalloons();
+                    musicButton.textContent = "🔇";
 
-    firePartyPoppers();
+                }
 
-    createConfetti();
-
-    setTimeout(
-        function () {
-
-            wishOverlay.classList.remove(
-                "hidden"
-            );
-
-        },
-        700
-    );
-
-}
-
-
-/* =====================================================
-   BALLOONS
-===================================================== */
-
-function popAllBalloons() {
-
-    const balloons =
-        document.querySelectorAll(
-            ".balloon"
+            }
         );
 
-    balloons.forEach(
-        function (balloon, index) {
+
+        /* =====================================================
+           SECTION SWITCH
+        ===================================================== */
+
+        function showSection(id) {
+
+            document
+                .querySelectorAll(".page-section")
+                .forEach(function (section) {
+
+                    section.classList.remove("active");
+
+                });
+
+
+            const target = get(id);
+
+            if (!target) {
+                return;
+            }
+
 
             setTimeout(
                 function () {
 
-                    balloon.classList.add(
-                        "popped"
-                    );
+                    target.classList.add("active");
 
                 },
-                index * 120
+                80
             );
 
         }
-    );
-
-}
 
 
-/* =====================================================
-   PARTY POPPERS
-===================================================== */
+        /* =====================================================
+           START MUSIC AFTER USER ENTERS PAGE
+        ===================================================== */
 
-const leftPopper =
-    document.getElementById("leftPopper");
-
-const rightPopper =
-    document.getElementById("rightPopper");
-
-
-function firePartyPoppers() {
-
-    leftPopper.classList.add("blast");
-
-    setTimeout(
-        function () {
-
-            rightPopper.classList.add("blast");
-
-        },
-        180
-    );
-
-}
-
-
-/* =====================================================
-   CONFETTI
-===================================================== */
-
-function createConfetti() {
-
-    const pieces = 90;
-
-    for (
-        let i = 0;
-        i < pieces;
-        i++
-    ) {
-
-        const confetti =
-            document.createElement("div");
-
-        confetti.style.position = "fixed";
-
-        confetti.style.left =
-            Math.random() * 100 + "vw";
-
-        confetti.style.top = "-20px";
-
-        confetti.style.width = "7px";
-        confetti.style.height = "13px";
-
-        const colors = [
-            "#ffffff",
-            "#ffd166",
-            "#ff8fab",
-            "#a8e6cf"
-        ];
-
-        confetti.style.background =
-            colors[
-                Math.floor(
-                    Math.random() *
-                    colors.length
-                )
-            ];
-
-        confetti.style.zIndex = "900";
-
-        confetti.style.pointerEvents =
-            "none";
-
-        confetti.style.transform =
-            "rotate(" +
-            Math.random() * 360 +
-            "deg)";
-
-        confetti.style.transition =
-            "top 2.5s ease-out, " +
-            "transform 2.5s ease-out, " +
-            "opacity 2.5s ease";
-
-        document.body.appendChild(
-            confetti
-        );
-
-        requestAnimationFrame(
+        document.addEventListener(
+            "click",
             function () {
 
-                confetti.style.top =
-                    80 +
-                    Math.random() * 30 +
-                    "vh";
+                if (
+                    music &&
+                    music.paused
+                ) {
+                    startMusic();
+                }
 
-                confetti.style.transform =
-                    "rotate(" +
-                    Math.random() * 1000 +
-                    "deg)";
+            },
+            {
+                once: true
+            }
+        );
 
-                confetti.style.opacity = "0";
+
+        /* =====================================================
+           CAMERA
+        ===================================================== */
+
+        const camera = get("camera");
+        const countdown = get("countdown");
+        const cameraFlash = get("camera-screen-flash");
+
+        const photoPopup = get("photo-popup");
+        const photoContinue = get("photo-continue");
+
+        let cameraUsed = false;
+
+
+        camera.addEventListener(
+            "click",
+            function () {
+
+                if (cameraUsed) {
+                    return;
+                }
+
+                cameraUsed = true;
+
+                camera.style.pointerEvents = "none";
+
+                get("camera-hint").style.opacity = "0";
+
+                runCountdown();
 
             }
         );
 
-        setTimeout(
-            function () {
 
-                confetti.remove();
+        function runCountdown() {
 
-            },
-            3000
-        );
+            const numbers = [
+                "3",
+                "2",
+                "1"
+            ];
 
-    }
-
-}
+            let index = 0;
 
 
-/* =====================================================
-   CAKE
-===================================================== */
+            function showNumber() {
 
-cake.addEventListener(
-    "pointerup",
-    function () {
+                countdown.textContent =
+                    numbers[index];
 
-        if (!celebrationFinished) {
-            return;
-        }
+                countdown.classList.remove("show");
 
-        cake.style.transform =
-            "translate(-50%, -50%) scale(1.12)";
+                void countdown.offsetWidth;
 
-        createConfetti();
+                countdown.classList.add("show");
 
-        setTimeout(
-            function () {
 
-                showScene(
-                    document.getElementById(
-                        "letterScene"
-                    )
+                setTimeout(
+                    function () {
+
+                        index++;
+
+                        if (
+                            index <
+                            numbers.length
+                        ) {
+
+                            showNumber();
+
+                        } else {
+
+                            takePicture();
+
+                        }
+
+                    },
+                    1000
                 );
 
-                cake.style.transform =
-                    "translate(-50%, -50%)";
-
-            },
-            900
-        );
-
-    }
-);
+            }
 
 
-/* =====================================================
-   SECTION 3 — LETTER
-===================================================== */
+            showNumber();
 
-const letterButton =
-    document.getElementById(
-        "letterButton"
-    );
-
-const letterOverlay =
-    document.getElementById(
-        "letterOverlay"
-    );
-
-const closeLetter =
-    document.getElementById(
-        "closeLetter"
-    );
-
-const continueToWine =
-    document.getElementById(
-        "continueToWine"
-    );
-
-
-letterButton.addEventListener(
-    "pointerup",
-    function () {
-
-        letterOverlay.classList.remove(
-            "hidden"
-        );
-
-    }
-);
-
-
-closeLetter.addEventListener(
-    "pointerup",
-    function (event) {
-
-        event.stopPropagation();
-
-        letterOverlay.classList.add(
-            "hidden"
-        );
-
-    }
-);
-
-
-/* =====================================================
-   LETTER → WINE
-===================================================== */
-
-continueToWine.addEventListener(
-    "pointerup",
-    function () {
-
-        letterOverlay.classList.add(
-            "hidden"
-        );
-
-        setTimeout(
-            function () {
-
-                showScene(
-                    document.getElementById(
-                        "wineScene"
-                    )
-                );
-
-            },
-            500
-        );
-
-    }
-);
-
-
-/* =====================================================
-   SECTION 4 — WINE
-===================================================== */
-
-const wineBottle =
-    document.getElementById(
-        "wineBottle"
-    );
-
-const wineLiquid =
-    document.getElementById(
-        "wineLiquid"
-    );
-
-const glassLiquid =
-    document.getElementById(
-        "glassLiquid"
-    );
-
-const wineText =
-    document.getElementById(
-        "wineText"
-    );
-
-const wineFog =
-    document.getElementById(
-        "wineFog"
-    );
-
-const wineWorld =
-    document.getElementById(
-        "wineWorld"
-    );
-
-const finalWineMessage =
-    document.getElementById(
-        "finalWineMessage"
-    );
-
-const blackout =
-    document.getElementById(
-        "blackout"
-    );
-
-
-let wineClicks = 0;
-
-
-const wineMessages = [
-
-    "Tonight is yours… so let yourself feel every little moment. ❤️",
-
-    "Some moments are meant to be remembered forever… ✨",
-
-    "Close your eyes… and just let the moment take you somewhere beautiful. 🌙",
-
-    "Because the best part of tonight… is still waiting for you. ❤️"
-
-];
-
-
-wineBottle.addEventListener(
-    "pointerup",
-    function () {
-
-        if (wineClicks >= 5) {
-            return;
         }
 
-        wineClicks++;
+
+        function takePicture() {
+
+            playSound(
+                cameraSound,
+                0.65
+            );
 
 
-        /* ---------------------------------------------
-           WINE LEVEL
-        --------------------------------------------- */
+            cameraFlash.classList.remove(
+                "flash"
+            );
 
-        const bottleLevel =
-            100 -
-            wineClicks * 20;
+            void cameraFlash.offsetWidth;
 
-        const glassLevel =
-            65 -
-            wineClicks * 13;
+            cameraFlash.classList.add(
+                "flash"
+            );
 
-        wineLiquid.style.height =
-            bottleLevel + "%";
 
-        glassLiquid.style.height =
-            Math.max(
-                glassLevel,
+            setTimeout(
+                function () {
+
+                    photoPopup.classList.add(
+                        "show"
+                    );
+
+                },
+                400
+            );
+
+        }
+
+
+        photoContinue.addEventListener(
+            "click",
+            function () {
+
+                photoPopup.classList.remove(
+                    "show"
+                );
+
+                setTimeout(
+                    function () {
+
+                        showSection(
+                            "bouquet-section"
+                        );
+
+                    },
+                    500
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           BOUQUET
+        ===================================================== */
+
+        const bouquet = get("bouquet");
+        const envelope = get("letter-envelope");
+        const letterHint = get("letter-hint");
+
+        let bouquetOpened = false;
+
+
+        bouquet.addEventListener(
+            "click",
+            function () {
+
+                if (bouquetOpened) {
+                    return;
+                }
+
+                bouquetOpened = true;
+
+                bouquet.classList.add(
+                    "open"
+                );
+
+                get("bouquet-hint").style.opacity =
+                    "0";
+
+
+                setTimeout(
+                    function () {
+
+                        envelope.classList.add(
+                            "show"
+                        );
+
+                        letterHint.classList.add(
+                            "show"
+                        );
+
+                    },
+                    1000
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           ENVELOPE
+        ===================================================== */
+
+        let envelopeOpened = false;
+
+
+        envelope.addEventListener(
+            "click",
+            function () {
+
+                if (envelopeOpened) {
+                    return;
+                }
+
+                envelopeOpened = true;
+
+                envelope.classList.add(
+                    "open"
+                );
+
+                letterHint.classList.remove(
+                    "show"
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        showSection(
+                            "letter-section"
+                        );
+
+                        setTimeout(
+                            function () {
+
+                                startLetter();
+
+                            },
+                            800
+                        );
+
+                    },
+                    1200
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           LETTER
+        ===================================================== */
+
+        const letterText = get("letter-text");
+        const letterSignature =
+            get("letter-signature");
+
+        const letterContinue =
+            get("letter-continue");
+
+
+        const letterLines = [
+
+            "There are some things I don't say often enough...",
+
+            "You make ordinary days feel a little more beautiful.",
+
+            "Somehow, somewhere along the way, you became such a special part of my life.",
+
+            "And today, more than anything, I just want you to know how loved you are.",
+
+            "I hope this new year of your life brings you everything your beautiful heart deserves.",
+
+            "And if I get to be there beside you through it all...",
+
+            "well, I think I'd call myself pretty lucky. ❤️"
+
+        ];
+
+
+        let letterStarted = false;
+
+
+        function startLetter() {
+
+            if (letterStarted) {
+                return;
+            }
+
+            letterStarted = true;
+
+            letterText.innerHTML = "";
+
+            typeLetterLine(
                 0
-            ) + "%";
+            );
+
+        }
 
 
-        /* ---------------------------------------------
-           TEXT
-        --------------------------------------------- */
+        function typeLetterLine(index) {
 
-        wineText.classList.add(
-            "fade"
-        );
+            if (
+                index >=
+                letterLines.length
+            ) {
 
-        setTimeout(
-            function () {
+                setTimeout(
+                    function () {
 
-                if (wineClicks <= 4) {
+                        letterSignature.classList.add(
+                            "show"
+                        );
 
-                    wineText.textContent =
-                        wineMessages[
-                            wineClicks - 1
-                        ];
+                        setTimeout(
+                            function () {
+
+                                letterContinue.classList.add(
+                                    "show"
+                                );
+
+                            },
+                            1000
+                        );
+
+                    },
+                    700
+                );
+
+                return;
+            }
+
+
+            const paragraph =
+                document.createElement(
+                    "p"
+                );
+
+            paragraph.style.marginBottom =
+                "16px";
+
+            letterText.appendChild(
+                paragraph
+            );
+
+
+            const text =
+                letterLines[index];
+
+            let character = 0;
+
+
+            function typeCharacter() {
+
+                if (
+                    character <
+                    text.length
+                ) {
+
+                    paragraph.textContent +=
+                        text.charAt(
+                            character
+                        );
+
+                    character++;
+
+                    setTimeout(
+                        typeCharacter,
+                        25
+                    );
+
+                } else {
+
+                    setTimeout(
+                        function () {
+
+                            typeLetterLine(
+                                index + 1
+                            );
+
+                        },
+                        350
+                    );
 
                 }
 
-                wineText.classList.remove(
-                    "fade"
+            }
+
+
+            typeCharacter();
+
+        }
+
+
+        /* =====================================================
+           LETTER → WINE
+        ===================================================== */
+
+        letterContinue.addEventListener(
+            "click",
+            function () {
+
+                showSection(
+                    "wine-section"
                 );
 
-            },
-            400
+            }
         );
 
 
-        /* ---------------------------------------------
-           FOG
-        --------------------------------------------- */
+        /* =====================================================
+           WINE
+        ===================================================== */
 
-        if (wineClicks >= 2) {
+        const bottle =
+            get("wine-bottle");
 
-            wineFog.classList.add(
-                "active"
+        const wineLevel =
+            get("wine-level");
+
+        const glassWine =
+            get("glass-wine");
+
+        const wineCount =
+            get("wine-count");
+
+        const dizzyOverlay =
+            get("dizzy-overlay");
+
+        const drunkPopup =
+            get("drunk-popup");
+
+        const nextPage =
+            get("next-page");
+
+
+        let wineClicks = 0;
+
+        const totalClicks = 5;
+
+
+        bottle.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    wineClicks >=
+                    totalClicks
+                ) {
+                    return;
+                }
+
+
+                wineClicks++;
+
+
+                playSound(
+                    wineSound,
+                    0.5
+                );
+
+
+                /* =============================================
+                   BOTTLE LEVEL
+                ============================================== */
+
+                const remaining =
+                    100 -
+                    (
+                        wineClicks *
+                        20
+                    );
+
+
+                wineLevel.style.height =
+                    remaining + "%";
+
+
+                /* =============================================
+                   GLASS LEVEL
+                ============================================== */
+
+                const glassHeight =
+                    wineClicks *
+                    15;
+
+                glassWine.style.height =
+                    glassHeight + "px";
+
+
+                /* =============================================
+                   BOTTLE ANIMATION
+                ============================================== */
+
+                bottle.animate(
+                    [
+                        {
+                            transform:
+                                "rotate(0deg)"
+                        },
+                        {
+                            transform:
+                                "rotate(-12deg)"
+                        },
+                        {
+                            transform:
+                                "rotate(0deg)"
+                        }
+                    ],
+                    {
+                        duration: 650,
+                        easing: "ease-in-out"
+                    }
+                );
+
+
+                /* =============================================
+                   TEXT
+                ============================================== */
+
+                if (
+                    wineClicks <
+                    totalClicks
+                ) {
+
+                    const remainingClicks =
+                        totalClicks -
+                        wineClicks;
+
+                    wineCount.textContent =
+                        remainingClicks +
+                        (
+                            remainingClicks === 1
+                                ? " pour left..."
+                                : " pours left..."
+                        );
+
+                } else {
+
+                    wineCount.textContent =
+                        "BOTTOMS UP... 🍷❤️";
+
+                    finishWine();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           FINAL WINE
+        ===================================================== */
+
+        function finishWine() {
+
+            bottle.style.pointerEvents =
+                "none";
+
+
+            setTimeout(
+                function () {
+
+                    playSound(
+                        glassSound,
+                        0.7
+                    );
+
+                    glassWine.animate(
+                        [
+                            {
+                                transform:
+                                    "scale(1)"
+                            },
+                            {
+                                transform:
+                                    "scale(1.12)"
+                            },
+                            {
+                                transform:
+                                    "scale(1)"
+                            }
+                        ],
+                        {
+                            duration: 500
+                        }
+                    );
+
+                },
+                500
+            );
+
+
+            setTimeout(
+                function () {
+
+                    dizzyOverlay.classList.add(
+                        "active"
+                    );
+
+                },
+                1100
+            );
+
+
+            setTimeout(
+                function () {
+
+                    drunkPopup.classList.add(
+                        "show"
+                    );
+
+                },
+                2600
             );
 
         }
 
 
-        /* ---------------------------------------------
-           SCREEN MOVEMENT
-        --------------------------------------------- */
+        /* =====================================================
+           NEXT PAGE
+        ===================================================== */
 
-        if (wineClicks >= 3) {
+        nextPage.addEventListener(
+            "click",
+            function () {
 
-            wineWorld.style.animation =
-                "screenSway 3s infinite ease-in-out";
+                window.location.href =
+                    "page4.html";
 
-        }
-
-
-        /* ---------------------------------------------
-           FINAL CLICK
-        --------------------------------------------- */
-
-        if (wineClicks === 5) {
-
-            finishWine();
-
-        }
+            }
+        );
 
     }
 );
-
-
-/* =====================================================
-   WINE ENDING
-===================================================== */
-
-function finishWine() {
-
-    wineText.classList.add(
-        "fade"
-    );
-
-    wineFog.classList.add(
-        "active"
-    );
-
-
-    setTimeout(
-        function () {
-
-            finalWineMessage.classList.remove(
-                "hidden"
-            );
-
-        },
-        1800
-    );
-
-
-    setTimeout(
-        function () {
-
-            finalWineMessage.classList.add(
-                "hidden"
-            );
-
-        },
-        5000
-    );
-
-
-    setTimeout(
-        function () {
-
-            blackout.classList.add(
-                "show"
-            );
-
-        },
-        6500
-    );
-
-
-    /*
-       PAGE 3 CONNECTION
-
-       When Page 3 is ready, replace the
-       following comment with:
-
-       window.location.href = "page3.html";
-
-       Example:
-
-       setTimeout(function () {
-           window.location.href = "page3.html";
-       }, 8500);
-    */
-
-        setTimeout(function () {
-
-            balloon.classList.add("popped");
-
-        }, index * 100);
-
-    });
-
-}
-
-
-/* =========================================
-   SECTION 05 - PARTY POPPERS
-========================================= */
-
-const leftPopper =
-    document.getElementById("leftPopper");
-
-const rightPopper =
-    document.getElementById("rightPopper");
-
-
-function firePoppers() {
-
-    leftPopper.classList.add("pop");
-
-    setTimeout(function () {
-
-        rightPopper.classList.add("pop");
-
-    }, 180);
-
-}
-
-
-/* =========================================
-   SECTION 06 - CONFETTI
-========================================= */
-
-function createConfetti() {
-
-    const amount = 80;
-
-    for (let i = 0; i < amount; i++) {
-
-        const piece =
-            document.createElement("div");
-
-        piece.style.position = "fixed";
-        piece.style.width = "8px";
-        piece.style.height = "14px";
-
-        piece.style.background =
-            ["#ff8ba7", "#ffd166", "#ffffff", "#8ed1a8"][
-                Math.floor(Math.random() * 4)
-            ];
-
-        piece.style.left =
-            Math.random() * 100 + "%";
-
-        piece.style.top = "-20px";
-
-        piece.style.zIndex = "500";
-
-        piece.style.transform =
-            "rotate(" + Math.random() * 360 + "deg)";
-
-        piece.style.transition =
-            "top 2.5s ease, transform 2.5s ease, opacity 2.5s ease";
-
-        document.body.appendChild(piece);
-
-        setTimeout(function () {
-
-            piece.style.top =
-                (70 + Math.random() * 40) + "%";
-
-            piece.style.transform =
-                "rotate(" +
-                (Math.random() * 1000) +
-                "deg)";
-
-            piece.style.opacity = "0";
-
-        }, 50);
-
-        setTimeout(function () {
-
-            piece.remove();
-
-        }, 3000);
-
-    }
-
-}
-
-
-/* =========================================
-   SECTION 07 - CAKE CLICK
-========================================= */
-
-const cake =
-    document.getElementById("cake");
-
-cake.addEventListener("click", function () {
-
-    if (!celebrationStarted) {
-        return;
-    }
-
-    cake.style.transform =
-        "scale(1.15) rotate(-2deg)";
-
-    createConfetti();
-
-    setTimeout(function () {
-
-        wishMessage.classList.remove("show");
-
-        partyScene.classList.remove("active");
-
-        setTimeout(function () {
-
-            document
-                .getElementById("letterScene")
-                .classList.add("active");
-
-        }, 800);
-
-    }, 700);
-
-});
-
-
-/* =========================================
-   SECTION 08 - LETTER
-========================================= */
-
-const letter =
-    document.getElementById("letter");
-
-const letterContent =
-    document.getElementById("letterContent");
-
-const closeLetter =
-    document.getElementById("closeLetter");
-
-
-letter.addEventListener("click", function () {
-
-    letterContent.classList.add("open");
-
-});
-
-
-closeLetter.addEventListener("click", function (event) {
-
-    event.stopPropagation();
-
-    letterContent.classList.remove("open");
-
-});
-
-
-/* =========================================
-   SECTION 09 - MOVE TO WINE
-========================================= */
-
-/*
-   Clicking outside the letter after reading it
-   moves to the wine scene.
-*/
-
-letterContent.addEventListener("click", function (event) {
-
-    if (event.target === letterContent) {
-
-        letterContent.classList.remove("open");
-
-        setTimeout(function () {
-
-            document
-                .getElementById("letterScene")
-                .classList.remove("active");
-
-            document
-                .getElementById("wineScene")
-                .classList.add("active");
-
-        }, 800);
-
-    }
-
-});
-
-
-/* =========================================
-   SECTION 10 - WINE
-========================================= */
-
-const wineBottle =
-    document.getElementById("wineBottle");
-
-const wineLiquid =
-    document.getElementById("wineLiquid");
-
-const wineGlassLiquid =
-    document.getElementById("wineGlassLiquid");
-
-const wineText =
-    document.getElementById("wineText");
-
-const wineFog =
-    document.querySelector(".wine-fog");
-
-const wineWorld =
-    document.querySelector(".wine-world");
-
-const finalWineMessage =
-    document.getElementById("finalWineMessage");
-
-const blackout =
-    document.getElementById("blackout");
-
-
-let wineClicks = 0;
-
-
-const wineMessages = [
-
-    "Tonight is yours… so let yourself feel every little moment. ❤️",
-
-    "Some moments are meant to be remembered forever… ✨",
-
-    "Close your eyes… and just let the moment take you somewhere beautiful. 🌙",
-
-    "Because the best part of tonight… is still waiting for you. ❤️"
-
-];
-
-
-wineBottle.addEventListener("click", function () {
-
-    if (wineClicks >= 5) {
-        return;
-    }
-
-    wineClicks++;
-
-    const remaining =
-        85 - (wineClicks * 17);
-
-    wineLiquid.style.height =
-        Math.max(remaining, 0) + "%";
-
-    wineGlassLiquid.style.height =
-        Math.max(65 - (wineClicks * 13), 0) + "%";
-
-
-    /* -----------------------------------------
-       TEXT
-    ----------------------------------------- */
-
-    wineText.classList.add("fade");
-
-    setTimeout(function () {
-
-        if (wineClicks <= 4) {
-
-            wineText.textContent =
-                wineMessages[wineClicks - 1];
-
-        }
-
-        wineText.classList.remove("fade");
-
-    }, 500);
-
-
-    /* -----------------------------------------
-       FOG
-    ----------------------------------------- */
-
-    if (wineClicks >= 2) {
-
-        wineFog.classList.add("active");
-
-    }
-
-
-    /* -----------------------------------------
-       SCREEN SWAY
-    ----------------------------------------- */
-
-    if (wineClicks >= 3) {
-
-        wineWorld.style.animation =
-            "screenSway 3s infinite ease-in-out";
-
-    }
-
-
-    /* -----------------------------------------
-       FINAL CLICK
-    ----------------------------------------- */
-
-    if (wineClicks === 5) {
-
-        finishWineScene();
-
-    }
-
-});
-
-
-/* =========================================
-   SECTION 11 - WINE ENDING
-========================================= */
-
-function finishWineScene() {
-
-    wineText.classList.add("fade");
-
-    wineFog.classList.add("active");
-
-    setTimeout(function () {
-
-        finalWineMessage.classList.add("show");
-
-    }, 1800);
-
-
-    setTimeout(function () {
-
-        finalWineMessage.classList.remove("show");
-
-    }, 5000);
-
-
-    setTimeout(function () {
-
-        blackout.classList.add("show");
-
-    }, 6500);
-
-
-    /*
-       Page 3 connection will be added here.
-
-       Example later:
-
-       window.location.href = "page3.html";
-    */
-
-}
-
-
-/* =========================================
-   SECTION 12 - SCREEN SWAY
-========================================= */
-
-const dynamicStyle =
-    document.createElement("style");
-
-dynamicStyle.textContent = `
-
-@keyframes screenSway {
-
-    0% {
-        transform: translateX(0) rotate(0deg);
-    }
-
-    25% {
-        transform: translateX(-12px) rotate(-0.5deg);
-    }
-
-    50% {
-        transform: translateX(12px) rotate(0.5deg);
-    }
-
-    75% {
-        transform: translateX(-8px) rotate(-0.3deg);
-    }
-
-    100% {
-        transform: translateX(0) rotate(0deg);
-    }
-
-}
-
-`;
-
-document.head.appendChild(dynamicStyle);
