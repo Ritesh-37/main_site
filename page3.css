@@ -1,0 +1,2382 @@
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    overflow: hidden;
+
+    font-family: "DM Sans", sans-serif;
+
+    color: #7d1834;
+
+    /* SAME VISUAL FAMILY AS PAGE 2 */
+
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            #fffafa 0%,
+            #fff1f4 35%,
+            #ffe3e8 70%,
+            #ffd0d9 100%
+        );
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background-glow {
+    position: fixed;
+
+    width: 700px;
+    height: 700px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        rgba(255, 90, 130, .16);
+
+    filter: blur(110px);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background-image:
+        radial-gradient(
+            rgba(180, 40, 70, .08) 1px,
+            transparent 1px
+        );
+
+    background-size: 28px 28px;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+
+/* =========================================================
+   FLOATING DECOR
+========================================================= */
+
+.floating-hearts {
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 1;
+}
+
+.floating-hearts span {
+    position: absolute;
+
+    font-size: 20px;
+
+    opacity: .28;
+
+    animation:
+        floatHeart 5s ease-in-out infinite;
+}
+
+.floating-hearts span:nth-child(1) {
+    left: 8%;
+    top: 25%;
+}
+
+.floating-hearts span:nth-child(2) {
+    left: 20%;
+    top: 70%;
+
+    animation-delay: .7s;
+}
+
+.floating-hearts span:nth-child(3) {
+    left: 38%;
+    top: 15%;
+
+    animation-delay: 1.2s;
+}
+
+.floating-hearts span:nth-child(4) {
+    left: 65%;
+    top: 75%;
+
+    animation-delay: 1.8s;
+}
+
+.floating-hearts span:nth-child(5) {
+    left: 80%;
+    top: 20%;
+
+    animation-delay: .4s;
+}
+
+.floating-hearts span:nth-child(6) {
+    left: 90%;
+    top: 60%;
+
+    animation-delay: 2s;
+}
+
+@keyframes floatHeart {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0);
+    }
+
+    50% {
+        transform:
+            translateY(-18px)
+            rotate(8deg);
+    }
+}
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+#page3 {
+    position: relative;
+
+    width: 100%;
+    height: 100vh;
+
+    z-index: 5;
+}
+
+.page-section {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding:
+        70px
+        20px
+        35px;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        scale(.97)
+        translateY(20px);
+
+    transition:
+        opacity .7s ease,
+        transform .7s ease,
+        visibility .7s;
+}
+
+.page-section.active {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        scale(1)
+        translateY(0);
+
+    z-index: 20;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+========================================================= */
+
+.eyebrow {
+    font-size: 10px;
+
+    letter-spacing: 4px;
+
+    font-weight: 700;
+
+    opacity: .65;
+
+    margin-bottom: 14px;
+}
+
+h1,
+h2,
+h3 {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+}
+
+.section-description {
+    margin-top: 10px;
+
+    color: #633040;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   PREMIUM BUTTON
+========================================================= */
+
+.premium-button {
+    border: none;
+
+    padding:
+        15px
+        28px;
+
+    border-radius: 50px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8f243d,
+            #b52d51
+        );
+
+    color: white;
+
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-weight: 700;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 12px 30px
+        rgba(143, 36, 61, .25);
+
+    transition:
+        transform .3s ease,
+        box-shadow .3s ease;
+}
+
+.premium-button:hover {
+    transform:
+        translateY(-4px)
+        scale(1.03);
+
+    box-shadow:
+        0 18px 38px
+        rgba(143, 36, 61, .35);
+}
+
+.premium-button:active {
+    transform: scale(.96);
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+#intro-section {
+    text-align: center;
+}
+
+.intro-card {
+    position: absolute;
+
+    width:
+        min(720px, 92vw);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(35px)
+        scale(.94);
+
+    transition:
+        opacity .6s ease,
+        transform .6s ease,
+        visibility .6s;
+}
+
+.intro-card.active {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.intro-number {
+    font-size: 11px;
+
+    letter-spacing: 3px;
+
+    opacity: .45;
+
+    margin-bottom: 25px;
+}
+
+.intro-icon {
+    width: 65px;
+    height: 65px;
+
+    margin:
+        0 auto
+        20px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(255,255,255,.65);
+
+    border:
+        1px solid
+        rgba(143,36,61,.12);
+
+    box-shadow:
+        0 15px 40px
+        rgba(143,36,61,.1);
+
+    font-size: 28px;
+
+    animation:
+        softFloat 2.5s ease-in-out infinite;
+}
+
+.camera-mini {
+    font-size: 40px;
+}
+
+@keyframes softFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-8px);
+    }
+}
+
+.intro-card h1 {
+    font-size:
+        clamp(48px, 8vw, 90px);
+
+    line-height: .95;
+
+    color: #7d1834;
+}
+
+.intro-card h1 span {
+    display: block;
+
+    color: #a92549;
+}
+
+.intro-text {
+    max-width: 570px;
+
+    margin:
+        22px auto
+        30px;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    color: #633040;
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+.camera-content {
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+.camera-content h2,
+.bouquet-content h2,
+.letter-content h2,
+.wine-content h2 {
+    font-size:
+        clamp(45px, 7vw, 75px);
+
+    line-height: .9;
+
+    color: #7d1834;
+}
+
+.camera-content h2 span,
+.bouquet-content h2 span,
+.letter-content h2 span,
+.wine-content h2 span {
+    color: #a92549;
+}
+
+
+/* CAMERA BODY */
+
+.camera {
+    position: relative;
+
+    width: 280px;
+    height: 190px;
+
+    margin:
+        30px auto
+        15px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    filter:
+        drop-shadow(
+            0 25px 25px
+            rgba(90, 10, 30, .2)
+        );
+
+    transition:
+        transform .3s ease;
+}
+
+.camera:hover {
+    transform:
+        translateY(-7px)
+        scale(1.04);
+}
+
+.camera:active {
+    transform:
+        scale(.94);
+}
+
+.camera-body {
+    position: absolute;
+
+    left: 10px;
+    bottom: 0;
+
+    width: 260px;
+    height: 145px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #92253f,
+            #64172d
+        );
+
+    border:
+        4px solid
+        rgba(255,255,255,.35);
+
+    box-shadow:
+        inset 0 8px 15px
+        rgba(255,255,255,.15);
+}
+
+.camera-top {
+    position: absolute;
+
+    left: 60px;
+    top: 15px;
+
+    width: 125px;
+    height: 35px;
+
+    border-radius:
+        14px 14px 0 0;
+
+    background:
+        #751b33;
+
+    z-index: 2;
+}
+
+.camera-grip {
+    position: absolute;
+
+    right: 0;
+    bottom: 15px;
+
+    width: 40px;
+    height: 100px;
+
+    border-radius:
+        0 18px 18px 0;
+
+    background:
+        #591328;
+
+    transform:
+        rotate(4deg);
+}
+
+.camera-lens {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 105px;
+    height: 105px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #34101c 0 25%,
+            #60152b 26% 42%,
+            #b45a70 43% 48%,
+            #4d1123 49% 100%
+        );
+
+    border:
+        6px solid
+        #e6a5b2;
+
+    box-shadow:
+        inset 0 0 20px
+        rgba(0,0,0,.6),
+        0 0 25px
+        rgba(255,255,255,.15);
+}
+
+.lens-ring {
+    position: absolute;
+
+    inset: 10px;
+
+    border:
+        2px solid
+        rgba(255,255,255,.3);
+
+    border-radius: 50%;
+}
+
+.lens-inner {
+    position: absolute;
+
+    width: 28px;
+    height: 28px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        #17070d;
+
+    box-shadow:
+        0 0 12px
+        rgba(255,255,255,.15);
+}
+
+.lens-shine {
+    position: absolute;
+
+    width: 18px;
+    height: 10px;
+
+    left: 24px;
+    top: 20px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.6);
+
+    transform: rotate(-35deg);
+
+    filter: blur(2px);
+}
+
+.camera-flash {
+    position: absolute;
+
+    right: 22px;
+    top: 25px;
+
+    width: 28px;
+    height: 22px;
+
+    border-radius: 6px;
+
+    background:
+        #f8dce2;
+}
+
+.camera-viewfinder {
+    position: absolute;
+
+    left: 30px;
+    top: 35px;
+
+    width: 30px;
+    height: 15px;
+
+    border-radius: 5px;
+
+    background:
+        #280b15;
+}
+
+.interaction-text {
+    margin-top: 12px;
+
+    font-size: 13px;
+
+    opacity: .7;
+
+    transition: .4s;
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+.countdown-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(30, 5, 15, .78);
+
+    backdrop-filter:
+        blur(12px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    z-index: 500;
+
+    transition: .25s;
+}
+
+.countdown-overlay.active {
+    opacity: 1;
+
+    visibility: visible;
+}
+
+.countdown-number {
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size:
+        clamp(130px, 25vw, 260px);
+
+    font-weight: 700;
+
+    color: white;
+
+    text-shadow:
+        0 0 40px
+        rgba(255,255,255,.8);
+
+    animation:
+        countdownPop .9s ease;
+}
+
+@keyframes countdownPop {
+
+    0% {
+        transform:
+            scale(1.5);
+
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        transform:
+            scale(1);
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   FLASH
+========================================================= */
+
+.flash-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    background: white;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    z-index: 1000;
+}
+
+.flash-overlay.active {
+    visibility: visible;
+
+    animation:
+        hugeFlash .8s ease-out;
+}
+
+@keyframes hugeFlash {
+
+    0% {
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    30% {
+        opacity: .2;
+    }
+
+    45% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+.photo-result {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 25px;
+
+    background:
+        rgba(255,255,255,.3);
+
+    backdrop-filter:
+        blur(7px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        scale(.8);
+
+    z-index: 900;
+
+    transition:
+        opacity .7s ease,
+        transform .7s ease,
+        visibility .7s;
+}
+
+.photo-result.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        scale(1);
+}
+
+.photo-frame {
+    width:
+        min(360px, 82vw);
+
+    padding: 12px;
+
+    background:
+        #fffdfd;
+
+    border:
+        1px solid
+        rgba(143,36,61,.15);
+
+    box-shadow:
+        0 30px 80px
+        rgba(90,10,30,.25);
+
+    transform:
+        rotate(-1deg);
+}
+
+.photo-frame-top {
+    padding:
+        10px 5px;
+
+    text-align: center;
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+
+    color: #8f243d;
+}
+
+.photo-container {
+    width: 100%;
+
+    aspect-ratio: 4 / 5;
+
+    overflow: hidden;
+
+    background: #f7dfe5;
+}
+
+.photo-container img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.photo-caption {
+    padding:
+        15px 5px 5px;
+
+    text-align: center;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    color: #7d1834;
+}
+
+.photo-caption span {
+    font-family:
+        "DM Sans",
+        sans-serif;
+
+    font-size: 20px;
+}
+
+.photo-date {
+    text-align: center;
+
+    padding:
+        5px 5px 10px;
+
+    font-size: 7px;
+
+    letter-spacing: 2px;
+
+    opacity: .5;
+}
+
+
+/* =========================================================
+   BOUQUET
+========================================================= */
+
+.bouquet-content {
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+.bouquet {
+    position: relative;
+
+    width: 360px;
+    height: 320px;
+
+    margin-top: 15px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        transform .5s ease;
+}
+
+.bouquet:hover {
+    transform:
+        scale(1.04)
+        translateY(-5px);
+}
+
+.bouquet-glow {
+    position: absolute;
+
+    left: 50%;
+    top: 42%;
+
+    width: 230px;
+    height: 230px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 70, 110, .15);
+
+    filter:
+        blur(35px);
+
+    opacity: .5;
+
+    transition: .6s;
+}
+
+.bouquet.glowing .bouquet-glow {
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.3);
+}
+
+.bouquet-paper {
+    position: absolute;
+
+    left: 50%;
+    bottom: 10px;
+
+    width: 225px;
+    height: 180px;
+
+    transform:
+        translateX(-50%)
+        rotate(2deg);
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8d9df,
+            #e7aab9
+        );
+
+    clip-path:
+        polygon(
+            8% 0,
+            92% 0,
+            100% 100%,
+            50% 82%,
+            0 100%
+        );
+
+    box-shadow:
+        0 15px 25px
+        rgba(90,10,30,.15);
+}
+
+.paper-fold {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            45deg,
+            transparent 48%,
+            rgba(255,255,255,.45) 49%,
+            transparent 52%
+        );
+}
+
+
+/* STEMS */
+
+.stem {
+    position: absolute;
+
+    width: 7px;
+
+    height: 185px;
+
+    left: 50%;
+    bottom: 70px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #355f42,
+            #6d9b65
+        );
+
+    border-radius: 10px;
+
+    transform-origin:
+        bottom center;
+}
+
+.stem-1 {
+    transform: rotate(-24deg);
+}
+
+.stem-2 {
+    transform: rotate(-15deg);
+}
+
+.stem-3 {
+    transform: rotate(-8deg);
+}
+
+.stem-4 {
+    transform: rotate(2deg);
+}
+
+.stem-5 {
+    transform: rotate(11deg);
+}
+
+.stem-6 {
+    transform: rotate(18deg);
+}
+
+.stem-7 {
+    transform: rotate(27deg);
+}
+
+
+/* LEAVES */
+
+.leaf {
+    position: absolute;
+
+    width: 40px;
+    height: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #315f3d,
+            #6e9c67
+        );
+
+    border-radius:
+        100% 0 100% 0;
+}
+
+.leaf-1 {
+    left: 80px;
+    bottom: 130px;
+
+    transform: rotate(25deg);
+}
+
+.leaf-2 {
+    left: 100px;
+    bottom: 105px;
+
+    transform: rotate(150deg);
+}
+
+.leaf-3 {
+    left: 130px;
+    bottom: 155px;
+
+    transform: rotate(40deg);
+}
+
+.leaf-4 {
+    right: 80px;
+    bottom: 125px;
+
+    transform: rotate(-25deg);
+}
+
+.leaf-5 {
+    right: 105px;
+    bottom: 100px;
+
+    transform: rotate(-150deg);
+}
+
+.leaf-6 {
+    right: 125px;
+    bottom: 155px;
+
+    transform: rotate(-40deg);
+}
+
+
+/* ROSES */
+
+.rose {
+    position: absolute;
+
+    width: 65px;
+    height: 65px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #8b1734 0 10%,
+            #c12f50 11% 28%,
+            #e05b76 29% 45%,
+            #b51f43 46% 65%,
+            #77142d 66% 100%
+        );
+
+    box-shadow:
+        inset 0 4px 10px
+        rgba(255,255,255,.25),
+        0 10px 20px
+        rgba(100,10,30,.2);
+
+    transition:
+        transform .4s ease,
+        filter .4s ease;
+}
+
+.rose::before,
+.rose::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 7px;
+
+    border:
+        3px solid
+        rgba(255,255,255,.12);
+
+    border-radius: 50%;
+}
+
+.rose i {
+    position: absolute;
+
+    inset: 16px;
+
+    border:
+        3px solid
+        rgba(110,10,35,.45);
+
+    border-radius: 50%;
+}
+
+.rose-1 {
+    left: 80px;
+    top: 35px;
+}
+
+.rose-2 {
+    left: 145px;
+    top: 15px;
+
+    transform: scale(1.08);
+}
+
+.rose-3 {
+    right: 78px;
+    top: 35px;
+}
+
+.rose-4 {
+    left: 105px;
+    top: 90px;
+
+    transform: scale(.9);
+}
+
+.rose-5 {
+    right: 105px;
+    top: 90px;
+
+    transform: scale(.9);
+}
+
+.rose-6 {
+    left: 50px;
+    top: 100px;
+
+    transform: scale(.72);
+}
+
+.rose-7 {
+    right: 50px;
+    top: 100px;
+
+    transform: scale(.72);
+}
+
+.bouquet.glowing .rose {
+    filter:
+        drop-shadow(
+            0 0 15px
+            rgba(255,80,120,.9)
+        );
+
+    animation:
+        rosePulse .8s ease-in-out 2;
+}
+
+@keyframes rosePulse {
+
+    50% {
+        transform:
+            scale(1.15);
+    }
+}
+
+
+/* =========================================================
+   LETTER / ENVELOPE
+========================================================= */
+
+.letter-content {
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+.envelope {
+    position: relative;
+
+    width: 340px;
+    height: 220px;
+
+    margin:
+        35px auto
+        10px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    filter:
+        drop-shadow(
+            0 25px 30px
+            rgba(80,10,30,.2)
+        );
+
+    transition:
+        transform .4s ease;
+}
+
+.envelope:hover {
+    transform:
+        translateY(-8px);
+}
+
+.envelope-body {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffdfd,
+            #f6e0e5
+        );
+
+    border:
+        1px solid
+        rgba(143,36,61,.18);
+}
+
+.envelope-shadow {
+    position: absolute;
+
+    left: 15px;
+    right: 15px;
+    bottom: -15px;
+
+    height: 25px;
+
+    background:
+        rgba(80,10,30,.15);
+
+    filter:
+        blur(15px);
+
+    border-radius: 50%;
+}
+
+.envelope-paper {
+    position: absolute;
+
+    left: 35px;
+    right: 35px;
+
+    top: 30px;
+
+    height: 170px;
+
+    background:
+        #fffaf9;
+
+    box-shadow:
+        0 5px 15px
+        rgba(90,10,30,.08);
+
+    transform:
+        translateY(15px);
+
+    transition:
+        transform .7s ease;
+}
+
+.envelope-flap {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 0;
+    height: 0;
+
+    border-left:
+        170px solid transparent;
+
+    border-right:
+        170px solid transparent;
+
+    border-top:
+        105px solid #edc5ce;
+
+    transform-origin:
+        top center;
+
+    transition:
+        transform .8s ease;
+
+    z-index: 5;
+}
+
+.wax-seal {
+    position: absolute;
+
+    left: 50%;
+    top: 48%;
+
+    width: 52px;
+    height: 52px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #b42a4c,
+            #71162e
+        );
+
+    color: #f9dfe5;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 25px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 5px 15px
+        rgba(80,10,30,.25);
+
+    z-index: 10;
+
+    transition:
+        opacity .4s ease,
+        transform .6s ease;
+}
+
+.envelope.open .envelope-flap {
+    transform:
+        rotateX(180deg);
+}
+
+.envelope.open .envelope-paper {
+    transform:
+        translateY(-55px);
+}
+
+.envelope.open .wax-seal {
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.5);
+}
+
+
+/* =========================================================
+   POSTCARD
+========================================================= */
+
+.postcard {
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    width:
+        min(500px, 90vw);
+
+    max-height: 82vh;
+
+    overflow-y: auto;
+
+    padding: 12px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.6)
+        rotate(-3deg);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    z-index: 500;
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease,
+        visibility .8s;
+}
+
+.postcard.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1)
+        rotate(0);
+}
+
+.postcard-inner {
+    padding:
+        35px 32px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fffefe,
+            #fff4f6
+        );
+
+    border:
+        1px solid
+        rgba(143,36,61,.16);
+
+    box-shadow:
+        0 30px 90px
+        rgba(80,10,30,.25);
+
+    text-align: center;
+}
+
+.postcard-top {
+    font-size: 8px;
+
+    letter-spacing: 3px;
+
+    color: #8f243d;
+
+    margin-bottom: 15px;
+}
+
+.postcard-divider {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #b52d51;
+
+    margin-bottom: 20px;
+}
+
+.postcard-divider span {
+    width: 45px;
+    height: 1px;
+
+    background:
+        rgba(143,36,61,.3);
+}
+
+.postcard h3 {
+    font-size: 42px;
+
+    line-height: 1;
+
+    color: #7d1834;
+
+    margin-bottom: 20px;
+}
+
+.postcard h3 span {
+    display: block;
+
+    color: #a92549;
+}
+
+.postcard p {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 19px;
+
+    line-height: 1.55;
+
+    color: #633040;
+
+    margin:
+        0 auto
+        15px;
+
+    max-width: 400px;
+}
+
+.postcard-signature {
+    margin-top: 25px;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 18px;
+
+    color: #7d1834;
+}
+
+.postcard-signature strong {
+    display: block;
+
+    font-size: 30px;
+
+    margin-top: 5px;
+}
+
+.postcard .premium-button {
+    margin-top: 18px;
+}
+
+
+/* =========================================================
+   WINE
+========================================================= */
+
+.wine-content {
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+}
+
+.wine-table {
+    position: relative;
+
+    width:
+        min(650px, 95vw);
+
+    height: 350px;
+
+    margin-top: 15px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-end;
+
+    gap: 75px;
+
+    padding-bottom: 20px;
+}
+
+
+/* BOTTLE */
+
+.wine-bottle {
+    position: relative;
+
+    width: 115px;
+    height: 290px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        transform .25s ease;
+}
+
+.wine-bottle:hover {
+    transform:
+        translateY(-6px)
+        rotate(-2deg);
+}
+
+.wine-bottle:active {
+    transform:
+        scale(.94);
+}
+
+.bottle-neck {
+    position: absolute;
+
+    left: 38px;
+    top: 0;
+
+    width: 40px;
+    height: 75px;
+
+    border-radius:
+        12px 12px 3px 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #4d1225,
+            #8f243d,
+            #4d1225
+        );
+
+    border:
+        2px solid
+        rgba(255,255,255,.2);
+}
+
+.bottle-foil {
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+    height: 23px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b78c45,
+            #f1d18a,
+            #9b7132
+        );
+}
+
+.bottle-body {
+    position: absolute;
+
+    left: 12px;
+    bottom: 0;
+
+    width: 91px;
+    height: 230px;
+
+    border-radius:
+        25px 25px 18px 18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #3a0b1a,
+            #7a1730,
+            #3a0b1a
+        );
+
+    border:
+        2px solid
+        rgba(255,255,255,.15);
+
+    overflow: hidden;
+}
+
+.bottle-liquid {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(165,32,65,.85),
+            #5d1028
+        );
+
+    transition:
+        height .8s ease;
+}
+
+.bottle-label {
+    position: absolute;
+
+    left: 9px;
+    right: 9px;
+
+    top: 80px;
+
+    height: 95px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff7f5,
+            #f0d7d9
+        );
+
+    border:
+        1px solid
+        rgba(180,80,100,.3);
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    color: #7d1834;
+
+    z-index: 3;
+}
+
+.bottle-label strong {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 23px;
+
+    letter-spacing: 2px;
+}
+
+.bottle-label small {
+    font-size: 6px;
+
+    letter-spacing: 1.5px;
+
+    margin-top: 5px;
+}
+
+.bottle-label span {
+    margin-top: 8px;
+
+    font-size: 12px;
+}
+
+
+/* GLASSES */
+
+.glasses {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 35px;
+}
+
+.wine-glass {
+    position: relative;
+
+    width: 100px;
+    height: 210px;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        transform .3s ease;
+}
+
+.wine-glass:hover {
+    transform:
+        translateY(-7px)
+        rotate(2deg);
+}
+
+.glass-bowl {
+    position: absolute;
+
+    top: 0;
+    left: 8px;
+
+    width: 84px;
+    height: 110px;
+
+    border:
+        3px solid
+        rgba(130,60,75,.35);
+
+    border-top:
+        4px solid
+        rgba(130,60,75,.4);
+
+    border-radius:
+        8px 8px 45px 45px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255,255,255,.18);
+
+    box-shadow:
+        inset 0 5px 12px
+        rgba(255,255,255,.4);
+}
+
+.glass-wine {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            #c43b59,
+            #76142e
+        );
+
+    transition:
+        height .8s ease;
+}
+
+.glass-stem {
+    position: absolute;
+
+    left: 48px;
+    top: 108px;
+
+    width: 4px;
+    height: 75px;
+
+    background:
+        rgba(130,60,75,.4);
+}
+
+.glass-base {
+    position: absolute;
+
+    left: 17px;
+    bottom: 0;
+
+    width: 66px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(130,60,75,.4);
+}
+
+
+/* COUNTER */
+
+.wine-counter {
+    font-size: 10px;
+
+    letter-spacing: 3px;
+
+    font-weight: 700;
+
+    color: #8f243d;
+
+    margin-top: -5px;
+}
+
+.wine-hint {
+    margin-top: 10px;
+
+    font-size: 11px;
+
+    opacity: .55;
+}
+
+
+/* =========================================================
+   DRUNK EFFECT
+========================================================= */
+
+.drunk-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    z-index: 1000;
+
+    backdrop-filter:
+        blur(0);
+
+    background:
+        rgba(255,220,230,0);
+}
+
+.drunk-overlay.active {
+    opacity: 1;
+
+    visibility: visible;
+
+    animation:
+        drunkScreen 5s ease forwards;
+}
+
+@keyframes drunkScreen {
+
+    0% {
+        backdrop-filter:
+            blur(0);
+
+        background:
+            rgba(255,220,230,0);
+    }
+
+    25% {
+        backdrop-filter:
+            blur(3px);
+
+        background:
+            rgba(255,220,230,.08);
+    }
+
+    55% {
+        backdrop-filter:
+            blur(7px);
+
+        background:
+            rgba(255,220,230,.25);
+    }
+
+    100% {
+        backdrop-filter:
+            blur(14px);
+
+        background:
+            rgba(255,220,230,.55);
+    }
+}
+
+.drunk-ring {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 200px;
+    height: 200px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid
+        rgba(143,36,61,.2);
+
+    transform:
+        translate(-50%, -50%);
+
+    opacity: 0;
+}
+
+.drunk-overlay.active .ring-1 {
+    animation:
+        drunkRing 4s infinite;
+}
+
+.drunk-overlay.active .ring-2 {
+    animation:
+        drunkRing 4s .8s infinite;
+}
+
+.drunk-overlay.active .ring-3 {
+    animation:
+        drunkRing 4s 1.6s infinite;
+}
+
+@keyframes drunkRing {
+
+    0% {
+        transform:
+            translate(-50%,-50%)
+            scale(.3)
+            rotate(0);
+
+        opacity: 0;
+    }
+
+    40% {
+        opacity: .4;
+    }
+
+    100% {
+        transform:
+            translate(-50%,-50%)
+            scale(3)
+            rotate(180deg);
+
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   DRUNK POPUP
+========================================================= */
+
+.drunk-popup {
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    width:
+        min(500px, 90vw);
+
+    padding:
+        35px 28px;
+
+    text-align: center;
+
+    background:
+        rgba(255,255,255,.96);
+
+    border:
+        1px solid
+        rgba(143,36,61,.15);
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 30px 100px
+        rgba(80,10,30,.3);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translate(-50%,-50%)
+        scale(.7);
+
+    z-index: 2000;
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease,
+        visibility .8s;
+}
+
+.drunk-popup.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translate(-50%,-50%)
+        scale(1);
+}
+
+.drunk-icon {
+    font-size: 60px;
+
+    margin-bottom: 10px;
+}
+
+.drunk-popup h2 {
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size:
+        clamp(40px, 7vw, 60px);
+
+    line-height: .95;
+
+    color: #7d1834;
+}
+
+.drunk-popup p:not(.eyebrow) {
+    margin:
+        18px auto
+        25px;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+
+    color: #633040;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .page-section {
+        padding:
+            70px
+            15px
+            25px;
+    }
+
+    .intro-card h1 {
+        font-size: 50px;
+    }
+
+    .camera {
+        transform:
+            scale(.85);
+    }
+
+    .camera:hover {
+        transform:
+            scale(.88)
+            translateY(-5px);
+    }
+
+    .bouquet {
+        transform:
+            scale(.78);
+    }
+
+    .bouquet:hover {
+        transform:
+            scale(.82)
+            translateY(-5px);
+    }
+
+    .envelope {
+        transform:
+            scale(.82);
+    }
+
+    .wine-table {
+        transform:
+            scale(.75);
+
+        margin-top: -15px;
+
+        gap: 30px;
+    }
+
+    .postcard-inner {
+        padding:
+            28px 20px;
+    }
+}
+
+
+@media (max-width: 450px) {
+
+    .eyebrow {
+        letter-spacing: 2px;
+    }
+
+    .intro-card h1 {
+        font-size: 43px;
+    }
+
+    .camera {
+        transform:
+            scale(.72);
+    }
+
+    .camera:hover {
+        transform:
+            scale(.75);
+    }
+
+    .bouquet {
+        transform:
+            scale(.68);
+    }
+
+    .envelope {
+        transform:
+            scale(.68);
+    }
+
+    .postcard h3 {
+        font-size: 35px;
+    }
+
+    .postcard p {
+        font-size: 17px;
+    }
+
+    .wine-table {
+        transform:
+            scale(.58);
+
+        margin-top: -45px;
+    }
+
+    .wine-content h2 {
+        font-size: 43px;
+    }
+
+    .wine-hint {
+        font-size: 9px;
+    }
+
+    .drunk-popup {
+        padding:
+            28px 20px;
+    }
+}
