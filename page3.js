@@ -110,7 +110,12 @@ document.addEventListener(
 
                 masterGain.gain.value = 0.85;
 
-                musicGain.gain.value = 0.18;
+                /* 
+                   VERY SOFT BACKGROUND MUSIC.
+                   Effects remain much louder.
+                */
+
+                musicGain.gain.value = 0.075;
 
                 effectGain.gain.value = 0.42;
 
@@ -363,9 +368,10 @@ document.addEventListener(
 
 
         /* =====================================================
-           SMOOTH ROMANTIC JAZZ BGM
-           Soft sax / warm piano / upright bass
-           Slightly sexy late-night vibe
+           SEXY ROMANTIC JAZZ / LOUNGE BGM
+           
+           Soft, slow and atmospheric.
+           No bright repetitive piano melody.
         ====================================================== */
 
         function startRomanticBGM() {
@@ -394,12 +400,12 @@ document.addEventListener(
             }
 
 
-            playJazzLoop();
+            playRomanticLoop();
 
         }
 
 
-        function playJazzLoop() {
+        function playRomanticLoop() {
 
             if (
                 !musicPlaying ||
@@ -411,200 +417,183 @@ document.addEventListener(
 
 
             /*
-               Smooth jazz progression:
+                Smooth lounge progression.
 
-               Am7
-               Dm7
-               G7
-               Cmaj7
-               Fmaj7
-               Bm7b5
-               E7
-               E7
+                Am7
+                Dm7
+                G7
+                Cmaj7
+                Fmaj7
+                Bm7b5
+                E7
+                Am7
             */
+
 
             const chords = [
 
-                [
-                    220.00,
-                    261.63,
-                    329.63,
-                    392.00
-                ],
+                {
+                    bass: 110.00,
+                    notes: [
+                        220.00,
+                        261.63,
+                        329.63,
+                        392.00
+                    ]
+                },
 
-                [
-                    146.83,
-                    174.61,
-                    220.00,
-                    261.63
-                ],
+                {
+                    bass: 146.83,
+                    notes: [
+                        220.00,
+                        293.66,
+                        349.23,
+                        440.00
+                    ]
+                },
 
-                [
-                    196.00,
-                    246.94,
-                    293.66,
-                    349.23
-                ],
+                {
+                    bass: 196.00,
+                    notes: [
+                        246.94,
+                        293.66,
+                        369.99,
+                        440.00
+                    ]
+                },
 
-                [
-                    130.81,
-                    164.81,
-                    196.00,
-                    246.94
-                ],
+                {
+                    bass: 130.81,
+                    notes: [
+                        261.63,
+                        329.63,
+                        392.00,
+                        493.88
+                    ]
+                },
 
-                [
-                    174.61,
-                    220.00,
-                    261.63,
-                    329.63
-                ],
+                {
+                    bass: 174.61,
+                    notes: [
+                        261.63,
+                        349.23,
+                        440.00,
+                        523.25
+                    ]
+                },
 
-                [
-                    146.83,
-                    174.61,
-                    207.65,
-                    246.94
-                ],
+                {
+                    bass: 123.47,
+                    notes: [
+                        246.94,
+                        293.66,
+                        369.99,
+                        440.00
+                    ]
+                },
 
-                [
-                    164.81,
-                    207.65,
-                    246.94,
-                    311.13
-                ],
+                {
+                    bass: 164.81,
+                    notes: [
+                        246.94,
+                        311.13,
+                        369.99,
+                        493.88
+                    ]
+                },
 
-                [
-                    164.81,
-                    207.65,
-                    246.94,
-                    329.63
-                ]
+                {
+                    bass: 110.00,
+                    notes: [
+                        220.00,
+                        261.63,
+                        329.63,
+                        392.00
+                    ]
+                }
 
             ];
 
 
             const chord =
-                chords[
-                    musicStep %
-                    chords.length
-                ];
+                chords[musicStep];
 
 
-            /* =================================================
-               SOFT JAZZ CHORD
-            ================================================== */
+            /*
+                Deep, warm bass.
+            */
 
-            chord.forEach(
+            tone(
+                chord.bass,
+                2.7,
+                0.010,
+                "sine",
+                musicGain
+            );
+
+
+            /*
+                Warm jazz chord.
+                Notes enter very gently.
+            */
+
+            chord.notes.forEach(
                 function (note, index) {
 
                     tone(
                         note,
-                        1.15,
-                        0.010,
+                        2.3,
+                        0.0065,
                         "triangle",
                         musicGain,
-                        index * 0.025
+                        index * 0.035
                     );
 
                 }
             );
 
 
-            /* =================================================
-               UPRIGHT BASS
-            ================================================== */
+            /*
+                Soft upper lounge note.
+                This prevents the BGM from sounding
+                like a static chord loop.
+            */
 
-            const bassNotes = [
-
-                110.00,
-                73.42,
-                98.00,
-                65.41,
-                87.31,
-                73.42,
-                82.41,
-                82.41
-
+            const upperNotes = [
+                659.25,
+                698.46,
+                783.99,
+                659.25,
+                698.46,
+                739.99,
+                659.25,
+                587.33
             ];
 
 
             tone(
-                bassNotes[
-                    musicStep %
-                    bassNotes.length
-                ],
-                0.75,
-                0.018,
-                "triangle",
-                musicGain
-            );
-
-
-            /* =================================================
-               SAX-LIKE MELODY
-            ================================================== */
-
-            const saxMelody = [
-
-                659.25,
-                698.46,
-                783.99,
-                698.46,
-
-                587.33,
-                659.25,
-                698.46,
-                659.25,
-
-                523.25,
-                587.33,
-                659.25,
-                783.99,
-
-                698.46,
-                659.25,
-                587.33,
-                523.25
-
-            ];
-
-
-            const melodyNote =
-                saxMelody[
-                    musicStep %
-                    saxMelody.length
-                ];
-
-
-            tone(
-                melodyNote,
-                0.72,
-                0.014,
-                "triangle",
+                upperNotes[musicStep],
+                1.5,
+                0.0045,
+                "sine",
                 musicGain,
-                0.08
+                0.45
             );
 
 
-            /* =================================================
-               JAZZ TURNAROUND
-            ================================================== */
+            /*
+                Very subtle jazz "breath".
+                A second harmonic enters halfway through.
+            */
 
-            if (
-                musicStep % 4 === 3
-            ) {
-
-                tone(
-                    melodyNote * 1.5,
-                    0.25,
-                    0.007,
-                    "sine",
-                    musicGain,
-                    0.32
-                );
-
-            }
+            tone(
+                upperNotes[musicStep] * 0.5,
+                1.1,
+                0.003,
+                "sine",
+                musicGain,
+                1.15
+            );
 
 
             musicStep++;
@@ -612,7 +601,7 @@ document.addEventListener(
 
             if (
                 musicStep >=
-                saxMelody.length
+                chords.length
             ) {
 
                 musicStep = 0;
@@ -620,10 +609,15 @@ document.addEventListener(
             }
 
 
+            /*
+                Slow tempo:
+                approximately 72 BPM.
+            */
+
             musicTimer =
                 setTimeout(
-                    playJazzLoop,
-                    650
+                    playRomanticLoop,
+                    3000
                 );
 
         }
@@ -855,81 +849,6 @@ document.addEventListener(
 
 
         /* =====================================================
-           PHOTO REVEAL CHEER
-           Soft celebration / applause
-        ====================================================== */
-
-        function photoCheer() {
-
-            if (!initAudio()) {
-                return;
-            }
-
-
-            /*
-               Soft applause-like texture
-            */
-
-            for (
-                let i = 0;
-                i < 14;
-                i++
-            ) {
-
-                const frequency =
-                    700 +
-                    Math.random() * 900;
-
-
-                tone(
-                    frequency,
-                    0.055,
-                    0.010,
-                    "square",
-                    effectGain,
-                    i * 0.055
-                );
-
-            }
-
-
-            /*
-               Warm celebratory melody
-            */
-
-            tone(
-                523.25,
-                0.28,
-                0.035,
-                "sine",
-                effectGain,
-                0.45
-            );
-
-
-            tone(
-                659.25,
-                0.35,
-                0.040,
-                "sine",
-                effectGain,
-                0.53
-            );
-
-
-            tone(
-                783.99,
-                0.55,
-                0.035,
-                "triangle",
-                effectGain,
-                0.62
-            );
-
-        }
-
-
-        /* =====================================================
            FLOWER / BOUQUET SOUND
         ====================================================== */
 
@@ -1012,148 +931,6 @@ document.addEventListener(
 
 
         /* =====================================================
-           PAGE / PAPER OPENING SOUND
-           Soft paper movement + elegant page turn
-        ====================================================== */
-
-        function pageOpeningSound() {
-
-            if (!initAudio()) {
-                return;
-            }
-
-
-            const start =
-                audioContext.currentTime;
-
-
-            const duration =
-                0.85;
-
-
-            const buffer =
-                audioContext.createBuffer(
-                    1,
-                    Math.floor(
-                        audioContext.sampleRate *
-                        duration
-                    ),
-                    audioContext.sampleRate
-                );
-
-
-            const data =
-                buffer.getChannelData(0);
-
-
-            for (
-                let i = 0;
-                i < data.length;
-                i++
-            ) {
-
-                const noise =
-                    Math.random() * 2 - 1;
-
-
-                const progress =
-                    i / data.length;
-
-
-                const envelope =
-                    Math.sin(
-                        Math.PI *
-                        progress
-                    );
-
-
-                data[i] =
-                    noise *
-                    envelope *
-                    0.20;
-
-            }
-
-
-            const source =
-                audioContext.createBufferSource();
-
-
-            const filter =
-                audioContext.createBiquadFilter();
-
-
-            const gain =
-                audioContext.createGain();
-
-
-            source.buffer =
-                buffer;
-
-
-            filter.type =
-                "bandpass";
-
-
-            filter.frequency.value =
-                1900;
-
-
-            filter.Q.value =
-                0.8;
-
-
-            gain.gain.value =
-                0.035;
-
-
-            source.connect(filter);
-
-            filter.connect(gain);
-
-            gain.connect(effectGain);
-
-
-            source.start(start);
-
-
-            /*
-               Elegant page-opening chime
-            */
-
-            tone(
-                659.25,
-                0.30,
-                0.025,
-                "sine",
-                effectGain,
-                0.18
-            );
-
-
-            tone(
-                783.99,
-                0.38,
-                0.025,
-                "sine",
-                effectGain,
-                0.28
-            );
-
-
-            tone(
-                1046.50,
-                0.55,
-                0.018,
-                "triangle",
-                effectGain,
-                0.38
-            );
-
-        }
-
-
-        /* =====================================================
            WINE POUR SOUND
            Procedural soft liquid effect
         ====================================================== */
@@ -1169,8 +946,7 @@ document.addEventListener(
                 audioContext.currentTime;
 
 
-            const duration =
-                0.75;
+            const duration = 0.75;
 
 
             const buffer =
@@ -1470,7 +1246,6 @@ document.addEventListener(
                 ".intro-card"
             );
 
-
         let introIndex = 0;
 
 
@@ -1518,7 +1293,6 @@ document.addEventListener(
                                         "active"
                                     );
 
-
                                     romanticChime();
 
                                 }
@@ -1551,7 +1325,6 @@ document.addEventListener(
 
                     uiClick();
 
-
                     showSection(
                         "camera-section"
                     );
@@ -1569,18 +1342,14 @@ document.addEventListener(
         const camera =
             get("camera");
 
-
         const countdown =
             get("countdown");
-
 
         const countdownNumber =
             get("countdown-number");
 
-
         const flash =
             get("flash");
-
 
         const photoResult =
             get("photo-result");
@@ -1604,7 +1373,6 @@ document.addEventListener(
 
 
                     cameraUsed = true;
-
 
                     startCountdown();
 
@@ -1711,23 +1479,7 @@ document.addEventListener(
                         "show"
                     );
 
-
                     photoReveal();
-
-
-                    /*
-                       Soft celebration after
-                       the image appears.
-                    */
-
-                    setTimeout(
-                        function () {
-
-                            photoCheer();
-
-                        },
-                        120
-                    );
 
                 },
                 400
@@ -1779,7 +1531,6 @@ document.addEventListener(
                                 "bouquet-section"
                             );
 
-
                             romanticChime();
 
                         },
@@ -1798,7 +1549,6 @@ document.addEventListener(
 
         const bouquet =
             get("bouquet");
-
 
         const bouquetText =
             get("bouquet-text");
@@ -1856,7 +1606,6 @@ document.addEventListener(
                             showSection(
                                 "letter-section"
                             );
-
 
                             magicalReveal();
 
@@ -2024,10 +1773,8 @@ document.addEventListener(
         const envelope =
             get("envelope");
 
-
         const postcard =
             get("postcard");
-
 
         const envelopeText =
             get("envelope-text");
@@ -2062,18 +1809,7 @@ document.addEventListener(
                         "Open it... it's just for you. ❤️";
 
 
-                    /*
-                       Existing envelope sound
-                    */
-
                     envelopeOpenSound();
-
-
-                    /*
-                       New paper/page opening sound
-                    */
-
-                    pageOpeningSound();
 
 
                     setTimeout(
@@ -2082,7 +1818,6 @@ document.addEventListener(
                             postcard.classList.add(
                                 "show"
                             );
-
 
                             magicalReveal();
 
@@ -2132,7 +1867,6 @@ document.addEventListener(
                                 "wine-section"
                             );
 
-
                             romanticChime();
 
                         },
@@ -2152,28 +1886,23 @@ document.addEventListener(
         const bottle =
             get("wine-bottle");
 
-
         const glasses =
             document.querySelectorAll(
                 ".wine-glass"
             );
-
 
         const bottleLiquid =
             document.querySelector(
                 ".bottle-liquid"
             );
 
-
         const glassWine =
             document.querySelectorAll(
                 ".glass-wine"
             );
 
-
         const wineCounter =
             get("wine-counter");
-
 
         const wineInstruction =
             get("wine-instruction");
@@ -2230,7 +1959,7 @@ document.addEventListener(
 
 
                     /*
-                       EXISTING WINE POUR WHOOSH
+                       Wine pouring sound.
                     */
 
                     winePourSound();
@@ -2334,17 +2063,12 @@ document.addEventListener(
                             wineInstruction.textContent =
                                 "Pour the wine first, sweetheart. ❤️";
 
-
                             uiClick();
 
                             return;
 
                         }
 
-
-                        /*
-                           EXISTING GLASS CLINK
-                        */
 
                         glassClink();
 
@@ -2420,17 +2144,13 @@ document.addEventListener(
 
             /*
                Stop normal BGM
-               for dizzy sequence.
+               for the dizzy sequence.
             */
 
             drunkMode = true;
 
             stopRomanticBGM();
 
-
-            /*
-               EXISTING DIZZY SOUND
-            */
 
             dizzySound();
 
@@ -2498,8 +2218,8 @@ document.addEventListener(
 
 
             /*
-               Bring jazz BGM back
-               after drunk moment.
+               Bring romantic BGM back
+               after the drunk moment.
             */
 
             setTimeout(
