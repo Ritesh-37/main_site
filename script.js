@@ -1,89 +1,68 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================================================
-       ELEMENTS
-    ========================================================= */
+       PAGE 1 AUDIO + INTERACTION ENGINE
+       ========================================================= */
 
-    const loadingScreen =
-        document.getElementById("loading-screen");
+    const loadingScreen = document.getElementById("loading-screen");
 
-    const giftScreen =
-        document.getElementById("gift-screen");
+    const giftScreen = document.getElementById("gift-screen");
+    const entranceScreen = document.getElementById("entrance-screen");
+    const passwordScreen = document.getElementById("password-screen");
 
-    const entranceScreen =
-        document.getElementById("entrance-screen");
+    const envelope = document.getElementById("envelope");
+    const openGiftButton = document.getElementById("open-gift-btn");
+    const curiousButton = document.getElementById("curious-btn");
 
-    const passwordScreen =
-        document.getElementById("password-screen");
+    const passwordInput = document.getElementById("password-input");
+    const unlockButton = document.getElementById("unlock-btn");
 
-    const envelope =
-        document.getElementById("envelope");
+    const wrongPopup = document.getElementById("wrong-popup");
+    const tryAgainButton = document.getElementById("try-again-btn");
 
-    const openGiftButton =
-        document.getElementById("open-gift-btn");
+    const successPopup = document.getElementById("success-popup");
+    const continueButton = document.getElementById("continue-btn");
 
-    const curiousButton =
-        document.getElementById("curious-btn");
-
-    const passwordInput =
-        document.getElementById("password-input");
-
-    const unlockButton =
-        document.getElementById("unlock-btn");
-
-    const wrongPopup =
-        document.getElementById("wrong-popup");
-
-    const tryAgainButton =
-        document.getElementById("try-again-btn");
-
-    const successPopup =
-        document.getElementById("success-popup");
-
-    const continueButton =
-        document.getElementById("continue-btn");
-
-    const backgroundMusic =
-        document.getElementById("background-music");
-
-    const musicControl =
-        document.getElementById("music-control");
-
-    const confettiLayer =
-        document.getElementById("confetti-layer");
-
-
-    /* =========================================================
-       PASSWORD
-    ========================================================= */
+    const musicControl = document.getElementById("music-control");
+    const confettiLayer = document.getElementById("confetti-layer");
 
     const correctPassword = "0309";
 
 
     /* =========================================================
        AUDIO ENGINE
-       
-       Everything below is generated using JavaScript.
-       NO AUDIO FILES ARE REQUIRED.
-    ========================================================= */
+       ========================================================= */
 
     let audioContext = null;
     let masterGain = null;
+    let musicGain = null;
+    let sfxGain = null;
 
-    let musicStarted = false;
-    let musicNodes = [];
+    let audioReady = false;
+    let musicPlaying = false;
 
-    let lastClickSound = 0;
-    let lastTypingSound = 0;
+    let musicTimer = null;
+    let musicStep = 0;
+
+    let lastClickTime = 0;
+    let lastKeyTime = 0;
 
 
-    /* ---------------------------------------------------------
-       CREATE AUDIO CONTEXT
-    --------------------------------------------------------- */
+    /* =========================================================
+       INITIALIZE AUDIO
+       ========================================================= */
 
-    function initAudio() {
+    function initializeAudio() {
 
-        if (audioContext) {
+        if (audioReady) {
+
+            if (
+                audioContext &&
+                audioContext.state === "suspended"
+            ) {
+                audioContext.resume();
+            }
+
             return;
         }
 
@@ -92,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
             window.webkitAudioContext;
 
         if (!AudioContext) {
+            console.log("Web Audio is not supported.");
             return;
         }
 
@@ -100,24 +80,40 @@ document.addEventListener("DOMContentLoaded", function () {
         masterGain =
             audioContext.createGain();
 
-        masterGain.gain.value = 0.22;
+        musicGain =
+            audioContext.createGain();
 
+        sfxGain =
+            audioContext.createGain();
+
+        /*
+         * Overall volume.
+         */
+
+        masterGain.gain.value = 0.75;
+
+        /*
+         * BGM volume.
+         * Kept lower than sound effects.
+         */
+
+        musicGain.gain.value = 0.16;
+
+        /*
+         * Sound effects volume.
+         */
+
+        sfxGain.gain.value = 0.50;
+
+        musicGain.connect(masterGain);
+        sfxGain.connect(masterGain);
         masterGain.connect(
             audioContext.destination
         );
-    }
 
-
-    /* ---------------------------------------------------------
-       RESUME AUDIO
-    --------------------------------------------------------- */
-
-    function resumeAudio() {
-
-        initAudio();
+        audioReady = true;
 
         if (
-            audioContext &&
             audioContext.state === "suspended"
         ) {
             audioContext.resume();
@@ -126,23 +122,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       BASIC SOUND GENERATOR
-    ========================================================= */
+       RESUME AUDIO
+       ========================================================= */
 
-    function playTone(
-        frequency,
-        duration,
-        volume,
+    async function unlockAudio() {
+
+        initializeAudio();
+
+        if (
+            audioContext &&
+            audioContext.state === "suspended"
+        ) {
+
+            try {
+                await audioContext.resume();
+            } catch (error) {
+                console.log(
+                    "Audio resume failed:",
+                    error
+                );
+            }
+        }
+    }
+
+
+    /* =========================================================
+       BASIC OSCILLATOR
+       ========================================================= */
+
+    function tone({
+        frequency = 440,
+        duration = 0.1,
+        volume = 0.1,
         type = "sine",
-        delay = 0
-    ) {
+        startDelay = 0,
+        destination = sfxGain,
+        attack = 0.01,
+        release = 0.08
+    }) {
 
-        if (!audioContext || !masterGain) {
+        if (
+            !audioContext ||
+            !destination
+        ) {
             return;
         }
 
         const now =
-            audioContext.currentTime + delay;
+            audioContext.currentTime +
+            startDelay;
 
         const oscillator =
             audioContext.createOscillator();
@@ -164,7 +192,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         gain.gain.linearRampToValueAtTime(
             volume,
-            now + 0.015
+            now + attack
+        );
+
+        gain.gain.setValueAtTime(
+            volume,
+            now + Math.max(
+                attack,
+                duration - release
+            )
         );
 
         gain.gain.exponentialRampToValueAtTime(
@@ -173,216 +209,366 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         oscillator.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(destination);
 
         oscillator.start(now);
-        oscillator.stop(now + duration + 0.03);
+
+        oscillator.stop(
+            now + duration + 0.03
+        );
     }
 
 
     /* =========================================================
-       SOUND EFFECTS
-    ========================================================= */
+       NOISE BURST
+       Used for envelope / transition textures.
+       ========================================================= */
+
+    function noiseBurst({
+        duration = 0.15,
+        volume = 0.04,
+        startDelay = 0
+    }) {
+
+        if (
+            !audioContext ||
+            !sfxGain
+        ) {
+            return;
+        }
+
+        const bufferSize =
+            audioContext.sampleRate *
+            duration;
+
+        const buffer =
+            audioContext.createBuffer(
+                1,
+                bufferSize,
+                audioContext.sampleRate
+            );
+
+        const data =
+            buffer.getChannelData(0);
+
+        for (
+            let i = 0;
+            i < bufferSize;
+            i++
+        ) {
+
+            data[i] =
+                Math.random() * 2 - 1;
+        }
+
+        const source =
+            audioContext.createBufferSource();
+
+        const gain =
+            audioContext.createGain();
+
+        source.buffer = buffer;
+
+        const now =
+            audioContext.currentTime +
+            startDelay;
+
+        gain.gain.setValueAtTime(
+            0,
+            now
+        );
+
+        gain.gain.linearRampToValueAtTime(
+            volume,
+            now + 0.015
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            now + duration
+        );
+
+        source.connect(gain);
+        gain.connect(sfxGain);
+
+        source.start(now);
+
+        source.stop(
+            now + duration
+        );
+    }
 
 
-    /* ---------------------------------------------------------
-       1. CLEAN UI CLICK
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 1
+       CLEAN BUTTON CLICK
+       ========================================================= */
 
-    function playClickSound() {
+    function playClick() {
 
         const now =
             performance.now();
 
         /*
-         * Prevent accidental double-click sound spam.
+         * Prevent double-click clutter.
          */
+
         if (
-            now - lastClickSound < 90
+            now - lastClickTime <
+            100
         ) {
             return;
         }
 
-        lastClickSound = now;
+        lastClickTime = now;
 
-        resumeAudio();
+        unlockAudio();
 
-        playTone(
-            520,
-            0.055,
-            0.045,
-            "sine"
-        );
+        tone({
+            frequency: 620,
+            duration: 0.07,
+            volume: 0.12,
+            type: "sine",
+            attack: 0.005,
+            release: 0.04
+        });
 
-        playTone(
-            760,
-            0.045,
-            0.025,
-            "sine",
-            0.025
-        );
+        tone({
+            frequency: 900,
+            duration: 0.055,
+            volume: 0.06,
+            type: "sine",
+            startDelay: 0.025,
+            attack: 0.005,
+            release: 0.03
+        });
     }
 
 
-    /* ---------------------------------------------------------
-       2. PASSWORD TYPING
-       
-       Very soft tick.
-       Throttled so it never becomes irritating.
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 2
+       PASSWORD KEY
+       ========================================================= */
 
-    function playTypingSound() {
+    function playKeySound() {
 
         const now =
             performance.now();
 
         if (
-            now - lastTypingSound < 65
+            now - lastKeyTime <
+            70
         ) {
             return;
         }
 
-        lastTypingSound = now;
+        lastKeyTime = now;
 
-        resumeAudio();
+        unlockAudio();
 
-        playTone(
-            720,
-            0.035,
-            0.018,
-            "sine"
-        );
+        /*
+         * Slightly different pitch each time.
+         * Makes typing feel natural.
+         */
+
+        const frequencies = [
+            540,
+            580,
+            620,
+            560
+        ];
+
+        const frequency =
+            frequencies[
+                Math.floor(
+                    Math.random() *
+                    frequencies.length
+                )
+            ];
+
+        tone({
+            frequency,
+            duration: 0.075,
+            volume: 0.085,
+            type: "triangle",
+            attack: 0.005,
+            release: 0.045
+        });
     }
 
 
-    /* ---------------------------------------------------------
-       3. WRONG PASSWORD
-       
-       Cute descending "uh-oh" sound.
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 3
+       WRONG PASSWORD
+       ========================================================= */
 
     function playWrongSound() {
 
-        resumeAudio();
+        unlockAudio();
 
-        playTone(
-            420,
-            0.16,
-            0.07,
-            "sine"
-        );
+        /*
+         * Cute descending melody.
+         */
 
-        playTone(
-            300,
-            0.20,
-            0.055,
-            "sine",
-            0.10
-        );
+        tone({
+            frequency: 480,
+            duration: 0.16,
+            volume: 0.18,
+            type: "triangle",
+            release: 0.07
+        });
 
-        playTone(
-            220,
-            0.24,
-            0.045,
-            "sine",
-            0.20
-        );
+        tone({
+            frequency: 380,
+            duration: 0.18,
+            volume: 0.16,
+            type: "triangle",
+            startDelay: 0.12,
+            release: 0.08
+        });
+
+        tone({
+            frequency: 270,
+            duration: 0.25,
+            volume: 0.14,
+            type: "triangle",
+            startDelay: 0.24,
+            release: 0.12
+        });
     }
 
 
-    /* ---------------------------------------------------------
-       4. SUCCESS PASSWORD
-       
-       Small magical ascending chime.
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 4
+       CORRECT PASSWORD
+       ========================================================= */
 
     function playSuccessSound() {
 
-        resumeAudio();
+        unlockAudio();
 
-        playTone(
-            523,
-            0.18,
-            0.055,
-            "sine"
-        );
+        /*
+         * C - E - G - high C
+         */
 
-        playTone(
-            659,
-            0.18,
-            0.055,
-            "sine",
-            0.10
-        );
+        tone({
+            frequency: 523.25,
+            duration: 0.22,
+            volume: 0.16,
+            type: "sine",
+            release: 0.09
+        });
 
-        playTone(
-            784,
-            0.22,
-            0.06,
-            "sine",
-            0.20
-        );
+        tone({
+            frequency: 659.25,
+            duration: 0.22,
+            volume: 0.16,
+            type: "sine",
+            startDelay: 0.11,
+            release: 0.09
+        });
 
-        playTone(
-            1047,
-            0.35,
-            0.05,
-            "sine",
-            0.32
-        );
+        tone({
+            frequency: 783.99,
+            duration: 0.25,
+            volume: 0.18,
+            type: "sine",
+            startDelay: 0.22,
+            release: 0.10
+        });
+
+        tone({
+            frequency: 1046.50,
+            duration: 0.48,
+            volume: 0.16,
+            type: "sine",
+            startDelay: 0.35,
+            release: 0.18
+        });
+
+        /*
+         * Tiny sparkle.
+         */
+
+        tone({
+            frequency: 1567.98,
+            duration: 0.35,
+            volume: 0.055,
+            type: "sine",
+            startDelay: 0.42,
+            release: 0.18
+        });
     }
 
 
-    /* ---------------------------------------------------------
-       5. ENVELOPE OPEN
-       
-       Soft magical paper-opening sound.
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 5
+       ENVELOPE OPEN
+       ========================================================= */
 
     function playEnvelopeSound() {
 
-        resumeAudio();
+        unlockAudio();
 
-        playTone(
-            330,
-            0.15,
-            0.035,
-            "triangle"
-        );
+        /*
+         * Soft paper movement.
+         */
 
-        playTone(
-            440,
-            0.20,
-            0.04,
-            "triangle",
-            0.08
-        );
+        noiseBurst({
+            duration: 0.22,
+            volume: 0.055
+        });
 
-        playTone(
-            660,
-            0.28,
-            0.035,
-            "sine",
-            0.17
-        );
+        /*
+         * Rising magical notes.
+         */
+
+        tone({
+            frequency: 330,
+            duration: 0.16,
+            volume: 0.09,
+            type: "triangle"
+        });
+
+        tone({
+            frequency: 440,
+            duration: 0.18,
+            volume: 0.10,
+            type: "triangle",
+            startDelay: 0.08
+        });
+
+        tone({
+            frequency: 554.37,
+            duration: 0.22,
+            volume: 0.11,
+            type: "sine",
+            startDelay: 0.17
+        });
+
+        tone({
+            frequency: 659.25,
+            duration: 0.35,
+            volume: 0.10,
+            type: "sine",
+            startDelay: 0.28
+        });
     }
 
 
-    /* ---------------------------------------------------------
-       6. PAGE TRANSITION
-       
-       Magical "whoosh/chime" when going to Page 2.
-    --------------------------------------------------------- */
+    /* =========================================================
+       SOUND EFFECT 6
+       PAGE TRANSITION
+       ========================================================= */
 
     function playTransitionSound() {
 
-        resumeAudio();
+        unlockAudio();
 
-        /*
-         * Rising sweep.
-         */
-
-        if (!audioContext || !masterGain) {
+        if (
+            !audioContext ||
+            !sfxGain
+        ) {
             return;
         }
 
@@ -403,7 +589,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         oscillator.frequency.exponentialRampToValueAtTime(
-            900,
+            1100,
             now + 0.65
         );
 
@@ -413,252 +599,152 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         gain.gain.linearRampToValueAtTime(
-            0.055,
-            now + 0.12
+            0.14,
+            now + 0.18
         );
 
         gain.gain.exponentialRampToValueAtTime(
             0.001,
-            now + 0.75
+            now + 0.85
         );
 
         oscillator.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(sfxGain);
 
         oscillator.start(now);
-        oscillator.stop(now + 0.8);
+
+        oscillator.stop(
+            now + 0.9
+        );
 
 
         /*
-         * Final sparkle.
+         * Magical final chimes.
          */
 
-        playTone(
-            880,
-            0.30,
-            0.045,
-            "sine",
-            0.52
-        );
+        tone({
+            frequency: 783.99,
+            duration: 0.35,
+            volume: 0.10,
+            type: "sine",
+            startDelay: 0.48
+        });
 
-        playTone(
-            1175,
-            0.35,
-            0.035,
-            "sine",
-            0.62
-        );
+        tone({
+            frequency: 987.77,
+            duration: 0.40,
+            volume: 0.10,
+            type: "sine",
+            startDelay: 0.58
+        });
+
+        tone({
+            frequency: 1174.66,
+            duration: 0.55,
+            volume: 0.08,
+            type: "sine",
+            startDelay: 0.70
+        });
     }
 
 
     /* =========================================================
-       BACKGROUND MUSIC
+       CODED BACKGROUND MUSIC
        
-       Soft romantic ambient BGM created entirely with JS.
-    ========================================================= */
+       Soft repeating romantic melody.
+       No external MP3.
+       ========================================================= */
 
-    function startCodedMusic() {
+    const melody = [
+
+        261.63,
+        329.63,
+        392.00,
+        329.63,
+
+        293.66,
+        349.23,
+        440.00,
+        349.23,
+
+        261.63,
+        329.63,
+        392.00,
+        493.88,
+
+        293.66,
+        349.23,
+        440.00,
+        392.00
+    ];
+
+
+    function playMusicNote() {
 
         if (
-            musicStarted ||
+            !musicPlaying ||
             !audioContext ||
-            !masterGain
+            !musicGain
         ) {
             return;
         }
 
-        musicStarted = true;
-
-        const bassGain =
-            audioContext.createGain();
-
-        const padGain =
-            audioContext.createGain();
-
-        const shimmerGain =
-            audioContext.createGain();
-
-        bassGain.gain.value = 0.018;
-        padGain.gain.value = 0.012;
-        shimmerGain.gain.value = 0.006;
-
-        bassGain.connect(masterGain);
-        padGain.connect(masterGain);
-        shimmerGain.connect(masterGain);
-
-        musicNodes.push(
-            bassGain,
-            padGain,
-            shimmerGain
-        );
-
-
-        /*
-         * Gentle chord progression.
-         */
-
-        const chords = [
-
-            [261.63, 329.63, 392.00],
-
-            [220.00, 261.63, 329.63],
-
-            [174.61, 220.00, 261.63],
-
-            [196.00, 246.94, 293.66]
-
-        ];
-
-        let chordIndex = 0;
-
-
-        function playChord() {
-
-            if (!audioContext) {
-                return;
-            }
-
-            const chord =
-                chords[chordIndex];
-
-            chordIndex =
-                (chordIndex + 1) %
-                chords.length;
-
-            chord.forEach(
-                function (frequency, index) {
-
-                    const oscillator =
-                        audioContext.createOscillator();
-
-                    const gain =
-                        audioContext.createGain();
-
-                    oscillator.type = "sine";
-
-                    oscillator.frequency.value =
-                        frequency;
-
-                    gain.gain.setValueAtTime(
-                        0,
-                        audioContext.currentTime
-                    );
-
-                    gain.gain.linearRampToValueAtTime(
-                        0.5,
-                        audioContext.currentTime + 1.2
-                    );
-
-                    gain.gain.linearRampToValueAtTime(
-                        0,
-                        audioContext.currentTime + 5.5
-                    );
-
-                    oscillator.connect(gain);
-                    gain.connect(padGain);
-
-                    oscillator.start();
-
-                    oscillator.stop(
-                        audioContext.currentTime + 5.7
-                    );
-
-                }
-            );
-
-            setTimeout(
-                playChord,
-                4800
-            );
-        }
-
-
-        playChord();
-
-
-        /*
-         * Very occasional high sparkle.
-         */
-
-        function sparkle() {
-
-            if (!audioContext) {
-                return;
-            }
-
-            const notes = [
-                783.99,
-                880,
-                987.77,
-                1174.66
+        const frequency =
+            melody[
+                musicStep %
+                melody.length
             ];
 
-            const note =
-                notes[
-                    Math.floor(
-                        Math.random() *
-                        notes.length
-                    )
-                ];
+        musicStep++;
 
-            const oscillator =
-                audioContext.createOscillator();
+        /*
+         * Main soft note.
+         */
 
-            const gain =
-                audioContext.createGain();
+        tone({
+            frequency,
+            duration: 1.15,
+            volume: 0.20,
+            type: "sine",
+            destination: musicGain,
+            attack: 0.10,
+            release: 0.35
+        });
 
-            oscillator.type = "sine";
+        /*
+         * Very quiet harmony.
+         */
 
-            oscillator.frequency.value =
-                note;
+        tone({
+            frequency:
+                frequency * 1.5,
+            duration: 0.90,
+            volume: 0.045,
+            type: "sine",
+            startDelay: 0.08,
+            destination: musicGain,
+            attack: 0.10,
+            release: 0.35
+        });
 
-            gain.gain.setValueAtTime(
-                0,
-                audioContext.currentTime
-            );
-
-            gain.gain.linearRampToValueAtTime(
-                0.35,
-                audioContext.currentTime + 0.05
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.001,
-                audioContext.currentTime + 1.2
-            );
-
-            oscillator.connect(gain);
-            gain.connect(shimmerGain);
-
-            oscillator.start();
-
-            oscillator.stop(
-                audioContext.currentTime + 1.3
-            );
-
+        musicTimer =
             setTimeout(
-                sparkle,
-                6000 + Math.random() * 5000
+                playMusicNote,
+                620
             );
-        }
-
-        sparkle();
     }
 
 
-    /* =========================================================
-       START MUSIC
-    ========================================================= */
-
     function startMusic() {
 
-        resumeAudio();
+        unlockAudio();
 
-        if (!audioContext) {
+        if (musicPlaying) {
             return;
         }
 
-        startCodedMusic();
+        musicPlaying = true;
+        musicStep = 0;
 
         if (musicControl) {
 
@@ -670,82 +756,109 @@ document.addEventListener("DOMContentLoaded", function () {
                 "muted"
             );
         }
+
+        playMusicNote();
+    }
+
+
+    function stopMusic() {
+
+        musicPlaying = false;
+
+        if (musicTimer) {
+
+            clearTimeout(
+                musicTimer
+            );
+
+            musicTimer = null;
+        }
+
+        if (musicControl) {
+
+            musicControl.classList.add(
+                "muted"
+            );
+        }
     }
 
 
     /* =========================================================
        MUSIC BUTTON
-    ========================================================= */
+       ========================================================= */
 
     if (musicControl) {
 
         musicControl.addEventListener(
             "click",
-            function () {
+            async () => {
 
-                resumeAudio();
+                await unlockAudio();
 
-                if (!musicStarted) {
+                if (!musicPlaying) {
 
                     startMusic();
 
-                    return;
-                }
-
-                /*
-                 * Toggle master music volume.
-                 */
-
-                if (
-                    masterGain.gain.value > 0.001
-                ) {
-
-                    masterGain.gain.value =
-                        0;
-
-                    musicControl.classList.add(
-                        "muted"
-                    );
-
                 } else {
 
-                    masterGain.gain.value =
-                        0.22;
+                    stopMusic();
 
-                    musicControl.classList.remove(
-                        "muted"
-                    );
                 }
 
             }
         );
-
     }
 
 
     /* =========================================================
-       LOADING SCREEN
-    ========================================================= */
+       FIRST TOUCH
+       
+       Unlocks Web Audio on Android/Chrome.
+       ========================================================= */
 
-    setTimeout(
-        function () {
+    document.addEventListener(
+        "pointerdown",
+        async () => {
 
-            if (loadingScreen) {
+            await unlockAudio();
 
-                loadingScreen.classList.add(
-                    "hide"
-                );
+            /*
+             * Start the BGM only after the visitor
+             * has interacted with the website.
+             */
 
+            if (!musicPlaying) {
+                startMusic();
             }
 
         },
-        1500
+        {
+            once: true,
+            passive: true
+        }
     );
 
 
     /* =========================================================
-       SCREEN TRANSITION
-    ========================================================= */
+       LOADING SCREEN
+       ========================================================= */
+
+    setTimeout(() => {
+
+        if (loadingScreen) {
+
+            loadingScreen.classList.add(
+                "hide"
+            );
+
+        }
+
+    }, 1500);
+
+
+    /* =========================================================
+       SCREEN TRANSITIONS
+       ========================================================= */
 
     function showScreen(screenToShow) {
 
@@ -756,7 +869,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
         screens.forEach(
-            function (screen) {
+            screen => {
 
                 if (screen) {
 
@@ -769,26 +882,23 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
-        setTimeout(
-            function () {
+        setTimeout(() => {
 
-                if (screenToShow) {
+            if (screenToShow) {
 
-                    screenToShow.classList.add(
-                        "active"
-                    );
+                screenToShow.classList.add(
+                    "active"
+                );
 
-                }
+            }
 
-            },
-            120
-        );
+        }, 120);
     }
 
 
     /* =========================================================
        CONFETTI
-    ========================================================= */
+       ========================================================= */
 
     function createConfetti(amount) {
 
@@ -803,7 +913,9 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             const piece =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
 
             piece.className =
                 "confetti-piece";
@@ -817,7 +929,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const delay =
                 Math.random() * 0.3;
 
-            const sizes =
+            const size =
                 5 + Math.random() * 5;
 
             piece.style.left =
@@ -827,15 +939,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 Math.random() * 12 + "%";
 
             piece.style.width =
-                sizes + "px";
+                size + "px";
 
             piece.style.height =
-                sizes * 1.5 + "px";
+                size * 1.5 + "px";
 
             piece.style.transform =
-                "rotate(" +
-                rotation +
-                "deg)";
+                `rotate(${rotation}deg)`;
 
             piece.style.animationDelay =
                 delay + "s";
@@ -845,7 +955,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             setTimeout(
-                function () {
+                () => {
 
                     piece.remove();
 
@@ -858,23 +968,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================================================
        OPEN ENVELOPE
-    ========================================================= */
+       ========================================================= */
+
+    let envelopeOpened = false;
 
     function openGift() {
 
-        if (!envelope) {
-            return;
-        }
-
         if (
-            envelope.classList.contains(
-                "opening"
-            )
+            !envelope ||
+            envelopeOpened
         ) {
             return;
         }
 
-        resumeAudio();
+        envelopeOpened = true;
+
+        unlockAudio();
+
+        /*
+         * Envelope gets its OWN sound.
+         */
 
         playEnvelopeSound();
 
@@ -886,15 +999,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
             openGiftButton.disabled =
                 true;
-
         }
 
         createConfetti(28);
 
+        /*
+         * BGM begins here as well.
+         */
+
         startMusic();
 
         setTimeout(
-            function () {
+            () => {
 
                 showScreen(
                     entranceScreen
@@ -910,15 +1026,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         openGiftButton.addEventListener(
             "click",
-            function () {
+            event => {
 
-                playClickSound();
+                event.stopPropagation();
 
                 openGift();
 
             }
         );
-
     }
 
 
@@ -926,34 +1041,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
         envelope.addEventListener(
             "click",
-            function () {
+            () => {
 
                 openGift();
 
             }
         );
-
     }
 
 
     /* =========================================================
-       ENTRANCE BUTTON
-    ========================================================= */
+       ENTRANCE → PASSWORD
+       ========================================================= */
 
     if (curiousButton) {
 
         curiousButton.addEventListener(
             "click",
-            function () {
+            async () => {
 
-                playClickSound();
+                await unlockAudio();
+
+                playClick();
 
                 showScreen(
                     passwordScreen
                 );
 
                 setTimeout(
-                    function () {
+                    () => {
 
                         if (passwordInput) {
 
@@ -964,20 +1080,78 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     700
                 );
+            }
+        );
+    }
+
+
+    /* =========================================================
+       PASSWORD INPUT
+       ========================================================= */
+
+    if (passwordInput) {
+
+        passwordInput.addEventListener(
+            "keydown",
+            event => {
+
+                /*
+                 * Number typing sound.
+                 */
+
+                if (
+                    /^[0-9]$/.test(
+                        event.key
+                    )
+                ) {
+
+                    playKeySound();
+
+                }
+
+                /*
+                 * Enter = submit.
+                 */
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    checkPassword();
+
+                }
 
             }
         );
 
+
+        passwordInput.addEventListener(
+            "input",
+            () => {
+
+                passwordInput.value =
+                    passwordInput.value.replace(
+                        /\D/g,
+                        ""
+                    );
+
+            }
+        );
     }
 
 
     /* =========================================================
        PASSWORD CHECK
-    ========================================================= */
+       ========================================================= */
+
+    let passwordLocked = false;
 
     function checkPassword() {
 
-        if (!passwordInput) {
+        if (
+            !passwordInput ||
+            passwordLocked
+        ) {
             return;
         }
 
@@ -985,14 +1159,22 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordInput.value.trim();
 
 
-        /* -----------------------------------------------------
-           CORRECT PASSWORD
-        ----------------------------------------------------- */
+        /* =====================================================
+           CORRECT
+           ===================================================== */
 
         if (
             enteredPassword ===
             correctPassword
         ) {
+
+            passwordLocked = true;
+
+            unlockAudio();
+
+            /*
+             * SUCCESS SOUND
+             */
 
             playSuccessSound();
 
@@ -1003,7 +1185,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 unlockButton.textContent =
                     "CHECKING... 👀";
-
             }
 
             passwordInput.classList.add(
@@ -1013,7 +1194,7 @@ document.addEventListener("DOMContentLoaded", function () {
             createConfetti(35);
 
             setTimeout(
-                function () {
+                () => {
 
                     if (unlockButton) {
 
@@ -1027,7 +1208,7 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
             setTimeout(
-                function () {
+                () => {
 
                     if (successPopup) {
 
@@ -1042,11 +1223,19 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        } else {
+        }
 
-            /* -------------------------------------------------
-               WRONG PASSWORD
-            ------------------------------------------------- */
+        /* =====================================================
+           WRONG
+           ===================================================== */
+
+        else {
+
+            unlockAudio();
+
+            /*
+             * WRONG SOUND
+             */
 
             playWrongSound();
 
@@ -1063,100 +1252,48 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* =========================================================
+       UNLOCK BUTTON
+       ========================================================= */
+
     if (unlockButton) {
 
         unlockButton.addEventListener(
             "click",
-            function () {
+            () => {
 
-                playClickSound();
+                playClick();
 
                 checkPassword();
 
             }
         );
-
-    }
-
-
-    /* =========================================================
-       PASSWORD INPUT SOUND
-    ========================================================= */
-
-    if (passwordInput) {
-
-        passwordInput.addEventListener(
-            "keydown",
-            function (event) {
-
-                /*
-                 * Only play typing sound for actual
-                 * number keys.
-                 */
-
-                if (
-                    /^[0-9]$/.test(
-                        event.key
-                    )
-                ) {
-
-                    playTypingSound();
-
-                }
-
-
-                if (
-                    event.key === "Enter"
-                ) {
-
-                    checkPassword();
-
-                }
-
-            }
-        );
-
-
-        /* ONLY NUMBERS */
-
-        passwordInput.addEventListener(
-            "input",
-            function () {
-
-                passwordInput.value =
-                    passwordInput.value.replace(
-                        /\D/g,
-                        ""
-                    );
-
-            }
-        );
-
     }
 
 
     /* =========================================================
        TRY AGAIN
-    ========================================================= */
+       ========================================================= */
 
     if (tryAgainButton) {
 
         tryAgainButton.addEventListener(
             "click",
-            function () {
+            () => {
 
-                playClickSound();
+                playClick();
 
                 if (wrongPopup) {
 
                     wrongPopup.classList.remove(
                         "show"
                     );
-
                 }
 
+                passwordLocked = false;
+
                 setTimeout(
-                    function () {
+                    () => {
 
                         if (passwordInput) {
 
@@ -1167,89 +1304,93 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     300
                 );
-
             }
         );
-
     }
 
 
     /* =========================================================
-       CONTINUE TO PAGE 2
-    ========================================================= */
+       SUCCESS → PAGE 2
+       ========================================================= */
 
     if (continueButton) {
 
         continueButton.addEventListener(
             "click",
-            function () {
+            async () => {
 
-                playClickSound();
+                await unlockAudio();
+
+                playClick();
 
                 if (successPopup) {
 
                     successPopup.classList.remove(
                         "show"
                     );
-
                 }
 
                 createConfetti(45);
 
                 /*
-                 * Magical transition sound.
-                 */
-
-                playTransitionSound();
-
-
-                /*
-                 * Give the sound time to play
-                 * before changing page.
+                 * IMPORTANT:
+                 * Transition sound plays AFTER
+                 * the button click sound.
                  */
 
                 setTimeout(
-                    function () {
+                    () => {
+
+                        playTransitionSound();
+
+                    },
+                    80
+                );
+
+
+                /*
+                 * Wait for the magical transition.
+                 */
+
+                setTimeout(
+                    () => {
 
                         window.location.href =
                             "page2.html";
 
                     },
-                    850
+                    1050
                 );
-
             }
         );
-
     }
 
 
     /* =========================================================
-       CLOSE POPUPS
-    ========================================================= */
+       POPUP CLOSE
+       ========================================================= */
 
     if (wrongPopup) {
 
         wrongPopup.addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 if (
                     event.target ===
                     wrongPopup
                 ) {
 
-                    playClickSound();
+                    playClick();
 
                     wrongPopup.classList.remove(
                         "show"
                     );
 
+                    passwordLocked = false;
                 }
-
             }
         );
-
     }
 
 
@@ -1257,30 +1398,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
         successPopup.addEventListener(
             "click",
-            function (event) {
+            event => {
 
                 if (
                     event.target ===
                     successPopup
                 ) {
 
-                    playClickSound();
+                    playClick();
 
                     successPopup.classList.remove(
                         "show"
                     );
 
                 }
-
             }
         );
-
     }
 
 
     /* =========================================================
        CAMERA EASTER EGGS
-    ========================================================= */
+       ========================================================= */
 
     const cameras =
         document.querySelectorAll(
@@ -1288,17 +1427,17 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
     cameras.forEach(
-        function (camera) {
+        camera => {
 
             camera.addEventListener(
                 "click",
-                function () {
+                () => {
 
                     /*
-                     * One clean click sound only.
+                     * ONLY ONE CLICK SOUND.
                      */
 
-                    playClickSound();
+                    playClick();
 
                     const message =
                         document.createElement(
@@ -1347,106 +1486,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     /*
-                     * Tiny amount of confetti.
-                     * No extra sound.
+                     * No extra sound here.
                      */
 
                     createConfetti(5);
 
                     setTimeout(
-                        function () {
+                        () => {
 
                             message.remove();
 
                         },
                         1800
                     );
-
                 }
             );
-
-        });
-
-
-    /* =========================================================
-       GLOBAL BUTTON CLICK SOUND
-       
-       Covers buttons we may add later.
-       Excludes elements that already have their own
-       click sound to prevent double audio.
-    ========================================================= */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const target =
-                event.target.closest(
-                    "button"
-                );
-
-            if (!target) {
-                return;
-            }
-
-            /*
-             * These already have dedicated sounds.
-             */
-
-            const specialButtons = [
-                openGiftButton,
-                curiousButton,
-                unlockButton,
-                tryAgainButton,
-                continueButton,
-                musicControl
-            ];
-
-            if (
-                specialButtons.includes(
-                    target
-                )
-            ) {
-                return;
-            }
-
-            playClickSound();
-
-        }
-    );
-
-
-    /* =========================================================
-       FIRST USER INTERACTION
-       
-       Important for Android/Chrome autoplay restrictions.
-    ========================================================= */
-
-    document.addEventListener(
-        "pointerdown",
-        function firstInteraction() {
-
-            resumeAudio();
-
-            /*
-             * Start the BGM on the first genuine
-             * user interaction.
-             */
-
-            if (!musicStarted) {
-
-                startMusic();
-
-            }
-
-            document.removeEventListener(
-                "pointerdown",
-                firstInteraction
-            );
-
-        },
-        {
-            once: true
         }
     );
 
