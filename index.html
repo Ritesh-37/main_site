@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>For Tisha ❤️</title>
 
@@ -10,49 +15,36 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="page3.css">
 </head>
 
 <body>
 
-    <!-- BACKGROUND -->
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
 
     <div class="background-glow"></div>
 
-    <div class="floating-decor">
-        <span>✦</span>
-        <span>♥</span>
-        <span>✧</span>
-        <span>♥</span>
+    <div class="floating-particles">
         <span>✦</span>
         <span>✧</span>
         <span>♥</span>
         <span>✦</span>
+        <span>✧</span>
+        <span>♥</span>
+        <span>✦</span>
+        <span>✧</span>
     </div>
 
 
-    <!-- TOP DECORATION -->
-
-    <div class="birthday-rope">
-        <div class="rope-line"></div>
-
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-    </div>
-
-
-    <!-- MUSIC -->
+    <!-- =====================================================
+         MUSIC
+    ====================================================== -->
 
     <button
         id="music-button"
@@ -62,126 +54,139 @@
         ♫
     </button>
 
-    <audio id="birthday-music" loop preload="auto">
+    <audio id="birthday-music" loop>
         <source src="birthday-song.mp3" type="audio/mpeg">
     </audio>
 
-    <audio id="camera-sound" preload="auto">
+    <audio id="camera-sound">
         <source src="camera-shutter.mp3" type="audio/mpeg">
     </audio>
 
-    <audio id="pour-sound" preload="auto">
+    <audio id="wine-sound">
         <source src="wine-pour.mp3" type="audio/mpeg">
     </audio>
 
-    <audio id="glass-sound" preload="auto">
+    <audio id="glass-sound">
         <source src="glass-clink.mp3" type="audio/mpeg">
     </audio>
 
 
+    <!-- =====================================================
+         MAIN PAGE
+    ====================================================== -->
+
     <main id="page3">
 
 
-        <!-- =====================================================
-             PHOTOGRAPH INTRO
-        ===================================================== -->
+        <!-- =================================================
+             CAMERA SECTION
+        ================================================== -->
 
         <section
-            id="photo-section"
+            id="camera-section"
             class="page-section active"
         >
 
             <!-- POPUP 1 -->
 
             <div
-                id="photo-popup-1"
-                class="intro-popup active"
+                id="camera-message-1"
+                class="intro-message active"
             >
-                <div class="popup-icon">📸</div>
 
-                <div class="popup-label">
-                    ATTENTION, BIRTHDAY GIRL
+                <div class="message-symbol">
+                    ✦
                 </div>
 
+                <p class="eyebrow">
+                    WAIT A SECOND...
+                </p>
+
                 <h1>
-                    It's time for your
-                    <span>photograph.</span>
+                    Something is missing.
                 </h1>
 
                 <p>
-                    Every beautiful birthday girl
-                    deserves her own little moment. ❤️
+                    A birthday this beautiful
+                    cannot go without a photograph.
                 </p>
 
                 <button
-                    class="main-button intro-next"
-                    data-next="2"
+                    class="premium-button camera-next"
+                    data-message="2"
                 >
-                    I'M READY ❤️
+                    WHAT IS IT? ❤️
                 </button>
+
             </div>
 
 
             <!-- POPUP 2 -->
 
             <div
-                id="photo-popup-2"
-                class="intro-popup"
+                id="camera-message-2"
+                class="intro-message"
             >
-                <div class="popup-icon">🎀</div>
 
-                <div class="popup-label">
-                    ONE LITTLE PROBLEM...
+                <div class="message-symbol">
+                    📷
                 </div>
+
+                <p class="eyebrow">
+                    THINK ABOUT IT...
+                </p>
 
                 <h1>
                     The party is incomplete
-                    <span>without the birthday girl.</span>
+                    without your picture.
                 </h1>
 
                 <p>
-                    And unfortunately for you,
-                    sweetheart... you're far too pretty
-                    to stay behind the camera. 👀
+                    After all...
+                    who's the birthday girl? 👀
                 </p>
 
                 <button
-                    class="main-button intro-next"
-                    data-next="3"
+                    class="premium-button camera-next"
+                    data-message="3"
                 >
-                    OF COURSE 😌
+                    I'M THE BIRTHDAY GIRL 🥹
                 </button>
+
             </div>
 
 
             <!-- POPUP 3 -->
 
             <div
-                id="photo-popup-3"
-                class="intro-popup"
+                id="camera-message-3"
+                class="intro-message"
             >
-                <div class="popup-icon">✨</div>
 
-                <div class="popup-label">
-                    ONE LAST THING
+                <div class="message-symbol">
+                    ✨
                 </div>
 
+                <p class="eyebrow">
+                    READY, BEAUTIFUL?
+                </p>
+
                 <h1>
-                    Come on,
-                    <span>gorgeous.</span>
+                    It's time for your photograph.
                 </h1>
 
                 <p>
-                    Let's capture this moment
-                    before the birthday girl gets distracted. ❤️
+                    Come on, birthday girl...
+                    give me that beautiful smile. ❤️
                 </p>
 
                 <button
-                    id="show-camera"
-                    class="main-button"
+                    id="open-camera"
+                    class="premium-button"
                 >
-                    TAKE MY PICTURE 📸
+                    LET'S TAKE IT 📸
                 </button>
+
             </div>
 
 
@@ -192,39 +197,37 @@
                 class="camera-area"
             >
 
-                <div class="camera-label">
-                    READY FOR YOUR CLOSE-UP?
-                </div>
+                <div class="camera-body">
 
-                <div
-                    id="camera"
-                    class="camera"
-                >
-
-                    <div class="camera-top"></div>
-
-                    <div class="camera-flash-light"></div>
-
-                    <div class="camera-viewfinder">
-                        <div class="viewfinder-inner"></div>
+                    <div class="camera-top">
+                        <div class="camera-hotshoe"></div>
+                        <div class="camera-dial"></div>
                     </div>
 
                     <div class="camera-lens">
+
                         <div class="lens-ring">
-                            <div class="lens-glass"></div>
+                            <div class="lens-glass">
+                                <div class="lens-shine"></div>
+                            </div>
                         </div>
+
                     </div>
 
-                    <div class="camera-button"></div>
+                    <div class="camera-flash"></div>
 
-                    <div class="camera-brand">
-                        TISHA
-                    </div>
+                    <button
+                        id="shutter-button"
+                        class="shutter-button"
+                        aria-label="Take photograph"
+                    >
+                        <span></span>
+                    </button>
 
                 </div>
 
-                <p class="camera-instruction">
-                    Tap the camera to capture the birthday girl. ❤️
+                <p class="camera-hint">
+                    Tap the shutter to take your picture
                 </p>
 
             </div>
@@ -233,22 +236,22 @@
             <!-- COUNTDOWN -->
 
             <div
-                id="countdown-overlay"
-                class="countdown-overlay"
+                id="countdown"
+                class="countdown"
             >
-                <div id="countdown-number">3</div>
+                <span id="countdown-number">3</span>
             </div>
 
 
             <!-- FLASH -->
 
             <div
-                id="camera-flash"
-                class="camera-flash"
+                id="camera-flash-screen"
+                class="camera-flash-screen"
             ></div>
 
 
-            <!-- PHOTO RESULT -->
+            <!-- PHOTO -->
 
             <div
                 id="photo-result"
@@ -257,25 +260,28 @@
 
                 <div class="photo-frame">
 
-                    <div class="photo-tape"></div>
+                    <div class="photo-image">
 
-                    <img
-                        src="tisha-photo.jpg"
-                        alt="Birthday girl"
-                    >
+                        <div class="photo-silhouette">
+                            TISHA
+                        </div>
+
+                        <div class="photo-glow"></div>
+
+                    </div>
 
                     <div class="photo-caption">
                         There's my sexy lady
-                        <span>👠⭐</span>
+                        <span>👠✨⭐</span>
                     </div>
 
                 </div>
 
                 <button
-                    id="photo-continue"
-                    class="main-button"
+                    id="camera-continue"
+                    class="premium-button"
                 >
-                    THAT'S MY GIRL ❤️
+                    THERE SHE IS ❤️
                 </button>
 
             </div>
@@ -283,141 +289,147 @@
         </section>
 
 
-        <!-- =====================================================
-             BOUQUET SECTION
-        ===================================================== -->
+        <!-- =================================================
+             BOUQUET + LETTER SECTION
+        ================================================== -->
 
         <section
             id="bouquet-section"
             class="page-section"
         >
 
-            <div class="section-content">
+            <div class="section-heading">
 
-                <div class="section-label">
-                    A LITTLE SOMETHING FOR YOU
-                </div>
-
-                <h2>
-                    Flowers for the
-                    <span>birthday girl.</span>
-                </h2>
-
-                <p class="section-description">
-                    They're beautiful...
-                    but still not quite as beautiful as you. ❤️
+                <p class="eyebrow">
+                    SOMETHING BEAUTIFUL FOR YOU
                 </p>
 
+                <h2>
+                    A bouquet,
+                    <span>just for you.</span>
+                </h2>
 
-                <!-- BOUQUET -->
-
-                <div
-                    id="bouquet"
-                    class="bouquet"
-                >
-
-                    <div class="flower flower-one">
-                        <div class="flower-head">🌹</div>
-                    </div>
-
-                    <div class="flower flower-two">
-                        <div class="flower-head">🌸</div>
-                    </div>
-
-                    <div class="flower flower-three">
-                        <div class="flower-head">🌷</div>
-                    </div>
-
-                    <div class="flower flower-four">
-                        <div class="flower-head">🌹</div>
-                    </div>
-
-                    <div class="flower flower-five">
-                        <div class="flower-head">🌸</div>
-                    </div>
-
-                    <div class="bouquet-wrapper">
-                        <div class="bouquet-paper"></div>
-                        <div class="bouquet-ribbon">♥</div>
-                    </div>
-
-                </div>
-
-
-                <button
-                    id="bouquet-button"
-                    class="main-button"
-                >
-                    TOUCH THE BOUQUET 🌸
-                </button>
-
-                <div
-                    id="bouquet-message"
-                    class="tiny-message"
-                >
-                    These flowers are pretty...
-                    but still not as pretty as you. ❤️
-                </div>
-
-
-                <button
-                    id="letter-button"
-                    class="main-button hidden-button"
-                >
-                    THERE'S A LETTER FOR YOU 💌
-                </button>
+                <p>
+                    Because some girls deserve flowers
+                    without needing a reason.
+                </p>
 
             </div>
 
-        </section>
 
-
-        <!-- =====================================================
-             LETTER SECTION
-        ===================================================== -->
-
-        <section
-            id="letter-section"
-            class="page-section"
-        >
-
-            <div class="section-label">
-                SOMETHING FROM MY HEART
-            </div>
-
-            <h2>
-                A little letter,
-                <span>for you.</span>
-            </h2>
-
-
-            <!-- PREMIUM ENVELOPE -->
+            <!-- CSS BOUQUET -->
 
             <div
-                id="envelope"
-                class="envelope"
+                id="bouquet"
+                class="bouquet"
             >
 
-                <div class="envelope-back"></div>
-
-                <div class="envelope-paper"></div>
-
-                <div class="envelope-flap"></div>
-
-                <div class="envelope-seal">
-                    ♥
+                <div class="flower flower-one">
+                    <span class="petal p1"></span>
+                    <span class="petal p2"></span>
+                    <span class="petal p3"></span>
+                    <span class="petal p4"></span>
+                    <span class="petal p5"></span>
+                    <span class="flower-center"></span>
                 </div>
 
-                <div class="envelope-front"></div>
+                <div class="flower flower-two">
+                    <span class="petal p1"></span>
+                    <span class="petal p2"></span>
+                    <span class="petal p3"></span>
+                    <span class="petal p4"></span>
+                    <span class="petal p5"></span>
+                    <span class="flower-center"></span>
+                </div>
+
+                <div class="flower flower-three">
+                    <span class="petal p1"></span>
+                    <span class="petal p2"></span>
+                    <span class="petal p3"></span>
+                    <span class="petal p4"></span>
+                    <span class="petal p5"></span>
+                    <span class="flower-center"></span>
+                </div>
+
+                <div class="flower flower-four">
+                    <span class="petal p1"></span>
+                    <span class="petal p2"></span>
+                    <span class="petal p3"></span>
+                    <span class="petal p4"></span>
+                    <span class="petal p5"></span>
+                    <span class="flower-center"></span>
+                </div>
+
+                <div class="flower flower-five">
+                    <span class="petal p1"></span>
+                    <span class="petal p2"></span>
+                    <span class="petal p3"></span>
+                    <span class="petal p4"></span>
+                    <span class="petal p5"></span>
+                    <span class="flower-center"></span>
+                </div>
+
+                <!-- STEMS -->
+
+                <div class="stem stem-one"></div>
+                <div class="stem stem-two"></div>
+                <div class="stem stem-three"></div>
+                <div class="stem stem-four"></div>
+                <div class="stem stem-five"></div>
+
+                <!-- LEAVES -->
+
+                <div class="leaf leaf-one"></div>
+                <div class="leaf leaf-two"></div>
+                <div class="leaf leaf-three"></div>
+                <div class="leaf leaf-four"></div>
+
+                <!-- WRAPPING -->
+
+                <div class="bouquet-wrap"></div>
+                <div class="bouquet-ribbon"></div>
 
             </div>
 
-            <p
-                id="envelope-instruction"
-                class="envelope-instruction"
-            >
-                Tap the seal to open your letter. ❤️
+
+            <p class="bouquet-hint">
+                Tap the bouquet ❤️
             </p>
+
+
+            <!-- ENVELOPE -->
+
+            <div
+                id="envelope-area"
+                class="envelope-area"
+            >
+
+                <div
+                    id="envelope"
+                    class="envelope"
+                >
+
+                    <div class="envelope-back"></div>
+
+                    <div class="envelope-paper">
+                        FOR TISHA
+                    </div>
+
+                    <div class="envelope-front"></div>
+
+                    <div class="envelope-flap"></div>
+
+                    <div class="wax-seal">
+                        ♥
+                    </div>
+
+                </div>
+
+                <p>
+                    There's something inside...
+                </p>
+
+            </div>
 
 
             <!-- LETTER -->
@@ -427,96 +439,56 @@
                 class="letter"
             >
 
-                <div class="letter-border">
+                <div class="letter-inner">
 
-                    <div class="letter-small-title">
-                        FOR MY BEAUTIFUL GIRL
+                    <div class="letter-decoration">
+                        ✦
                     </div>
+
+                    <p class="letter-label">
+                        A LITTLE NOTE FOR YOU
+                    </p>
 
                     <h3>
                         Dear Tisha,
                     </h3>
 
-                    <div
-                        id="letter-text"
-                        class="letter-text"
-                    >
+                    <p>
+                        If I could give you one thing
+                        today, it would be the ability
+                        to see yourself through my eyes.
+                    </p>
 
-                        <p>
-                            Today is your birthday,
-                            but somehow I feel like
-                            I'm the lucky one.
-                        </p>
+                    <p>
+                        Maybe then you'd understand
+                        just how beautiful, special,
+                        and ridiculously precious you
+                        are to me.
+                    </p>
 
-                        <p>
-                            Because I get to celebrate
-                            another year of the beautiful
-                            person you are.
-                        </p>
+                    <p>
+                        Today is your day.
+                        So smile a little more,
+                        laugh a little louder,
+                        and let yourself be spoiled.
+                    </p>
 
-                        <p>
-                            I hope this little surprise
-                            makes you smile, laugh,
-                            blush a little...
-                            and feel just how special
-                            you are to me.
-                        </p>
+                    <p class="letter-ending">
+                        Happy birthday,
+                        beautiful. ❤️
+                    </p>
 
-                        <p>
-                            You deserve all the happiness,
-                            all the love, and every beautiful
-                            little moment this world can give you.
-                        </p>
-
-                        <p class="letter-final">
-                            Happy Birthday,
-                            beautiful girl. ❤️
-                        </p>
-
-                    </div>
-
-                    <div class="letter-signature">
-                        Always yours,<br>
-                        <strong>Ritesh</strong> ❤️
+                    <div class="letter-decoration">
+                        ✦
                     </div>
 
                 </div>
 
-            </div>
-
-
-            <!-- HEART -->
-
-            <div
-                id="letter-heart-area"
-                class="letter-heart-area"
-            >
-
-                <p>
-                    One last thing...
-                </p>
-
                 <button
-                    id="heart-button"
-                    class="heart-button"
-                    aria-label="Touch the heart"
+                    id="letter-continue"
+                    class="premium-button"
                 >
-                    ❤️
-                </button>
-
-                <div
-                    id="heart-message"
-                    class="heart-message"
-                >
-                    Okay sweetheart...
-                    one more thing is waiting for you. 🥂
-                </div>
-
-                <button
-                    id="wine-button"
-                    class="main-button"
-                >
-                    CONTINUE 🥂
+                    ONE MORE SURPRISE ❤️
                 </button>
 
             </div>
@@ -524,176 +496,179 @@
         </section>
 
 
-        <!-- =====================================================
+        <!-- =================================================
              WINE SECTION
-        ===================================================== -->
+        ================================================== -->
 
         <section
             id="wine-section"
             class="page-section"
         >
 
-            <div class="section-content wine-content">
+            <div class="wine-heading">
 
-                <div class="section-label">
-                    ONE LAST LITTLE CELEBRATION
-                </div>
-
-                <h2>
-                    A toast to
-                    <span>you.</span>
-                </h2>
-
-                <p class="section-description">
-                    Come on, birthday girl...
-                    let's have one little drink. 🥂
+                <p class="eyebrow">
+                    ONE LAST THING...
                 </p>
 
+                <h2>
+                    Let's have a drink,
+                    <span>birthday girl.</span>
+                </h2>
 
-                <!-- WINE TABLE -->
-
-                <div class="wine-table">
-
-                    <!-- BOTTLE -->
-
-                    <button
-                        id="wine-bottle"
-                        class="wine-bottle"
-                        aria-label="Wine bottle"
-                    >
-
-                        <div class="bottle-neck">
-                            <div class="bottle-label-top"></div>
-                        </div>
-
-                        <div class="bottle-body">
-
-                            <div class="wine-liquid">
-                                <div class="wine-liquid-shine"></div>
-                            </div>
-
-                            <div class="bottle-label">
-                                <small>
-                                    BIRTHDAY
-                                </small>
-
-                                <strong>
-                                    TISHA
-                                </strong>
-
-                                <span>
-                                    2026
-                                </span>
-                            </div>
-
-                        </div>
-
-                    </button>
-
-
-                    <!-- LEFT GLASS -->
-
-                    <button
-                        class="wine-glass glass-left"
-                        aria-label="Drink left glass"
-                    >
-
-                        <div class="glass-bowl">
-
-                            <div
-                                id="left-liquid"
-                                class="glass-liquid"
-                            ></div>
-
-                            <div class="glass-shine"></div>
-
-                        </div>
-
-                        <div class="glass-stem"></div>
-                        <div class="glass-base"></div>
-
-                    </button>
-
-
-                    <!-- RIGHT GLASS -->
-
-                    <button
-                        class="wine-glass glass-right"
-                        aria-label="Drink right glass"
-                    >
-
-                        <div class="glass-bowl">
-
-                            <div
-                                id="right-liquid"
-                                class="glass-liquid"
-                            ></div>
-
-                            <div class="glass-shine"></div>
-
-                        </div>
-
-                        <div class="glass-stem"></div>
-                        <div class="glass-base"></div>
-
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="wine-instruction"
-                    class="wine-instruction"
-                >
-                    Tap the bottle to pour. 🍷
-                </div>
-
-
-                <div
-                    id="wine-counter"
-                    class="wine-counter"
-                >
-                    0 / 5
-                </div>
+                <p>
+                    Because celebrations are better
+                    when shared. 🍷
+                </p>
 
             </div>
 
 
-            <!-- DIZZY OVERLAY -->
+            <!-- WINE TABLE -->
 
-            <div
-                id="dizzy-overlay"
-                class="dizzy-overlay"
-            >
+            <div class="wine-table">
 
-                <div class="dizzy-ring ring-one"></div>
-                <div class="dizzy-ring ring-two"></div>
-                <div class="dizzy-ring ring-three"></div>
+                <!-- BOTTLE -->
 
-                <div class="dizzy-text">
+                <button
+                    id="wine-bottle"
+                    class="wine-bottle"
+                    aria-label="Pour wine"
+                >
 
-                    <div class="dizzy-small">
-                        UMMMM... 👀
+                    <div class="bottle-neck"></div>
+
+                    <div class="bottle-body">
+
+                        <div class="bottle-label">
+                            <small>
+                                TISHA
+                            </small>
+
+                            <strong>
+                                20
+                            </strong>
+
+                            <span>
+                                BIRTHDAY
+                            </span>
+                        </div>
+
+                        <div
+                            id="bottle-wine"
+                            class="bottle-wine"
+                        ></div>
+
                     </div>
 
-                    <h2>
-                        Looks like my girl
-                        is completely drunk. 😂❤️
-                    </h2>
+                </button>
 
-                    <p>
-                        I think that's enough wine
-                        for tonight, birthday girl. 🥂
-                    </p>
 
-                    <button
-                        id="next-page"
-                        class="main-button"
-                    >
-                        LET'S CONTINUE ❤️
-                    </button>
+                <!-- GLASS ONE -->
 
+                <button
+                    class="wine-glass glass-one"
+                    data-glass="1"
+                    aria-label="Drink wine"
+                >
+
+                    <div class="glass-bowl">
+
+                        <div
+                            class="glass-liquid"
+                            id="glass-liquid-1"
+                        ></div>
+
+                    </div>
+
+                    <div class="glass-stem"></div>
+                    <div class="glass-base"></div>
+
+                </button>
+
+
+                <!-- GLASS TWO -->
+
+                <button
+                    class="wine-glass glass-two"
+                    data-glass="2"
+                    aria-label="Drink wine"
+                >
+
+                    <div class="glass-bowl">
+
+                        <div
+                            class="glass-liquid"
+                            id="glass-liquid-2"
+                        ></div>
+
+                    </div>
+
+                    <div class="glass-stem"></div>
+                    <div class="glass-base"></div>
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="wine-instruction"
+                class="wine-instruction"
+            >
+                Tap the bottle to pour.
+            </div>
+
+
+            <!-- WINE COUNTER -->
+
+            <div
+                id="wine-counter"
+                class="wine-counter"
+            >
+                <span id="wine-count">0</span> / 5
+            </div>
+
+
+            <!-- DRUNK EFFECT -->
+
+            <div
+                id="drunk-overlay"
+                class="drunk-overlay"
+            ></div>
+
+
+            <!-- DRUNK POPUP -->
+
+            <div
+                id="drunk-popup"
+                class="drunk-popup"
+            >
+
+                <div class="drunk-icon">
+                    ◌
                 </div>
+
+                <p class="eyebrow">
+                    UH-OH...
+                </p>
+
+                <h2>
+                    Looks like my girl
+                    is completely drunk. 🥴❤️
+                </h2>
+
+                <p>
+                    I think it's time to take you
+                    to the next part of the night.
+                </p>
+
+                <button
+                    id="page4-button"
+                    class="premium-button"
+                >
+                    CONTINUE ❤️
+                </button>
 
             </div>
 
@@ -702,7 +677,8 @@
     </main>
 
 
-    <script src="page2.js"></script>
+    <script src="page3.js"></script>
 
 </body>
+
 </html>
