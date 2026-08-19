@@ -1,523 +1,506 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* =========================================================
+    /* =========================================
        ELEMENTS
-    ========================================================= */
+    ========================================== */
 
-    const loadingScreen = document.getElementById("loading-screen");
+    const loadingScreen =
+        document.getElementById("loading-screen");
 
-    const giftScreen = document.getElementById("gift-screen");
-    const entranceScreen = document.getElementById("entrance-screen");
-    const passwordScreen = document.getElementById("password-screen");
+    const giftScreen =
+        document.getElementById("gift-screen");
 
-    const envelope = document.getElementById("envelope");
-    const openGiftButton = document.getElementById("open-gift-btn");
-    const curiousButton = document.getElementById("curious-btn");
+    const entranceScreen =
+        document.getElementById("entrance-screen");
 
-    const passwordInput = document.getElementById("password-input");
-    const unlockButton = document.getElementById("unlock-btn");
+    const passwordScreen =
+        document.getElementById("password-screen");
 
-    const wrongPopup = document.getElementById("wrong-popup");
-    const tryAgainButton = document.getElementById("try-again-btn");
+    const envelope =
+        document.getElementById("envelope");
 
-    const successPopup = document.getElementById("success-popup");
-    const continueButton = document.getElementById("continue-btn");
+    const openGiftButton =
+        document.getElementById("open-gift-btn");
 
-    const backgroundMusic = document.getElementById("background-music");
-    const musicControl = document.getElementById("music-control");
+    const curiousButton =
+        document.getElementById("curious-btn");
 
-    const confettiLayer = document.getElementById("confetti-layer");
+    const passwordInput =
+        document.getElementById("password-input");
+
+    const unlockButton =
+        document.getElementById("unlock-btn");
+
+    const wrongPopup =
+        document.getElementById("wrong-popup");
+
+    const tryAgainButton =
+        document.getElementById("try-again-btn");
+
+    const successPopup =
+        document.getElementById("success-popup");
+
+    const continueButton =
+        document.getElementById("continue-btn");
+
+    const backgroundMusic =
+        document.getElementById("background-music");
+
+    const musicControl =
+        document.getElementById("music-control");
+
+    const confettiLayer =
+        document.getElementById("confetti-layer");
 
 
-    /* =========================================================
+    /* =========================================
        PASSWORD
-    ========================================================= */
+    ========================================== */
 
     const correctPassword = "0309";
 
 
-    /* =========================================================
-       AUDIO ENGINE
+    /* =========================================
+       AUDIO SYSTEM
        
-       Sound effects are generated directly by the browser.
-       No separate sound-effect files are required.
-    ========================================================= */
+       IMPORTANT:
+       Only ONE sound effect is allowed at
+       a time. This prevents clutter.
+    ========================================== */
+
+    let audioUnlocked = false;
+    let musicStarted = false;
+    let effectBusy = false;
+
+    let currentEffect = null;
+
+
+    /* =========================================
+       AUDIO SETTINGS
+    ========================================== */
+
+    if (backgroundMusic) {
+
+        backgroundMusic.volume = 0.22;
+
+    }
+
+
+    /* =========================================
+       CREATE SIMPLE AUDIO EFFECTS
+       
+       These use the browser's Web Audio API.
+       No extra sound files are required.
+    ========================================== */
 
     let audioContext = null;
-    let masterGain = null;
-    let audioUnlocked = false;
 
 
-    function initializeAudio() {
-
-        if (audioContext) {
-            return;
-        }
-
-        const AudioContext =
-            window.AudioContext ||
-            window.webkitAudioContext;
-
-        if (!AudioContext) {
-            return;
-        }
-
-        audioContext = new AudioContext();
-
-        masterGain =
-            audioContext.createGain();
-
-        masterGain.gain.value = 0.55;
-
-        masterGain.connect(
-            audioContext.destination
-        );
-    }
-
-
-    function unlockAudio() {
-
-        initializeAudio();
+    function getAudioContext() {
 
         if (!audioContext) {
-            return;
+
+            const AudioContext =
+                window.AudioContext ||
+                window.webkitAudioContext;
+
+            if (!AudioContext) {
+                return null;
+            }
+
+            audioContext =
+                new AudioContext();
+
         }
 
-        if (audioContext.state === "suspended") {
+        return audioContext;
 
-            audioContext.resume()
-                .catch(function () {});
-
-        }
-
-        audioUnlocked = true;
     }
 
 
-    /* =========================================================
-       GENERIC TONE
-    ========================================================= */
+    /* =========================================
+       SOFT CLICK
+       
+       Used very rarely.
+    ========================================== */
 
-    function playTone(
-        frequency,
-        duration,
-        volume,
-        type,
-        delay,
-        endFrequency
-    ) {
+    function softClick() {
 
-        if (!audioContext || !masterGain) {
+        if (!audioUnlocked) {
             return;
+        }
+
+        const ctx =
+            getAudioContext();
+
+        if (!ctx) {
+            return;
+        }
+
+        if (ctx.state === "suspended") {
+            ctx.resume();
         }
 
         const oscillator =
-            audioContext.createOscillator();
+            ctx.createOscillator();
 
         const gain =
-            audioContext.createGain();
+            ctx.createGain();
 
-        const now =
-            audioContext.currentTime +
-            (delay || 0);
-
-        oscillator.type =
-            type || "sine";
+        oscillator.type = "sine";
 
         oscillator.frequency.setValueAtTime(
-            frequency,
-            now
+            520,
+            ctx.currentTime
         );
 
-        if (endFrequency) {
-
-            oscillator.frequency.exponentialRampToValueAtTime(
-                Math.max(endFrequency, 20),
-                now + duration
-            );
-
-        }
+        oscillator.frequency.exponentialRampToValueAtTime(
+            390,
+            ctx.currentTime + 0.07
+        );
 
         gain.gain.setValueAtTime(
             0.0001,
-            now
+            ctx.currentTime
         );
 
         gain.gain.exponentialRampToValueAtTime(
-            volume,
-            now + 0.015
+            0.045,
+            ctx.currentTime + 0.008
         );
 
         gain.gain.exponentialRampToValueAtTime(
             0.0001,
-            now + duration
+            ctx.currentTime + 0.08
         );
 
         oscillator.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(ctx.destination);
 
-        oscillator.start(now);
-        oscillator.stop(now + duration + 0.05);
+        oscillator.start();
+        oscillator.stop(
+            ctx.currentTime + 0.09
+        );
+
     }
 
 
-    /* =========================================================
-       MAGICAL SPARKLE
-    ========================================================= */
-
-    function sparkleSound() {
-
-        unlockAudio();
-
-        playTone(
-            880,
-            0.18,
-            0.08,
-            "sine",
-            0
-        );
-
-        playTone(
-            1320,
-            0.22,
-            0.06,
-            "sine",
-            0.07
-        );
-
-        playTone(
-            1760,
-            0.28,
-            0.045,
-            "sine",
-            0.14
-        );
-    }
-
-
-    /* =========================================================
-       BUTTON CLICK
-    ========================================================= */
-
-    function buttonSound() {
-
-        unlockAudio();
-
-        playTone(
-            520,
-            0.08,
-            0.045,
-            "sine",
-            0,
-            720
-        );
-    }
-
-
-    /* =========================================================
-       ENVELOPE OPENING
-    ========================================================= */
+    /* =========================================
+       ENVELOPE SOUND
+       
+       Soft magical "whoosh/chime".
+    ========================================== */
 
     function envelopeSound() {
 
-        unlockAudio();
+        if (!audioUnlocked) {
+            return;
+        }
 
-        playTone(
-            180,
-            0.5,
-            0.07,
-            "sine",
-            0,
-            520
+        const ctx =
+            getAudioContext();
+
+        if (!ctx) {
+            return;
+        }
+
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
+
+        const oscillator =
+            ctx.createOscillator();
+
+        const gain =
+            ctx.createGain();
+
+        oscillator.type = "sine";
+
+        oscillator.frequency.setValueAtTime(
+            330,
+            ctx.currentTime
         );
 
-        playTone(
-            420,
-            0.5,
-            0.055,
-            "sine",
-            0.12,
-            1050
+        oscillator.frequency.exponentialRampToValueAtTime(
+            660,
+            ctx.currentTime + 0.28
         );
 
-        playTone(
-            880,
-            0.4,
-            0.045,
-            "sine",
-            0.25,
-            1450
+        gain.gain.setValueAtTime(
+            0.0001,
+            ctx.currentTime
         );
 
-        setTimeout(
-            sparkleSound,
-            280
+        gain.gain.exponentialRampToValueAtTime(
+            0.06,
+            ctx.currentTime + 0.04
         );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + 0.38
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            ctx.currentTime + 0.4
+        );
+
     }
 
 
-    /* =========================================================
-       SOFT PAGE TRANSITION
-    ========================================================= */
-
-    function transitionSound() {
-
-        unlockAudio();
-
-        playTone(
-            220,
-            0.7,
-            0.055,
-            "sine",
-            0,
-            880
-        );
-
-        playTone(
-            440,
-            0.6,
-            0.04,
-            "sine",
-            0.15,
-            1320
-        );
-
-        setTimeout(
-            sparkleSound,
-            350
-        );
-    }
-
-
-    /* =========================================================
+    /* =========================================
        WRONG PASSWORD
-    ========================================================= */
+       
+       Very short, soft "boop".
+    ========================================== */
 
-    function wrongPasswordSound() {
+    function wrongSound() {
 
-        unlockAudio();
+        if (!audioUnlocked) {
+            return;
+        }
 
-        playTone(
-            420,
-            0.15,
-            0.07,
-            "triangle",
-            0,
-            280
+        const ctx =
+            getAudioContext();
+
+        if (!ctx) {
+            return;
+        }
+
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
+
+        const oscillator =
+            ctx.createOscillator();
+
+        const gain =
+            ctx.createGain();
+
+        oscillator.type = "sine";
+
+        oscillator.frequency.setValueAtTime(
+            240,
+            ctx.currentTime
         );
 
-        playTone(
-            280,
-            0.25,
-            0.065,
-            "triangle",
-            0.13,
-            180
+        oscillator.frequency.exponentialRampToValueAtTime(
+            170,
+            ctx.currentTime + 0.13
         );
-    }
 
+        gain.gain.setValueAtTime(
+            0.0001,
+            ctx.currentTime
+        );
 
-    /* =========================================================
-       PASSWORD TYPING
-    ========================================================= */
-
-    function typingSound() {
-
-        unlockAudio();
-
-        playTone(
-            700,
+        gain.gain.exponentialRampToValueAtTime(
             0.045,
-            0.025,
-            "sine",
-            0
+            ctx.currentTime + 0.01
         );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + 0.16
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            ctx.currentTime + 0.18
+        );
+
     }
 
 
-    /* =========================================================
-       UNLOCK SUCCESS
-    ========================================================= */
+    /* =========================================
+       SUCCESS SOUND
+       
+       Two-note soft magical chime.
+    ========================================== */
 
     function successSound() {
 
-        unlockAudio();
+        if (!audioUnlocked) {
+            return;
+        }
 
-        playTone(
-            523,
-            0.28,
-            0.065,
-            "sine",
-            0
-        );
+        const ctx =
+            getAudioContext();
 
-        playTone(
-            659,
-            0.28,
-            0.06,
-            "sine",
-            0.12
-        );
+        if (!ctx) {
+            return;
+        }
 
-        playTone(
-            784,
-            0.32,
-            0.065,
-            "sine",
-            0.24
-        );
-
-        playTone(
-            1046,
-            0.5,
-            0.055,
-            "sine",
-            0.38
-        );
-
-        setTimeout(
-            sparkleSound,
-            450
-        );
-
-        setTimeout(
-            sparkleSound,
-            700
-        );
-    }
-
-
-    /* =========================================================
-       CAMERA SHUTTER
-    ========================================================= */
-
-    function cameraSound() {
-
-        unlockAudio();
-
-        playTone(
-            1200,
-            0.055,
-            0.065,
-            "square",
-            0
-        );
-
-        playTone(
-            760,
-            0.12,
-            0.045,
-            "sine",
-            0.055
-        );
-
-        setTimeout(
-            sparkleSound,
-            100
-        );
-    }
-
-
-    /* =========================================================
-       CONFETTI CELEBRATION
-    ========================================================= */
-
-    function celebrationSound() {
-
-        unlockAudio();
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
 
         const notes = [
-            523,
-            659,
-            784,
-            988,
-            1174,
-            1318
+            {
+                frequency: 523.25,
+                delay: 0
+            },
+            {
+                frequency: 659.25,
+                delay: 0.13
+            }
         ];
 
-        notes.forEach(
-            function (note, index) {
+        notes.forEach(function (note) {
 
-                playTone(
-                    note,
-                    0.22,
-                    0.035,
-                    "sine",
-                    index * 0.07
-                );
+            const oscillator =
+                ctx.createOscillator();
 
-            }
-        );
-    }
+            const gain =
+                ctx.createGain();
 
+            oscillator.type = "sine";
 
-    /* =========================================================
-       LOADING SCREEN
-    ========================================================= */
+            oscillator.frequency.value =
+                note.frequency;
 
-    setTimeout(function () {
+            const start =
+                ctx.currentTime +
+                note.delay;
 
-        if (loadingScreen) {
-            loadingScreen.classList.add("hide");
-        }
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
 
-        sparkleSound();
+            gain.gain.exponentialRampToValueAtTime(
+                0.055,
+                start + 0.025
+            );
 
-    }, 1500);
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + 0.45
+            );
 
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
 
-    /* =========================================================
-       FIRST USER INTERACTION
-       Unlock browser audio on Android/mobile.
-    ========================================================= */
+            oscillator.start(start);
 
-    document.addEventListener(
-        "pointerdown",
-        function () {
-
-            unlockAudio();
-
-        },
-        {
-            once: true,
-            passive: true
-        }
-    );
-
-
-    /* =========================================================
-       SCREEN TRANSITION
-    ========================================================= */
-
-    function showScreen(screenToShow) {
-
-        const screens = [
-            giftScreen,
-            entranceScreen,
-            passwordScreen
-        ];
-
-        screens.forEach(function (screen) {
-
-            if (screen) {
-                screen.classList.remove("active");
-            }
+            oscillator.stop(
+                start + 0.48
+            );
 
         });
 
-        setTimeout(function () {
-
-            if (screenToShow) {
-                screenToShow.classList.add("active");
-            }
-
-        }, 120);
     }
 
 
-    /* =========================================================
-       BACKGROUND MUSIC
-    ========================================================= */
+    /* =========================================
+       CAMERA SHUTTER
+       
+       Kept extremely subtle.
+    ========================================== */
+
+    function cameraSound() {
+
+        if (!audioUnlocked) {
+            return;
+        }
+
+        const ctx =
+            getAudioContext();
+
+        if (!ctx) {
+            return;
+        }
+
+        if (ctx.state === "suspended") {
+            ctx.resume();
+        }
+
+        const oscillator =
+            ctx.createOscillator();
+
+        const gain =
+            ctx.createGain();
+
+        oscillator.type = "triangle";
+
+        oscillator.frequency.setValueAtTime(
+            900,
+            ctx.currentTime
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            420,
+            ctx.currentTime + 0.07
+        );
+
+        gain.gain.setValueAtTime(
+            0.0001,
+            ctx.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.035,
+            ctx.currentTime + 0.005
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.0001,
+            ctx.currentTime + 0.09
+        );
+
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            ctx.currentTime + 0.1
+        );
+
+    }
+
+
+    /* =========================================
+       AUDIO UNLOCK
+       
+       Browser allows audio after the user's
+       first real interaction.
+    ========================================== */
+
+    function unlockAudio() {
+
+        if (audioUnlocked) {
+            return;
+        }
+
+        audioUnlocked = true;
+
+        const ctx =
+            getAudioContext();
+
+        if (ctx && ctx.state === "suspended") {
+            ctx.resume();
+        }
+
+        startMusic();
+
+    }
+
+
+    /* =========================================
+       START BGM
+       
+       Only ONE BGM instance.
+    ========================================== */
 
     function startMusic() {
 
@@ -525,17 +508,21 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        unlockAudio();
+        if (musicStarted) {
+            return;
+        }
 
-        backgroundMusic.volume = 0.30;
+        backgroundMusic.volume = 0.22;
 
-        const playPromise =
+        const promise =
             backgroundMusic.play();
 
-        if (playPromise !== undefined) {
+        if (promise !== undefined) {
 
-            playPromise
+            promise
                 .then(function () {
+
+                    musicStarted = true;
 
                     if (musicControl) {
 
@@ -565,23 +552,43 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                 });
+
         }
+
     }
 
 
-    /* =========================================================
-       MUSIC BUTTON
-    ========================================================= */
+    /* =========================================
+       FIRST USER INTERACTION
+    ========================================== */
+
+    document.addEventListener(
+        "pointerdown",
+        function () {
+
+            unlockAudio();
+
+        },
+        {
+            once: true,
+            passive: true
+        }
+    );
+
+
+    /* =========================================
+       MUSIC CONTROL
+    ========================================== */
 
     if (musicControl) {
 
         musicControl.addEventListener(
             "click",
-            function () {
+            function (event) {
+
+                event.stopPropagation();
 
                 unlockAudio();
-
-                buttonSound();
 
                 if (!backgroundMusic) {
                     return;
@@ -593,16 +600,16 @@ document.addEventListener("DOMContentLoaded", function () {
                         .play()
                         .then(function () {
 
-                            musicControl.classList.remove(
-                                "muted"
-                            );
+                            musicStarted = true;
+
+                            musicControl.classList
+                                .remove("muted");
 
                         })
                         .catch(function () {
 
-                            musicControl.classList.add(
-                                "muted"
-                            );
+                            musicControl.classList
+                                .add("muted");
 
                         });
 
@@ -610,20 +617,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     backgroundMusic.pause();
 
-                    musicControl.classList.add(
-                        "muted"
-                    );
+                    musicControl.classList
+                        .add("muted");
 
                 }
 
             }
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
+       LOADING SCREEN
+    ========================================== */
+
+    setTimeout(function () {
+
+        if (loadingScreen) {
+
+            loadingScreen.classList.add("hide");
+
+        }
+
+    }, 1500);
+
+
+    /* =========================================
+       SCREEN TRANSITION
+    ========================================== */
+
+    function showScreen(screenToShow) {
+
+        const screens = [
+            giftScreen,
+            entranceScreen,
+            passwordScreen
+        ];
+
+        screens.forEach(function (screen) {
+
+            if (screen) {
+                screen.classList.remove("active");
+            }
+
+        });
+
+        setTimeout(function () {
+
+            if (screenToShow) {
+                screenToShow.classList.add("active");
+            }
+
+        }, 120);
+
+    }
+
+
+    /* =========================================
        CONFETTI
-    ========================================================= */
+       
+       VISUAL ONLY.
+       NO SOUND.
+    ========================================== */
 
     function createConfetti(amount) {
 
@@ -631,11 +687,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        for (
-            let i = 0;
-            i < amount;
-            i++
-        ) {
+        for (let i = 0; i < amount; i++) {
 
             const piece =
                 document.createElement("span");
@@ -668,9 +720,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 (sizes * 1.5) + "px";
 
             piece.style.transform =
-                "rotate(" +
-                rotation +
-                "deg)";
+                "rotate(" + rotation + "deg)";
 
             piece.style.animationDelay =
                 delay + "s";
@@ -682,13 +732,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 piece.remove();
 
             }, 2300);
+
         }
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        OPEN ENVELOPE
-    ========================================================= */
+       
+       ONE sound only.
+    ========================================== */
 
     function openGift() {
 
@@ -706,24 +760,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
         unlockAudio();
 
-        envelope.classList.add(
-            "opening"
-        );
+        envelope.classList.add("opening");
 
         if (openGiftButton) {
-            openGiftButton.disabled = true;
-        }
 
-        envelopeSound();
+            openGiftButton.disabled = true;
+
+        }
 
         createConfetti(28);
 
-        setTimeout(
-            celebrationSound,
-            300
-        );
-
-        startMusic();
+        envelopeSound();
 
         setTimeout(function () {
 
@@ -731,9 +778,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 entranceScreen
             );
 
-            sparkleSound();
-
         }, 850);
+
     }
 
 
@@ -741,16 +787,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         openGiftButton.addEventListener(
             "click",
-            function () {
-
-                buttonSound();
-
-                openGift();
-
-            }
+            openGift
         );
-    }
 
+    }
 
     if (envelope) {
 
@@ -758,12 +798,16 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             openGift
         );
+
     }
 
 
-    /* =========================================================
-       ENTRANCE → PASSWORD
-    ========================================================= */
+    /* =========================================
+       ENTRANCE BUTTON
+       
+       NO SOUND.
+       Keep the experience calm.
+    ========================================== */
 
     if (curiousButton) {
 
@@ -771,12 +815,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                buttonSound();
-
-                setTimeout(
-                    transitionSound,
-                    100
-                );
+                unlockAudio();
 
                 showScreen(
                     passwordScreen
@@ -785,19 +824,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(function () {
 
                     if (passwordInput) {
+
                         passwordInput.focus();
+
                     }
 
                 }, 700);
 
             }
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        PASSWORD CHECK
-    ========================================================= */
+    ========================================== */
 
     function checkPassword() {
 
@@ -827,20 +869,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 unlockButton.textContent =
                     "CHECKING... 👀";
+
             }
 
             passwordInput.classList.add(
                 "unlock-success"
             );
 
-            successSound();
-
             createConfetti(35);
 
-            setTimeout(
-                celebrationSound,
-                450
-            );
+            /* ONE success sound */
+
+            successSound();
+
 
             setTimeout(function () {
 
@@ -848,9 +889,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     unlockButton.textContent =
                         "✓ IT'S HER! ❤️";
+
                 }
 
             }, 600);
+
 
             setTimeout(function () {
 
@@ -859,30 +902,36 @@ document.addEventListener("DOMContentLoaded", function () {
                     successPopup.classList.add(
                         "show"
                     );
-                }
 
-                sparkleSound();
+                }
 
             }, 1100);
 
 
-        } else {
+        }
 
-            /* =================================
-               WRONG PASSWORD
-            ================================= */
+        /* =====================================
+           WRONG PASSWORD
+        ===================================== */
 
-            wrongPasswordSound();
+        else {
 
             passwordInput.value = "";
+
+            /* ONE wrong sound */
+
+            wrongSound();
 
             if (wrongPopup) {
 
                 wrongPopup.classList.add(
                     "show"
                 );
+
             }
+
         }
+
     }
 
 
@@ -890,20 +939,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         unlockButton.addEventListener(
             "click",
-            function () {
-
-                buttonSound();
-
-                checkPassword();
-
-            }
+            checkPassword
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        ENTER KEY
-    ========================================================= */
+    ========================================== */
 
     if (passwordInput) {
 
@@ -921,8 +965,6 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        /* ONLY NUMBERS */
-
         passwordInput.addEventListener(
             "input",
             function () {
@@ -933,22 +975,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         ""
                     );
 
-                if (
-                    passwordInput.value.length > 0
-                ) {
-
-                    typingSound();
-
-                }
-
             }
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        TRY AGAIN
-    ========================================================= */
+       
+       NO SOUND.
+    ========================================== */
 
     if (tryAgainButton) {
 
@@ -956,13 +993,12 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                buttonSound();
-
                 if (wrongPopup) {
 
                     wrongPopup.classList.remove(
                         "show"
                     );
+
                 }
 
                 setTimeout(function () {
@@ -977,12 +1013,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        CONTINUE TO PAGE 2
-    ========================================================= */
+       
+       ONE soft click.
+    ========================================== */
 
     if (continueButton) {
 
@@ -990,7 +1029,9 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                buttonSound();
+                unlockAudio();
+
+                softClick();
 
                 if (successPopup) {
 
@@ -1002,17 +1043,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 createConfetti(45);
 
-                transitionSound();
-
                 setTimeout(function () {
-
-                    /*
-                     * PAGE 2
-                     *
-                     * Make sure the file is:
-                     *
-                     * page2.html
-                     */
 
                     window.location.href =
                         "page2.html";
@@ -1021,12 +1052,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
+
     }
 
 
-    /* =========================================================
-       CLOSE WRONG POPUP
-    ========================================================= */
+    /* =========================================
+       CLOSE POPUPS
+       
+       NO SOUND.
+    ========================================== */
 
     if (wrongPopup) {
 
@@ -1047,12 +1081,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
+
     }
 
-
-    /* =========================================================
-       CLOSE SUCCESS POPUP
-    ========================================================= */
 
     if (successPopup) {
 
@@ -1073,123 +1104,103 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
+
     }
 
 
-    /* =========================================================
+    /* =========================================
        CAMERA EASTER EGGS
-    ========================================================= */
+       
+       Sound is intentionally subtle.
+    ========================================== */
 
     const cameras =
         document.querySelectorAll(
             ".camera"
         );
 
-    cameras.forEach(
-        function (camera) {
 
-            camera.addEventListener(
-                "click",
-                function () {
+    cameras.forEach(function (camera) {
 
-                    unlockAudio();
+        camera.addEventListener(
+            "click",
+            function () {
 
-                    cameraSound();
+                unlockAudio();
 
-                    const message =
-                        document.createElement(
-                            "div"
-                        );
+                cameraSound();
 
-                    message.className =
-                        "camera-message";
+                const message =
+                    document.createElement(
+                        "div"
+                    );
 
-                    const messages = [
+                message.className =
+                    "camera-message";
 
-                        "Caught you snooping 👀",
 
-                        "Smile, birthday girl! 📸",
+                const messages = [
 
-                        "Okayyy, that's cute 😂",
+                    "Caught you snooping 👀",
 
-                        "This camera has seen things... 🤫",
+                    "Smile, birthday girl! 📸",
 
-                        "You found me! 🌸"
+                    "Okayyy, that's cute 😂",
 
+                    "This camera has seen things... 🤫",
+
+                    "You found me! 🌸"
+
+                ];
+
+
+                const randomMessage =
+                    messages[
+                        Math.floor(
+                            Math.random() *
+                            messages.length
+                        )
                     ];
 
-                    const randomMessage =
-                        messages[
-                            Math.floor(
-                                Math.random() *
-                                messages.length
-                            )
-                        ];
 
-                    message.textContent =
-                        randomMessage;
-
-                    const rect =
-                        camera.getBoundingClientRect();
-
-                    message.style.left =
-                        rect.left + "px";
-
-                    message.style.top =
-                        (rect.top - 45) +
-                        "px";
-
-                    document.body.appendChild(
-                        message
-                    );
-
-                    createConfetti(8);
-
-                    setTimeout(
-                        sparkleSound,
-                        150
-                    );
-
-                    setTimeout(
-                        function () {
-
-                            message.remove();
-
-                        },
-                        1800
-                    );
-
-                }
-            );
-        }
-    );
+                message.textContent =
+                    randomMessage;
 
 
-    /* =========================================================
-       GENERAL BUTTON MICRO-SOUNDS
-    ========================================================= */
+                const rect =
+                    camera.getBoundingClientRect();
 
-    const allButtons =
-        document.querySelectorAll(
-            ".luxury-button"
+
+                message.style.left =
+                    rect.left + "px";
+
+
+                message.style.top =
+                    (rect.top - 45) + "px";
+
+
+                document.body.appendChild(
+                    message
+                );
+
+
+                /*
+                 * Visual confetti only.
+                 * No additional sound.
+                 */
+
+                createConfetti(8);
+
+
+                setTimeout(function () {
+
+                    message.remove();
+
+                }, 1800);
+
+            }
         );
 
-    allButtons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "pointerdown",
-                function () {
-
-                    unlockAudio();
-
-                },
-                {
-                    passive: true
-                }
-            );
-
-        }
-    );
+    });
 
 });
