@@ -16,7 +16,9 @@ document.addEventListener(
             document
                 .querySelectorAll(".page-section")
                 .forEach(function (section) {
+
                     section.classList.remove("active");
+
                 });
 
             setTimeout(function () {
@@ -34,7 +36,6 @@ document.addEventListener(
         /* =====================================================
            AUDIO ENGINE
            Android / Chrome friendly
-           No external audio files required
         ====================================================== */
 
         let audioContext = null;
@@ -110,12 +111,10 @@ document.addEventListener(
 
                 masterGain.gain.value = 0.85;
 
-                /* 
-                   VERY SOFT BACKGROUND MUSIC.
-                   Effects remain much louder.
+                /*
+                   SOFTER MUSIC
                 */
-
-                musicGain.gain.value = 0.075;
+                musicGain.gain.value = 0.14;
 
                 effectGain.gain.value = 0.42;
 
@@ -368,10 +367,16 @@ document.addEventListener(
 
 
         /* =====================================================
-           SEXY ROMANTIC JAZZ / LOUNGE BGM
+           SOFT SENSUAL DINNER-DATE PIANO BGM
            
-           Soft, slow and atmospheric.
-           No bright repetitive piano melody.
+           IMPORTANT:
+           This replaces ONLY the previous BGM.
+
+           Slow.
+           Spacious.
+           Soft.
+           No strumming.
+           No rapid arpeggios.
         ====================================================== */
 
         function startRomanticBGM() {
@@ -405,6 +410,93 @@ document.addEventListener(
         }
 
 
+        function pianoNote(
+            frequency,
+            duration,
+            volume,
+            delay
+        ) {
+
+            if (!audioContext) {
+                return;
+            }
+
+
+            const start =
+                audioContext.currentTime +
+                (delay || 0);
+
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            /*
+               Triangle gives a gentle
+               piano-like character.
+            */
+
+            oscillator.type =
+                "triangle";
+
+
+            oscillator.frequency.setValueAtTime(
+                frequency,
+                start
+            );
+
+
+            /*
+               Slow attack and long release.
+               This prevents the BGM from
+               sounding sharp or repetitive.
+            */
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                volume,
+                start + 0.08
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                volume * 0.45,
+                start + duration * 0.45
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + duration
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(
+                musicGain
+            );
+
+
+            oscillator.start(start);
+
+            oscillator.stop(
+                start +
+                duration +
+                0.1
+            );
+
+        }
+
+
         function playRomanticLoop() {
 
             if (
@@ -417,191 +509,103 @@ document.addEventListener(
 
 
             /*
-                Smooth lounge progression.
+               Very slow dinner-date progression.
 
-                Am7
-                Dm7
-                G7
-                Cmaj7
-                Fmaj7
-                Bm7b5
-                E7
-                Am7
+               Each step contains only one
+               main piano note and occasional
+               soft bass.
+
+               This creates space between notes.
             */
 
+            const melody = [
 
-            const chords = [
+                261.63,   // C4
+                329.63,   // E4
+                392.00,   // G4
+                329.63,   // E4
 
-                {
-                    bass: 110.00,
-                    notes: [
-                        220.00,
-                        261.63,
-                        329.63,
-                        392.00
-                    ]
-                },
+                293.66,   // D4
+                349.23,   // F4
+                440.00,   // A4
+                349.23,   // F4
 
-                {
-                    bass: 146.83,
-                    notes: [
-                        220.00,
-                        293.66,
-                        349.23,
-                        440.00
-                    ]
-                },
+                261.63,   // C4
+                329.63,   // E4
+                392.00,   // G4
+                493.88,   // B4
 
-                {
-                    bass: 196.00,
-                    notes: [
-                        246.94,
-                        293.66,
-                        369.99,
-                        440.00
-                    ]
-                },
-
-                {
-                    bass: 130.81,
-                    notes: [
-                        261.63,
-                        329.63,
-                        392.00,
-                        493.88
-                    ]
-                },
-
-                {
-                    bass: 174.61,
-                    notes: [
-                        261.63,
-                        349.23,
-                        440.00,
-                        523.25
-                    ]
-                },
-
-                {
-                    bass: 123.47,
-                    notes: [
-                        246.94,
-                        293.66,
-                        369.99,
-                        440.00
-                    ]
-                },
-
-                {
-                    bass: 164.81,
-                    notes: [
-                        246.94,
-                        311.13,
-                        369.99,
-                        493.88
-                    ]
-                },
-
-                {
-                    bass: 110.00,
-                    notes: [
-                        220.00,
-                        261.63,
-                        329.63,
-                        392.00
-                    ]
-                }
+                440.00,   // A4
+                392.00,   // G4
+                329.63,   // E4
+                293.66    // D4
 
             ];
 
 
-            const chord =
-                chords[musicStep];
+            const note =
+                melody[musicStep];
 
 
             /*
-                Deep, warm bass.
+               MAIN SOFT PIANO NOTE
             */
 
-            tone(
-                chord.bass,
-                2.7,
-                0.010,
-                "sine",
-                musicGain
+            pianoNote(
+                note,
+                1.55,
+                0.040,
+                0
             );
 
 
             /*
-                Warm jazz chord.
-                Notes enter very gently.
+               Very subtle bass on every
+               fourth note.
             */
 
-            chord.notes.forEach(
-                function (note, index) {
+            if (
+                musicStep % 4 === 0
+            ) {
 
-                    tone(
-                        note,
-                        2.3,
-                        0.0065,
-                        "triangle",
-                        musicGain,
-                        index * 0.035
-                    );
+                pianoNote(
+                    note / 2,
+                    2.10,
+                    0.012,
+                    0.03
+                );
 
-                }
-            );
+            }
 
 
             /*
-                Soft upper lounge note.
-                This prevents the BGM from sounding
-                like a static chord loop.
+               Occasional high romantic
+               piano accent.
+
+               Only every 8 steps so it
+               doesn't become sparkly/fast.
             */
 
-            const upperNotes = [
-                659.25,
-                698.46,
-                783.99,
-                659.25,
-                698.46,
-                739.99,
-                659.25,
-                587.33
-            ];
+            if (
+                musicStep === 3 ||
+                musicStep === 11
+            ) {
 
+                pianoNote(
+                    note * 2,
+                    1.10,
+                    0.009,
+                    0.22
+                );
 
-            tone(
-                upperNotes[musicStep],
-                1.5,
-                0.0045,
-                "sine",
-                musicGain,
-                0.45
-            );
-
-
-            /*
-                Very subtle jazz "breath".
-                A second harmonic enters halfway through.
-            */
-
-            tone(
-                upperNotes[musicStep] * 0.5,
-                1.1,
-                0.003,
-                "sine",
-                musicGain,
-                1.15
-            );
+            }
 
 
             musicStep++;
 
 
             if (
-                musicStep >=
-                chords.length
+                musicStep >= melody.length
             ) {
 
                 musicStep = 0;
@@ -610,14 +614,14 @@ document.addEventListener(
 
 
             /*
-                Slow tempo:
-                approximately 72 BPM.
+               Approximately 1.7 seconds
+               between musical phrases.
             */
 
             musicTimer =
                 setTimeout(
                     playRomanticLoop,
-                    3000
+                    1700
                 );
 
         }
@@ -1141,7 +1145,6 @@ document.addEventListener(
 
             const oscillator =
                 audioContext.createOscillator();
-
 
             const gain =
                 audioContext.createGain();
@@ -1941,7 +1944,6 @@ document.addEventListener(
                             "Now click either glass... 🍷";
 
                         return;
-
                     }
 
 
@@ -1958,16 +1960,12 @@ document.addEventListener(
                     pourCount++;
 
 
-                    /*
-                       Wine pouring sound.
-                    */
+                    /* WINE POUR SOUND */
 
                     winePourSound();
 
 
-                    /*
-                       BOTTLE LEVEL
-                    */
+                    /* BOTTLE LEVEL */
 
                     const bottleLevel =
                         100 -
@@ -1982,9 +1980,7 @@ document.addEventListener(
                         "%";
 
 
-                    /*
-                       GLASSES FILL
-                    */
+                    /* GLASSES FILL */
 
                     const glassLevel =
                         pourCount *
@@ -2070,12 +2066,12 @@ document.addEventListener(
                         }
 
 
+                        /* GLASS CLINK */
+
                         glassClink();
 
 
-                        /*
-                           EMPTY BOTH GLASSES
-                        */
+                        /* EMPTY BOTH GLASSES */
 
                         glassWine.forEach(
                             function (wine) {
@@ -2144,7 +2140,7 @@ document.addEventListener(
 
             /*
                Stop normal BGM
-               for the dizzy sequence.
+               during dizzy sequence.
             */
 
             drunkMode = true;
@@ -2218,8 +2214,8 @@ document.addEventListener(
 
 
             /*
-               Bring romantic BGM back
-               after the drunk moment.
+               Bring the soft romantic
+               piano back afterward.
             */
 
             setTimeout(
