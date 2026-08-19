@@ -1,469 +1,991 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        /* =====================================================
-           HELPERS
-        ====================================================== */
+    function get(id) {
+        return document.getElementById(id);
+    }
 
-        function get(id) {
-            return document.getElementById(id);
+
+    /* =========================
+       AUDIO
+    ========================== */
+
+    const music = get("birthday-music");
+    const musicButton = get("music-button");
+
+    const candleSound = get("candle-sound");
+    const balloonSound = get("balloon-pop-sound");
+    const popperSound = get("popper-sound");
+    const crackleSound = get("crackle-sound");
+
+
+    function playSound(audio, volume) {
+
+        if (!audio) {
+            return;
         }
 
+        try {
 
-        function showSection(id) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = volume || 0.6;
 
-            document
-                .querySelectorAll(".page-section")
-                .forEach(function (section) {
+            const promise = audio.play();
 
-                    section.classList.remove("active");
+            if (promise) {
+                promise.catch(function () {});
+            }
 
+        } catch (error) {
+            console.log("Audio error:", error);
+        }
+    }
+
+
+    function startBirthdayMusic() {
+
+        if (!music) {
+            return;
+        }
+
+        music.volume = 0.38;
+
+        const promise = music.play();
+
+        if (promise) {
+
+            promise
+                .then(function () {
+                    musicButton.textContent = "♫";
+                })
+                .catch(function () {
+                    musicButton.textContent = "🔇";
                 });
 
-            setTimeout(function () {
-
-                const section = get(id);
-
-                if (section) {
-                    section.classList.add("active");
-                }
-
-            }, 80);
         }
+    }
 
 
-        function playSound(audio, volume) {
+    musicButton.addEventListener(
+        "click",
+        function () {
 
-            if (!audio) {
+            if (!music) {
                 return;
             }
 
-            try {
+            if (music.paused) {
 
-                audio.pause();
+                music.play()
+                    .then(function () {
+                        musicButton.textContent = "♫";
+                    })
+                    .catch(function () {});
 
-                audio.currentTime = 0;
+            } else {
 
-                audio.volume = volume || 0.5;
+                music.pause();
 
-                const promise = audio.play();
-
-                if (promise) {
-                    promise.catch(function () {});
-                }
-
-            } catch (error) {
-
-                console.log(
-                    "Audio error:",
-                    error
-                );
-
+                musicButton.textContent = "🔇";
             }
+
         }
+    );
 
 
-        /* =====================================================
-           AUDIO
-        ====================================================== */
+    /* =========================
+       SECTION SWITCH
+    ========================== */
 
-        const cameraSound =
-            get("camera-sound");
-
-        const wineSound =
-            get("wine-sound");
-
-        const glassSound =
-            get("glass-sound");
-
-
-        /* =====================================================
-           INTRO POPUPS
-        ====================================================== */
-
-        const introCards =
-            document.querySelectorAll(
-                ".intro-card"
-            );
-
-        let introIndex = 0;
-
+    function showSection(id) {
 
         document
-            .querySelectorAll(".intro-next")
-            .forEach(function (button) {
+            .querySelectorAll(".party-section")
+            .forEach(function (section) {
 
-                button.addEventListener(
-                    "click",
-                    function () {
-
-                        introCards[
-                            introIndex
-                        ].classList.remove(
-                            "active"
-                        );
-
-                        introIndex++;
-
-                        setTimeout(
-                            function () {
-
-                                if (
-                                    introCards[
-                                        introIndex
-                                    ]
-                                ) {
-
-                                    introCards[
-                                        introIndex
-                                    ].classList.add(
-                                        "active"
-                                    );
-
-                                }
-
-                            },
-                            120
-                        );
-
-                    }
-                );
+                section.classList.remove("active");
 
             });
 
 
-        /* =====================================================
-           CAMERA START
-        ====================================================== */
+        const target = get(id);
 
-        get("start-camera")
-            .addEventListener(
-                "click",
-                function () {
-
-                    showSection(
-                        "camera-section"
-                    );
-
-                }
-            );
+        if (!target) {
+            return;
+        }
 
 
-        /* =====================================================
-           CAMERA COUNTDOWN
-        ====================================================== */
+        setTimeout(function () {
 
-        const camera =
-            get("camera");
+            target.classList.add("active");
 
-        const countdown =
-            get("countdown");
-
-        const countdownNumber =
-            get("countdown-number");
-
-        const flash =
-            get("flash");
-
-        const photoResult =
-            get("photo-result");
-
-        let cameraUsed = false;
+        }, 50);
+    }
 
 
-        camera.addEventListener(
+    /* =========================
+       WELCOME
+    ========================== */
+
+    const welcomeSteps =
+        document.querySelectorAll(".welcome-step");
+
+    const welcomeButtons =
+        document.querySelectorAll(".welcome-next");
+
+
+    welcomeButtons.forEach(function (button) {
+
+        button.addEventListener(
             "click",
             function () {
 
-                if (cameraUsed) {
-                    return;
+                const next =
+                    button.getAttribute("data-next");
+
+
+                welcomeSteps.forEach(function (step) {
+
+                    step.classList.remove("active");
+
+                });
+
+
+                const nextStep =
+                    get("welcome-step-" + next);
+
+
+                if (nextStep) {
+
+                    setTimeout(function () {
+
+                        nextStep.classList.add("active");
+
+                    }, 100);
+
                 }
-
-                cameraUsed = true;
-
-                startCountdown();
 
             }
         );
 
-
-        function startCountdown() {
-
-            countdown.classList.add(
-                "active"
-            );
-
-            const numbers = [
-                "3",
-                "2",
-                "1"
-            ];
-
-            let index = 0;
+    });
 
 
-            function showNumber() {
+    /* =========================
+       ENTER CAKE
+    ========================== */
 
-                countdownNumber.textContent =
-                    numbers[index];
+    get("start-cake").addEventListener(
+        "click",
+        function () {
 
-                countdownNumber.style.animation =
-                    "none";
+            showSection("cake-section");
 
-                void countdownNumber.offsetWidth;
-
-                countdownNumber.style.animation =
-                    "countdownPop .9s ease";
-
-
-                if (index < numbers.length - 1) {
-
-                    index++;
-
-                    setTimeout(
-                        showNumber,
-                        900
-                    );
-
-                } else {
-
-                    setTimeout(
-                        takePhoto,
-                        900
-                    );
-
-                }
-
-            }
-
-
-            showNumber();
+            startBirthdayMusic();
 
         }
+    );
 
 
-        /* =====================================================
-           TAKE PHOTO
-        ====================================================== */
+    /* =========================
+       CANDLES
+    ========================== */
 
-        function takePhoto() {
+    const candles =
+        document.querySelectorAll(".candle");
 
-            countdown.classList.remove(
-                "active"
-            );
+    const cakeInstruction =
+        get("cake-instruction");
 
-            playSound(
-                cameraSound,
-                0.7
-            );
+    const celebrationLayer =
+        get("celebration-layer");
 
-
-            /* BIG FLASH */
-
-            flash.classList.add(
-                "active"
-            );
+    const birthdayPopup =
+        get("birthday-popup");
 
 
-            setTimeout(
-                function () {
-
-                    photoResult.classList.add(
-                        "show"
-                    );
-
-                },
-                400
-            );
+    let candlesOff = 0;
+    let celebrationStarted = false;
 
 
-            setTimeout(
-                function () {
+    candles.forEach(function (candle) {
 
-                    flash.classList.remove(
-                        "active"
-                    );
-
-                },
-                900
-            );
-
-        }
-
-
-        /* =====================================================
-           PHOTO → BOUQUET
-        ====================================================== */
-
-        get("photo-continue")
-            .addEventListener(
-                "click",
-                function () {
-
-                    photoResult.classList.remove(
-                        "show"
-                    );
-
-                    setTimeout(
-                        function () {
-
-                            showSection(
-                                "bouquet-section"
-                            );
-
-                        },
-                        300
-                    );
-
-                }
-            );
-
-
-        /* =====================================================
-           BOUQUET
-        ====================================================== */
-
-        const bouquet =
-            get("bouquet");
-
-        const bouquetText =
-            get("bouquet-text");
-
-        let bouquetClicked = false;
-
-
-        bouquet.addEventListener(
+        candle.addEventListener(
             "click",
             function () {
 
-                if (bouquetClicked) {
+                if (
+                    candle.classList.contains("off")
+                ) {
                     return;
                 }
 
-                bouquetClicked = true;
 
-                bouquet.classList.add(
-                    "glowing"
+                candle.classList.add("off");
+
+                candlesOff++;
+
+
+                playSound(
+                    candleSound,
+                    0.5
                 );
 
 
-                bouquetText.textContent =
-                    "For the prettiest girl I know... ❤️";
+                createSmallSparkle(candle);
 
 
-                createBouquetSparkles();
+                const remaining =
+                    candles.length - candlesOff;
 
 
-                setTimeout(
-                    function () {
+                if (remaining > 0) {
 
-                        bouquetText.textContent =
-                            "I have something else for you... ✦";
+                    cakeInstruction.textContent =
+                        remaining +
+                        " candle" +
+                        (
+                            remaining === 1
+                                ? ""
+                                : "s"
+                        ) +
+                        " left, sweetheart... 🕯️❤️";
 
-                    },
-                    1700
-                );
+                }
 
 
-                setTimeout(
-                    function () {
+                if (
+                    candlesOff === candles.length
+                ) {
 
-                        showSection(
-                            "letter-section"
-                        );
+                    cakeInstruction.textContent =
+                        "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
 
-                    },
-                    3000
-                );
+                    startMegaCelebration();
+
+                }
 
             }
         );
 
+    });
 
-        function createBouquetSparkles() {
 
-            const symbols = [
-                "✦",
-                "✧",
-                "✨",
-                "♥"
+    /* =========================
+       SMALL SPARKLES
+    ========================== */
+
+    function createSmallSparkle(candle) {
+
+        const rect =
+            candle.getBoundingClientRect();
+
+
+        const symbols = [
+            "✦",
+            "✧",
+            "✨",
+            "♥"
+        ];
+
+
+        for (let i = 0; i < 8; i++) {
+
+            const sparkle =
+                document.createElement("div");
+
+            sparkle.className =
+                "celebration-particle sparkle";
+
+            sparkle.textContent =
+                symbols[
+                    Math.floor(
+                        Math.random() *
+                        symbols.length
+                    )
+                ];
+
+
+            sparkle.style.left =
+                (
+                    rect.left +
+                    rect.width / 2
+                ) + "px";
+
+            sparkle.style.top =
+                rect.top + "px";
+
+
+            sparkle.style.fontSize =
+                (
+                    12 +
+                    Math.random() * 10
+                ) + "px";
+
+
+            document.body.appendChild(sparkle);
+
+
+            const x =
+                (
+                    Math.random() - .5
+                ) * 120;
+
+            const y =
+                -(
+                    30 +
+                    Math.random() * 100
+                );
+
+
+            sparkle.animate(
+                [
+                    {
+                        transform:
+                            "translate(0,0) scale(1)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "translate(" +
+                            x +
+                            "px," +
+                            y +
+                            "px) scale(0)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        600 +
+                        Math.random() * 400,
+
+                    easing: "ease-out"
+                }
+            );
+
+
+            setTimeout(function () {
+
+                sparkle.remove();
+
+            }, 1200);
+
+        }
+
+    }
+
+
+    /* ==================================================
+       6 SECOND MEGA CELEBRATION
+       EVERYTHING IS CODED
+    ================================================== */
+
+    function startMegaCelebration() {
+
+        if (celebrationStarted) {
+            return;
+        }
+
+        celebrationStarted = true;
+
+
+        celebrationLayer.classList.add("active");
+
+        startBirthdayMusic();
+
+
+        /* FIRST MASSIVE BURST */
+
+        createMegaBurst();
+        createBalloonBurst();
+        createPopperBurst();
+        createFirework();
+
+
+        const celebrationStart =
+            Date.now();
+
+        const celebrationDuration =
+            6000;
+
+
+        const celebrationTimer =
+            setInterval(function () {
+
+                const elapsed =
+                    Date.now() -
+                    celebrationStart;
+
+
+                if (
+                    elapsed >=
+                    celebrationDuration
+                ) {
+
+                    clearInterval(
+                        celebrationTimer
+                    );
+
+                    finishCelebration();
+
+                    return;
+                }
+
+
+                /* REPEATING EFFECTS */
+
+                createSparkleWave();
+                createConfettiBurst();
+                createFirework();
+                createBalloonBurst();
+                createPopperBurst();
+
+            }, 500);
+
+    }
+
+
+    /* ==================================================
+       CODED MEGA BURST
+    ================================================== */
+
+    function createMegaBurst() {
+
+        for (let i = 0; i < 70; i++) {
+
+            const particle =
+                document.createElement("div");
+
+            particle.className =
+                "celebration-particle";
+
+
+            /* CODED SPARKLE */
+
+            particle.style.width =
+                (
+                    3 +
+                    Math.random() * 7
+                ) + "px";
+
+            particle.style.height =
+                (
+                    3 +
+                    Math.random() * 7
+                ) + "px";
+
+            particle.style.borderRadius =
+                "50%";
+
+            particle.style.background =
+                "#fff7b0";
+
+            particle.style.boxShadow =
+                "0 0 8px #ffffff, 0 0 18px #ffd45c";
+
+
+            particle.style.left = "50%";
+            particle.style.top = "50%";
+
+
+            document.body.appendChild(particle);
+
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+            const distance =
+                100 +
+                Math.random() * 450;
+
+
+            const x =
+                Math.cos(angle) *
+                distance;
+
+            const y =
+                Math.sin(angle) *
+                distance;
+
+
+            particle.animate(
+                [
+                    {
+                        transform:
+                            "translate(-50%,-50%) scale(.1)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "translate(-50%,-50%) scale(1.4)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "translate(calc(-50% + " +
+                            x +
+                            "px), calc(-50% + " +
+                            y +
+                            "px)) scale(.1)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        800 +
+                        Math.random() * 1000,
+
+                    easing:
+                        "cubic-bezier(.2,.8,.2,1)"
+                }
+            );
+
+
+            setTimeout(function () {
+
+                particle.remove();
+
+            }, 2200);
+
+        }
+
+    }
+
+
+    /* ==================================================
+       CODED SPARKLE WAVE
+    ================================================== */
+
+    function createSparkleWave() {
+
+        for (let i = 0; i < 20; i++) {
+
+            const particle =
+                document.createElement("div");
+
+            particle.className =
+                "celebration-particle";
+
+
+            particle.style.width =
+                (
+                    3 +
+                    Math.random() * 6
+                ) + "px";
+
+            particle.style.height =
+                (
+                    3 +
+                    Math.random() * 6
+                ) + "px";
+
+            particle.style.borderRadius =
+                "50%";
+
+            particle.style.background =
+                "#ffffff";
+
+            particle.style.boxShadow =
+                "0 0 8px #ffffff, 0 0 20px #ffd85c";
+
+
+            particle.style.left =
+                Math.random() * 100 + "%";
+
+            particle.style.top =
+                Math.random() * 100 + "%";
+
+
+            document.body.appendChild(particle);
+
+
+            particle.animate(
+                [
+                    {
+                        transform:
+                            "scale(.1)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "scale(2)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "scale(.1)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        600 +
+                        Math.random() * 700
+                }
+            );
+
+
+            setTimeout(function () {
+
+                particle.remove();
+
+            }, 1600);
+
+        }
+
+    }
+
+
+    /* ==================================================
+       CODED CONFETTI
+    ================================================== */
+
+    function createConfettiBurst() {
+
+        const x =
+            Math.random() *
+            window.innerWidth;
+
+        const y =
+            window.innerHeight * .08;
+
+
+        for (let i = 0; i < 25; i++) {
+
+            const piece =
+                document.createElement("div");
+
+            piece.className =
+                "celebration-particle";
+
+
+            const size =
+                5 +
+                Math.random() * 8;
+
+
+            piece.style.width =
+                size + "px";
+
+            piece.style.height =
+                (
+                    size * 1.8
+                ) + "px";
+
+
+            piece.style.borderRadius =
+                Math.random() > .5
+                    ? "2px"
+                    : "50%";
+
+
+            piece.style.background =
+                [
+                    "#8f243d",
+                    "#b52d51",
+                    "#e2a31a",
+                    "#f08ba3",
+                    "#ffffff"
+                ][
+                    Math.floor(
+                        Math.random() * 5
+                    )
+                ];
+
+
+            piece.style.left =
+                x + "px";
+
+            piece.style.top =
+                y + "px";
+
+
+            document.body.appendChild(piece);
+
+
+            const moveX =
+                (
+                    Math.random() - .5
+                ) * 400;
+
+            const moveY =
+                250 +
+                Math.random() * 500;
+
+
+            piece.animate(
+                [
+                    {
+                        transform:
+                            "translate(0,0) rotate(0deg)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "translate(" +
+                            moveX +
+                            "px," +
+                            moveY +
+                            "px) rotate(" +
+                            (
+                                Math.random() * 1000
+                            ) +
+                            "deg)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        1000 +
+                        Math.random() * 900,
+
+                    easing: "ease-out"
+                }
+            );
+
+
+            setTimeout(function () {
+
+                piece.remove();
+
+            }, 2300);
+
+        }
+
+    }
+
+
+    /* ==================================================
+       CODED BALLOON
+    ================================================== */
+
+    function createBalloonBurst() {
+
+        const x =
+            70 +
+            Math.random() *
+            (
+                window.innerWidth - 140
+            );
+
+        const y =
+            120 +
+            Math.random() *
+            (
+                window.innerHeight * .45
+            );
+
+
+        playSound(
+            balloonSound,
+            0.35
+        );
+
+
+        const balloon =
+            document.createElement("div");
+
+        balloon.className =
+            "celebration-particle";
+
+
+        balloon.style.position =
+            "fixed";
+
+        balloon.style.left =
+            x + "px";
+
+        balloon.style.top =
+            y + "px";
+
+
+        balloon.style.width =
+            "42px";
+
+        balloon.style.height =
+            "52px";
+
+
+        balloon.style.borderRadius =
+            "50% 50% 48% 48%";
+
+
+        balloon.style.background =
+            [
+                "linear-gradient(135deg,#f08ba3,#a92549)",
+                "linear-gradient(135deg,#ffd2dc,#d94d6c)",
+                "linear-gradient(135deg,#ffffff,#f08ba3)"
+            ][
+                Math.floor(
+                    Math.random() * 3
+                )
             ];
 
 
-            for (
-                let i = 0;
-                i < 22;
-                i++
-            ) {
+        balloon.style.boxShadow =
+            "inset -8px -10px 15px rgba(90,10,30,.15), 0 8px 20px rgba(90,10,30,.2)";
 
-                const sparkle =
-                    document.createElement(
-                        "span"
-                    );
 
-                sparkle.textContent =
-                    symbols[
-                        Math.floor(
-                            Math.random() *
-                            symbols.length
-                        )
-                    ];
+        balloon.style.zIndex =
+            "1200";
 
-                sparkle.style.position =
+
+        document.body.appendChild(balloon);
+
+
+        /* BALLOON STRING */
+
+        const string =
+            document.createElement("div");
+
+        string.style.position =
+            "fixed";
+
+        string.style.left =
+            (
+                x + 21
+            ) + "px";
+
+        string.style.top =
+            (
+                y + 50
+            ) + "px";
+
+        string.style.width =
+            "1px";
+
+        string.style.height =
+            "80px";
+
+        string.style.background =
+            "rgba(80,30,40,.35)";
+
+        string.style.zIndex =
+            "1199";
+
+
+        document.body.appendChild(string);
+
+
+        setTimeout(function () {
+
+            balloon.animate(
+                [
+                    {
+                        transform:
+                            "scale(.5)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "scale(1.15)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "scale(1)",
+                        opacity: 1
+                    }
+                ],
+                {
+                    duration: 350
+                }
+            );
+
+        }, 10);
+
+
+        setTimeout(function () {
+
+            /* POP */
+
+            balloon.animate(
+                [
+                    {
+                        transform:
+                            "scale(1)"
+                    },
+                    {
+                        transform:
+                            "scale(1.3)"
+                    },
+                    {
+                        transform:
+                            "scale(.05)"
+                    }
+                ],
+                {
+                    duration: 280
+                }
+            );
+
+
+            string.animate(
+                [
+                    {
+                        opacity: 1
+                    },
+                    {
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration: 250
+                }
+            );
+
+
+            /* CODED POP PARTICLES */
+
+            for (let i = 0; i < 18; i++) {
+
+                const spark =
+                    document.createElement("div");
+
+                spark.style.position =
                     "fixed";
 
-                sparkle.style.left =
-                    (
-                        25 +
-                        Math.random() * 50
-                    ) + "%";
+                spark.style.left =
+                    x + 21 + "px";
 
-                sparkle.style.top =
-                    (
-                        25 +
-                        Math.random() * 40
-                    ) + "%";
+                spark.style.top =
+                    y + 25 + "px";
 
-                sparkle.style.fontSize =
-                    (
-                        12 +
-                        Math.random() * 15
-                    ) + "px";
+                spark.style.width =
+                    "5px";
 
-                sparkle.style.color =
-                    "#b52d51";
+                spark.style.height =
+                    "5px";
 
-                sparkle.style.pointerEvents =
-                    "none";
+                spark.style.borderRadius =
+                    "50%";
 
-                sparkle.style.zIndex =
-                    "300";
+                spark.style.background =
+                    "#ffd85c";
 
-                document.body.appendChild(
-                    sparkle
-                );
+                spark.style.boxShadow =
+                    "0 0 10px #fff";
 
 
-                const x =
-                    (
-                        Math.random() - .5
-                    ) * 180;
-
-                const y =
-                    -(
-                        40 +
-                        Math.random() * 140
-                    );
+                document.body.appendChild(spark);
 
 
-                sparkle.animate(
+                const angle =
+                    Math.random() *
+                    Math.PI *
+                    2;
+
+                const distance =
+                    40 +
+                    Math.random() *
+                    100;
+
+
+                spark.animate(
                     [
-                        {
-                            transform:
-                                "translate(0,0) scale(.3)",
-                            opacity: 0
-                        },
                         {
                             transform:
                                 "translate(0,0) scale(1)",
@@ -472,415 +994,509 @@ document.addEventListener(
                         {
                             transform:
                                 "translate(" +
-                                x +
+                                Math.cos(angle) *
+                                distance +
                                 "px," +
-                                y +
-                                "px) scale(.2)",
+                                Math.sin(angle) *
+                                distance +
+                                "px) scale(.1)",
                             opacity: 0
                         }
                     ],
                     {
                         duration:
-                            1000 +
-                            Math.random() * 700,
-
-                        easing:
-                            "ease-out"
+                            450 +
+                            Math.random() * 300
                     }
                 );
 
 
-                setTimeout(
-                    function () {
-
-                        sparkle.remove();
-
-                    },
-                    1900
-                );
+                setTimeout(function () {
+                    spark.remove();
+                }, 1000);
 
             }
 
-        }
+        }, 550);
 
 
-        /* =====================================================
-           ENVELOPE
-        ====================================================== */
+        setTimeout(function () {
 
-        const envelope =
-            get("envelope");
+            balloon.remove();
+            string.remove();
 
-        const postcard =
-            get("postcard");
+        }, 1500);
 
-        const envelopeText =
-            get("envelope-text");
-
-        let envelopeOpened = false;
+    }
 
 
-        envelope.addEventListener(
-            "click",
-            function () {
+    /* ==================================================
+       CODED PARTY POPPER
+    ================================================== */
 
-                if (envelopeOpened) {
-                    return;
-                }
+    function createPopperBurst() {
 
-                envelopeOpened = true;
-
-                envelope.classList.add(
-                    "open"
-                );
+        const leftSide =
+            Math.random() < .5;
 
 
-                envelopeText.textContent =
-                    "Open it... it's just for you. ❤️";
+        const x =
+            leftSide
+                ? 70
+                : window.innerWidth - 70;
 
 
-                setTimeout(
-                    function () {
+        const y =
+            window.innerHeight *
+            (
+                .35 +
+                Math.random() * .25
+            );
 
-                        postcard.classList.add(
-                            "show"
-                        );
 
-                    },
-                    900
-                );
-
-            }
+        playSound(
+            popperSound,
+            0.4
         );
 
 
-        /* =====================================================
-           POSTCARD → WINE
-        ====================================================== */
+        /* POPPER BODY */
 
-        get("wine-continue")
-            .addEventListener(
-                "click",
-                function () {
+        const popper =
+            document.createElement("div");
 
-                    postcard.classList.remove(
-                        "show"
-                    );
+        popper.style.position =
+            "fixed";
 
-                    envelope.classList.remove(
-                        "open"
-                    );
+        popper.style.left =
+            x + "px";
 
-                    setTimeout(
-                        function () {
+        popper.style.top =
+            y + "px";
 
-                            showSection(
-                                "wine-section"
-                            );
+        popper.style.width =
+            "25px";
 
-                        },
-                        400
-                    );
+        popper.style.height =
+            "70px";
 
-                }
-            );
+        popper.style.borderRadius =
+            "7px";
 
+        popper.style.background =
+            "linear-gradient(135deg,#7d1834,#e15a78)";
 
-        /* =====================================================
-           WINE
-        ====================================================== */
+        popper.style.transform =
+            leftSide
+                ? "rotate(-25deg)"
+                : "rotate(25deg)";
 
-        const bottle =
-            get("wine-bottle");
+        popper.style.boxShadow =
+            "0 8px 20px rgba(80,10,30,.25)";
 
-        const glasses =
-            document.querySelectorAll(
-                ".wine-glass"
-            );
-
-        const bottleLiquid =
-            document.querySelector(
-                ".bottle-liquid"
-            );
-
-        const glassWine =
-            document.querySelectorAll(
-                ".glass-wine"
-            );
-
-        const wineCounter =
-            get("wine-counter");
-
-        const wineInstruction =
-            get("wine-instruction");
+        popper.style.zIndex =
+            "1200";
 
 
-        let pourCount = 0;
-
-        const maximumPours = 5;
-
-        let glassesFilled = false;
-
-        let wineFinished = false;
+        document.body.appendChild(popper);
 
 
-        /* =====================================================
-           BOTTLE CLICK
-        ====================================================== */
+        /* BURST PARTICLES */
 
-        bottle.addEventListener(
-            "click",
-            function () {
+        for (let i = 0; i < 22; i++) {
 
-                if (wineFinished) {
-                    return;
-                }
+            const piece =
+                document.createElement("div");
 
-                if (glassesFilled) {
-                    wineInstruction.textContent =
-                        "Now click either glass... 🍷";
+            piece.style.position =
+                "fixed";
 
-                    return;
-                }
+            piece.style.left =
+                x + "px";
+
+            piece.style.top =
+                y + "px";
 
 
-                if (
-                    pourCount >=
-                    maximumPours
-                ) {
-                    return;
-                }
+            const width =
+                4 +
+                Math.random() * 7;
+
+            const height =
+                10 +
+                Math.random() * 14;
 
 
-                pourCount++;
+            piece.style.width =
+                width + "px";
 
-                playSound(
-                    wineSound,
-                    0.55
+            piece.style.height =
+                height + "px";
+
+
+            piece.style.borderRadius =
+                "2px";
+
+
+            piece.style.background =
+                [
+                    "#a92549",
+                    "#e2a31a",
+                    "#f08ba3",
+                    "#ffffff"
+                ][
+                    Math.floor(
+                        Math.random() * 4
+                    )
+                ];
+
+
+            piece.style.zIndex =
+                "1250";
+
+
+            document.body.appendChild(piece);
+
+
+            const direction =
+                leftSide
+                    ? 1
+                    : -1;
+
+
+            const moveX =
+                direction *
+                (
+                    80 +
+                    Math.random() * 260
                 );
 
 
-                /* BOTTLE LEVEL */
-
-                const bottleLevel =
-                    100 -
-                    (
-                        pourCount *
-                        20
-                    );
-
-                bottleLiquid.style.height =
-                    bottleLevel + "%";
+            const moveY =
+                (
+                    Math.random() - .5
+                ) *
+                280;
 
 
-                /* GLASSES FILL */
-
-                const glassLevel =
-                    pourCount * 20;
-
-                glassWine.forEach(
-                    function (wine) {
-
-                        wine.style.height =
-                            glassLevel + "%";
-
-                    }
-                );
-
-
-                wineCounter.textContent =
-                    "POUR " +
-                    pourCount +
-                    " / 5";
-
-
-                if (
-                    pourCount <
-                    maximumPours
-                ) {
-
-                    wineInstruction.textContent =
-                        "A little more... 🍷❤️";
-
-                } else {
-
-                    glassesFilled = true;
-
-                    wineInstruction.textContent =
-                        "Cheers, sweetheart... now drink. 🍷";
-
-                    wineCounter.textContent =
-                        "CHEERS ❤️";
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           GLASS CLICK
-        ====================================================== */
-
-        glasses.forEach(
-            function (glass) {
-
-                glass.addEventListener(
-                    "click",
-                    function () {
-
-                        if (wineFinished) {
-                            return;
-                        }
-
-
-                        if (!glassesFilled) {
-
-                            wineInstruction.textContent =
-                                "Pour the wine first, sweetheart. ❤️";
-
-                            return;
-
-                        }
-
-
-                        playSound(
-                            glassSound,
-                            0.65
-                        );
-
-
-                        /* EMPTY BOTH GLASSES */
-
-                        glassWine.forEach(
-                            function (wine) {
-
-                                wine.style.height =
-                                    "0%";
-
-                            }
-                        );
-
-
-                        glassesFilled = false;
-
-
-                        /*
-                           THE BOTTLE IS NOW EMPTY
-                           AND BOTH GLASSES ARE EMPTY.
-                        */
-
-                        if (
-                            pourCount >=
-                            maximumPours
-                        ) {
-
-                            wineFinished = true;
-
-                            wineInstruction.textContent =
-                                "Well... that was quick. 😂";
-
-                            wineCounter.textContent =
-                                "EMPTY";
-
-
-                            setTimeout(
-                                startDrunkEnding,
-                                1000
-                            );
-
-                        }
-
-                    }
-                );
-
-            }
-        );
-
-
-        /* =====================================================
-           DRUNK ENDING
-        ====================================================== */
-
-        function startDrunkEnding() {
-
-            const overlay =
-                get("drunk-overlay");
-
-            overlay.classList.add(
-                "active"
-            );
-
-
-            /*
-                Make the entire page
-                slowly sway.
-            */
-
-            document.body.animate(
+            piece.animate(
                 [
                     {
                         transform:
-                            "rotate(0deg) scale(1)"
+                            "translate(0,0) rotate(0deg) scale(1)",
+                        opacity: 1
                     },
                     {
                         transform:
-                            "rotate(-1deg) scale(1.02)"
-                    },
-                    {
-                        transform:
-                            "rotate(1deg) scale(1.04)"
-                    },
-                    {
-                        transform:
-                            "rotate(-1deg) scale(1.06)"
-                    },
-                    {
-                        transform:
-                            "rotate(1deg) scale(1.08)"
-                    },
-                    {
-                        transform:
-                            "rotate(0deg) scale(1.1)"
+                            "translate(" +
+                            moveX +
+                            "px," +
+                            moveY +
+                            "px) rotate(" +
+                            (
+                                Math.random() * 800
+                            ) +
+                            "deg) scale(.2)",
+                        opacity: 0
                     }
                 ],
                 {
-                    duration: 5000,
-                    easing: "ease-in-out",
-                    fill: "forwards"
+                    duration:
+                        700 +
+                        Math.random() * 700,
+
+                    easing: "ease-out"
                 }
             );
 
 
-            setTimeout(
-                function () {
+            setTimeout(function () {
 
-                    get("drunk-popup")
-                        .classList.add(
-                            "show"
-                        );
+                piece.remove();
 
-                },
-                4200
-            );
+            }, 1700);
 
         }
 
 
-        /* =====================================================
-           NEXT PAGE
-        ====================================================== */
+        setTimeout(function () {
 
-        get("next-page")
-            .addEventListener(
-                "click",
-                function () {
-
-                    window.location.href =
-                        "page4.html";
-
+            popper.animate(
+                [
+                    {
+                        transform:
+                            leftSide
+                                ? "rotate(-25deg) scale(1)"
+                                : "rotate(25deg) scale(1)"
+                    },
+                    {
+                        transform:
+                            leftSide
+                                ? "rotate(-25deg) scale(.6)"
+                                : "rotate(25deg) scale(.6)"
+                    }
+                ],
+                {
+                    duration: 250
                 }
             );
 
+        }, 350);
+
+
+        setTimeout(function () {
+
+            popper.remove();
+
+        }, 1000);
+
     }
-);
+
+
+    /* ==================================================
+       CODED FIREWORK / CRACKLE
+    ================================================== */
+
+    function createFirework() {
+
+        const x =
+            10 +
+            Math.random() * 80;
+
+        const y =
+            15 +
+            Math.random() * 45;
+
+
+        playSound(
+            crackleSound,
+            0.35
+        );
+
+
+        /* CENTER FLASH */
+
+        const center =
+            document.createElement("div");
+
+        center.style.position =
+            "fixed";
+
+        center.style.left =
+            x + "%";
+
+        center.style.top =
+            y + "%";
+
+        center.style.width =
+            "12px";
+
+        center.style.height =
+            "12px";
+
+        center.style.borderRadius =
+            "50%";
+
+        center.style.background =
+            "#fff";
+
+        center.style.boxShadow =
+            "0 0 15px #fff, 0 0 35px #ffd85c";
+
+        center.style.zIndex =
+            "1300";
+
+
+        document.body.appendChild(center);
+
+
+        center.animate(
+            [
+                {
+                    transform:
+                        "scale(.1)",
+                    opacity: 0
+                },
+                {
+                    transform:
+                        "scale(2)",
+                    opacity: 1
+                },
+                {
+                    transform:
+                        "scale(.1)",
+                    opacity: 0
+                }
+            ],
+            {
+                duration: 500
+            }
+        );
+
+
+        /* RADIAL CRACKLE */
+
+        for (let i = 0; i < 28; i++) {
+
+            const spark =
+                document.createElement("div");
+
+            spark.style.position =
+                "fixed";
+
+            spark.style.left =
+                x + "%";
+
+            spark.style.top =
+                y + "%";
+
+            spark.style.width =
+                "4px";
+
+            spark.style.height =
+                "18px";
+
+            spark.style.borderRadius =
+                "5px";
+
+            spark.style.background =
+                [
+                    "#fff",
+                    "#ffd85c",
+                    "#f08ba3"
+                ][
+                    Math.floor(
+                        Math.random() * 3
+                    )
+                ];
+
+            spark.style.boxShadow =
+                "0 0 8px rgba(255,255,255,.9)";
+
+            spark.style.transformOrigin =
+                "center bottom";
+
+            spark.style.zIndex =
+                "1300";
+
+
+            document.body.appendChild(spark);
+
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+            const distance =
+                50 +
+                Math.random() * 180;
+
+
+            const moveX =
+                Math.cos(angle) *
+                distance;
+
+            const moveY =
+                Math.sin(angle) *
+                distance;
+
+
+            spark.animate(
+                [
+                    {
+                        transform:
+                            "translate(0,0) rotate(" +
+                            angle +
+                            "rad) scale(.2)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "translate(" +
+                            moveX +
+                            "px," +
+                            moveY +
+                            "px) rotate(" +
+                            angle +
+                            "rad) scale(1)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "translate(" +
+                            moveX * 1.2 +
+                            "px," +
+                            moveY * 1.2 +
+                            "px) rotate(" +
+                            angle +
+                            "rad) scale(.1)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        650 +
+                        Math.random() * 500,
+
+                    easing: "ease-out"
+                }
+            );
+
+
+            setTimeout(function () {
+
+                spark.remove();
+
+            }, 1600);
+
+        }
+
+
+        setTimeout(function () {
+
+            center.remove();
+
+        }, 800);
+
+    }
+
+
+    /* =========================
+       FINISH
+    ========================== */
+
+    function finishCelebration() {
+
+        createMegaBurst();
+
+
+        setTimeout(function () {
+
+            celebrationLayer.classList.remove("active");
+
+            birthdayPopup.classList.add("show");
+
+            cakeInstruction.textContent =
+                "Happy Birthday, beautiful girl. ❤️";
+
+        }, 900);
+
+    }
+
+
+    /* =========================
+       PAGE 3
+    ========================== */
+
+    get("page3-button").addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "page3.html";
+
+        }
+    );
+
+});
