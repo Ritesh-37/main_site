@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <meta name="theme-color" content="#18060b">
 
     <title>For My Birthday Girl ❤️</title>
 
@@ -11,33 +17,34 @@
 
 <body>
 
-    <!-- =========================================
-         PAGE 2 - MAIN CONTAINER
-    ========================================== -->
-
     <main id="page2">
 
-        <!-- =========================================
-             SECTION 01 - WELCOME SCREEN
-        ========================================== -->
+        <!-- =================================================
+             SECTION 1 — WELCOME
+        ================================================== -->
 
-        <section id="welcomeScreen" class="scene active">
+        <section id="welcomeScene" class="scene active">
 
             <div class="welcome-card">
 
-                <div class="welcome-heart">♥</div>
+                <div class="heart-icon">♥</div>
 
                 <h1>Welcome, Birthday Girl</h1>
 
                 <p>
-                    I have prepared something special just for you...
+                    I have prepared something special
+                    just for you...
                 </p>
 
-                <p class="small-text">
+                <p class="ready-text">
                     Are you ready? ❤️
                 </p>
 
-                <button id="startButton" class="main-button">
+                <button
+                    id="startButton"
+                    class="primary-button"
+                    type="button"
+                >
                     Enter My Surprise ✨
                 </button>
 
@@ -46,16 +53,16 @@
         </section>
 
 
-        <!-- =========================================
-             SECTION 02 - BIRTHDAY PARTY
-        ========================================== -->
+        <!-- =================================================
+             SECTION 2 — BIRTHDAY PARTY
+        ================================================== -->
 
         <section id="partyScene" class="scene">
 
-            <div class="party-lights"></div>
+            <div class="party-background"></div>
 
-            <div class="party-title">
-                <p>Tonight is all about you ❤️</p>
+            <div class="party-heading">
+                Tonight is all about you ❤️
             </div>
 
 
@@ -63,118 +70,169 @@
 
             <div id="balloons">
 
-                <div class="balloon balloon-1">
-                    <span></span>
+                <div class="balloon balloon-one">
+                    <span class="balloon-string"></span>
                 </div>
 
-                <div class="balloon balloon-2">
-                    <span></span>
+                <div class="balloon balloon-two">
+                    <span class="balloon-string"></span>
                 </div>
 
-                <div class="balloon balloon-3">
-                    <span></span>
+                <div class="balloon balloon-three">
+                    <span class="balloon-string"></span>
                 </div>
 
-                <div class="balloon balloon-4">
-                    <span></span>
+                <div class="balloon balloon-four">
+                    <span class="balloon-string"></span>
                 </div>
 
-                <div class="balloon balloon-5">
-                    <span></span>
+                <div class="balloon balloon-five">
+                    <span class="balloon-string"></span>
                 </div>
 
-                <div class="balloon balloon-6">
-                    <span></span>
+                <div class="balloon balloon-six">
+                    <span class="balloon-string"></span>
                 </div>
 
             </div>
 
 
-            <!-- LEFT PARTY POPPER -->
+            <!-- PARTY POPPERS -->
 
             <button
                 id="leftPopper"
                 class="party-popper left-popper"
-                aria-label="Party popper">
+                type="button"
+                aria-label="Party popper"
+            >
                 🎉
             </button>
-
-
-            <!-- RIGHT PARTY POPPER -->
 
             <button
                 id="rightPopper"
                 class="party-popper right-popper"
-                aria-label="Party popper">
+                type="button"
+                aria-label="Party popper"
+            >
                 🎉
             </button>
 
 
             <!-- CAKE -->
 
-            <div id="cakeContainer">
+            <div
+                id="cake"
+                class="cake"
+                role="button"
+                tabindex="0"
+                aria-label="Birthday cake"
+            >
 
-                <div id="cake" class="cake">
+                <!-- CANDLES -->
 
-                    <div class="cake-candles">
+                <div class="candles">
 
-                        <button class="candle" data-candle="1">
-                            <span class="flame"></span>
-                        </button>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 1"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
-                        <button class="candle" data-candle="2">
-                            <span class="flame"></span>
-                        </button>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 2"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
-                        <button class="candle" data-candle="3">
-                            <span class="flame"></span>
-                        </button>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 3"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
-                        <button class="candle" data-candle="4">
-                            <span class="flame"></span>
-                        </button>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 4"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
-                        <button class="candle" data-candle="5">
-                            <span class="flame"></span>
-                        </button>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 5"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
-                        <button class="candle" data-candle="6">
-                            <span class="flame"></span>
-                        </button>
-
-                    </div>
-
-                    <div class="cake-top"></div>
-
-                    <div class="cake-body">
-
-                        <div class="cake-cream cream-one"></div>
-                        <div class="cake-cream cream-two"></div>
-
-                    </div>
-
-                    <div class="cake-base"></div>
+                    <button
+                        class="candle"
+                        type="button"
+                        aria-label="Candle 6"
+                    >
+                        <span class="flame"></span>
+                    </button>
 
                 </div>
 
+
+                <!-- CAKE TOP -->
+
+                <div class="cake-top">
+                    <div class="cream cream-one"></div>
+                    <div class="cream cream-two"></div>
+                    <div class="cream cream-three"></div>
+                </div>
+
+
+                <!-- CAKE BODY -->
+
+                <div class="cake-body">
+
+                    <div class="icing-drip drip-one"></div>
+                    <div class="icing-drip drip-two"></div>
+                    <div class="icing-drip drip-three"></div>
+
+                </div>
+
+
+                <!-- CAKE BASE -->
+
+                <div class="cake-base"></div>
+
             </div>
 
 
-            <!-- CANDLE INSTRUCTION -->
+            <!-- INSTRUCTION -->
 
-            <div id="candleInstruction" class="instruction">
+            <div id="candleInstruction" class="candle-instruction">
+
                 <span>Make a wish...</span>
-                <strong>Click the candles 🕯️</strong>
+
+                <strong>
+                    Tap the candles 🕯️
+                </strong>
+
             </div>
 
 
-            <!-- CELEBRATION MESSAGE -->
+            <!-- WISH MESSAGE -->
 
-            <div id="wishMessage" class="message-overlay">
+            <div
+                id="wishOverlay"
+                class="overlay hidden"
+            >
 
-                <div class="message-card">
+                <div class="wish-card">
 
-                    <div class="message-icon">✨</div>
+                    <div class="sparkle">✨</div>
 
                     <h2>
                         Make a wish,
@@ -186,9 +244,9 @@
                         Your special moment has officially begun.
                     </p>
 
-                    <p class="cake-prompt">
-                        Now click the cake... 🎂
-                    </p>
+                    <strong>
+                        Now tap the cake... 🎂
+                    </strong>
 
                 </div>
 
@@ -197,13 +255,13 @@
         </section>
 
 
-        <!-- =========================================
-             SECTION 03 - BOUQUET + LETTER
-        ========================================== -->
+        <!-- =================================================
+             SECTION 3 — BOUQUET + LETTER
+        ================================================== -->
 
         <section id="letterScene" class="scene">
 
-            <div class="table-glow"></div>
+            <div class="romantic-glow"></div>
 
             <div class="wooden-table">
 
@@ -217,12 +275,12 @@
                     <div class="flower flower-four">🌸</div>
                     <div class="flower flower-five">🌹</div>
 
-                    <div class="leaves">
+                    <div class="greenery">
                         🌿 🌿 🌿
                     </div>
 
-                    <div class="bouquet-paper">
-                        <span>With Love</span>
+                    <div class="bouquet-wrap">
+                        With Love
                     </div>
 
                 </div>
@@ -230,14 +288,19 @@
 
                 <!-- LETTER -->
 
-                <button id="letter" class="letter">
+                <button
+                    id="letterButton"
+                    class="letter-button"
+                    type="button"
+                    aria-label="Open letter"
+                >
 
                     <div class="envelope">
 
                         <div class="envelope-flap"></div>
 
-                        <div class="envelope-front">
-                            <span>For My Birthday Girl ❤️</span>
+                        <div class="envelope-text">
+                            For My Birthday Girl ❤️
                         </div>
 
                     </div>
@@ -247,44 +310,52 @@
             </div>
 
 
-            <!-- LETTER CONTENT -->
+            <!-- LETTER MODAL -->
 
-            <div id="letterContent" class="letter-content">
+            <div
+                id="letterOverlay"
+                class="letter-overlay hidden"
+            >
 
                 <div class="letter-paper">
 
-                    <button id="closeLetter" class="close-letter">
+                    <button
+                        id="closeLetter"
+                        class="close-letter"
+                        type="button"
+                        aria-label="Close letter"
+                    >
                         ×
                     </button>
 
-                    <p class="letter-heading">
+                    <h2>
                         My Beautiful Birthday Girl,
+                    </h2>
+
+                    <p>
+                        Today is your day, but somehow I feel
+                        like I am the lucky one for getting to
+                        celebrate someone as beautiful as you.
                     </p>
 
                     <p>
-                        Today is your day, but somehow I feel like
-                        I am the lucky one for getting to celebrate
-                        someone as beautiful as you.
-                    </p>
-
-                    <p>
-                        I hope this new year of your life brings you
-                        the kind of happiness that stays, the kind of
-                        peace that makes your heart feel light, and
-                        countless moments that make you smile without
-                        even realizing it.
+                        I hope this new year of your life brings
+                        you the kind of happiness that stays,
+                        the kind of peace that makes your heart
+                        feel light, and countless moments that
+                        make you smile without even realizing it.
                     </p>
 
                     <p>
                         Never forget how special you are.
                         You deserve beautiful things, beautiful
-                        memories, and people who remind you every day
-                        just how precious you are.
+                        memories, and people who remind you
+                        every day just how precious you are.
                     </p>
 
                     <p>
-                        Keep smiling, keep dreaming, and keep being
-                        the wonderful person you are.
+                        Keep smiling, keep dreaming, and keep
+                        being the wonderful person you are.
                     </p>
 
                     <p class="letter-ending">
@@ -295,6 +366,14 @@
                         With all my heart
                     </p>
 
+                    <button
+                        id="continueToWine"
+                        class="primary-button"
+                        type="button"
+                    >
+                        Continue ❤️
+                    </button>
+
                 </div>
 
             </div>
@@ -302,32 +381,43 @@
         </section>
 
 
-        <!-- =========================================
-             SECTION 04 - WINE SCENE
-        ========================================== -->
+        <!-- =================================================
+             SECTION 4 — WINE
+        ================================================== -->
 
         <section id="wineScene" class="scene">
 
-            <div class="wine-fog"></div>
+            <div id="wineFog" class="wine-fog"></div>
 
-            <div class="wine-world">
+            <div
+                id="wineWorld"
+                class="wine-world"
+            >
 
-                <div class="wine-heading">
-                    <p>One last little journey...</p>
-                </div>
+                <h2>
+                    One last little journey...
+                </h2>
 
 
-                <!-- WINE BOTTLE -->
+                <!-- BOTTLE -->
 
-                <button id="wineBottle" class="wine-bottle">
+                <button
+                    id="wineBottle"
+                    class="wine-bottle"
+                    type="button"
+                    aria-label="Wine bottle"
+                >
 
                     <div class="bottle-neck"></div>
 
                     <div class="bottle-body">
 
-                        <div id="wineLiquid" class="wine-liquid"></div>
+                        <div
+                            id="wineLiquid"
+                            class="wine-liquid"
+                        ></div>
 
-                        <div class="bottle-label">
+                        <div class="wine-label">
                             <span>For Tonight</span>
                             <strong>❤️</strong>
                         </div>
@@ -337,27 +427,36 @@
                 </button>
 
 
-                <!-- WINE GLASS -->
+                <!-- GLASS -->
 
                 <div class="wine-glass">
 
-                    <div id="wineGlassLiquid" class="wine-glass-liquid"></div>
+                    <div
+                        id="glassLiquid"
+                        class="glass-liquid"
+                    ></div>
 
                 </div>
 
 
-                <!-- WINE TEXT -->
+                <!-- TEXT -->
 
-                <div id="wineText" class="wine-text">
-                    Click the bottle... 🍷
+                <div
+                    id="wineText"
+                    class="wine-text"
+                >
+                    Tap the bottle... 🍷
                 </div>
 
             </div>
 
 
-            <!-- FINAL WINE MESSAGE -->
+            <!-- FINAL MESSAGE -->
 
-            <div id="finalWineMessage" class="final-wine-message">
+            <div
+                id="finalWineMessage"
+                class="final-message hidden"
+            >
 
                 <p>
                     And now...
@@ -372,14 +471,16 @@
 
             <!-- BLACKOUT -->
 
-            <div id="blackout"></div>
+            <div
+                id="blackout"
+                class="blackout"
+            ></div>
 
         </section>
 
     </main>
 
-
     <script src="page2.js"></script>
 
 </body>
-</html>
+    </html>
