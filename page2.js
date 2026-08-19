@@ -1,18 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    function get(id) {
-        return document.getElementById(id);
-    }
-
-
-    /* =========================================================
-       AUDIO ENGINE
-       ========================================================= */
-
-    const music = get("birthday-music");
-    const musicButton = get("music-button");
-document.addEventListener("DOMContentLoaded", function () {
-
     /* =========================================================
        HELPER
     ========================================================= */
@@ -41,55 +28,65 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let audioContext = null;
 
-    let musicStarted = false;
-    let musicMuted = false;
+    let musicManuallyMuted = false;
+    let birthdayMode = false;
 
-    let celebrationPlaying = false;
+    let celebrationMusicTimer = null;
 
-    let celebrationTimer = null;
-
-    let audioUnlocked = false;
+    let musicWasPlaying = false;
 
 
     /* =========================================================
-       AUDIO CONTEXT
+       WEB AUDIO INITIALIZATION
     ========================================================= */
 
-    function initAudio() {
+    function initAudioContext() {
 
         if (!audioContext) {
 
             try {
 
-                audioContext = new (
+                const AudioContext =
                     window.AudioContext ||
-                    window.webkitAudioContext
-                )();
+                    window.webkitAudioContext;
+
+                if (!AudioContext) {
+                    return null;
+                }
+
+                audioContext =
+                    new AudioContext();
 
             } catch (error) {
 
-                console.log("Web Audio unavailable.");
+                console.log(
+                    "Web Audio unavailable:",
+                    error
+                );
 
-                return false;
+                return null;
             }
         }
 
 
-        if (audioContext.state === "suspended") {
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
 
-            audioContext.resume().catch(function () {});
+            audioContext.resume()
+                .catch(function () {});
 
         }
 
 
-        audioUnlocked = true;
+        return audioContext;
 
-        return true;
     }
 
 
     /* =========================================================
-       ORIGINAL BGM
+       NORMAL BGM
     ========================================================= */
 
     function startNormalMusic() {
@@ -98,42 +95,60 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (musicMuted) {
+        if (musicManuallyMuted) {
             return;
         }
 
-        if (celebrationPlaying) {
+        if (birthdayMode) {
             return;
         }
 
 
-        music.volume = 0.30;
+        try {
+
+            music.volume = 0.30;
 
 
-        const promise = music.play();
+            const promise =
+                music.play();
 
 
-        if (promise) {
+            if (promise) {
 
-            promise
-                .then(function () {
+                promise
+                    .then(function () {
 
-                    musicStarted = true;
+                        updateMusicButton(true);
 
-                    if (musicButton) {
-                        musicButton.textContent = "♫";
-                    }
+                    })
+                    .catch(function (error) {
 
-                })
-                .catch(function () {
+                        /*
+                           IMPORTANT:
 
-                    musicStarted = false;
+                           Do NOT set musicManuallyMuted here.
 
-                    if (musicButton) {
-                        musicButton.textContent = "🔇";
-                    }
+                           Browser autoplay blocking is NOT
+                           the same thing as the user muting
+                           the music.
+                        */
 
-                });
+                        console.log(
+                            "BGM waiting for user interaction."
+                        );
+
+                        updateMusicButton(false);
+
+                    });
+
+            }
+
+        } catch (error) {
+
+            console.log(
+                "BGM error:",
+                error
+            );
 
         }
 
@@ -141,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       STOP ORIGINAL BGM
+       STOP NORMAL BGM
     ========================================================= */
 
     function stopNormalMusic() {
@@ -150,15 +165,42 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+
         try {
+
+            musicWasPlaying =
+                !music.paused;
+
 
             music.pause();
 
         } catch (error) {
 
-            console.log(error);
+            console.log(
+                "Music stop error:",
+                error
+            );
 
         }
+
+    }
+
+
+    /* =========================================================
+       MUSIC BUTTON DISPLAY
+    ========================================================= */
+
+    function updateMusicButton(isPlaying) {
+
+        if (!musicButton) {
+            return;
+        }
+
+
+        musicButton.textContent =
+            isPlaying
+                ? "♫"
+                : "🔇";
 
     }
 
@@ -175,7 +217,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 event.stopPropagation();
 
-                initAudio();
+
+                initAudioContext();
 
 
                 if (!music) {
@@ -183,32 +226,50 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                if (music.paused) {
+                if (birthdayMode) {
+                    return;
+                }
 
-                    musicMuted = false;
 
+                if (!music.paused) {
 
-                    if (!celebrationPlaying) {
-
-                        music.play()
-                            .then(function () {
-
-                                musicStarted = true;
-
-                                musicButton.textContent = "♫";
-
-                            })
-                            .catch(function () {});
-
-                    }
-
-                } else {
+                    /*
+                       USER intentionally muted music.
+                    */
 
                     music.pause();
 
-                    musicMuted = true;
+                    musicManuallyMuted =
+                        true;
 
-                    musicButton.textContent = "🔇";
+                    updateMusicButton(false);
+
+                } else {
+
+                    /*
+                       USER intentionally turned music
+                       back on.
+                    */
+
+                    musicManuallyMuted =
+                        false;
+
+
+                    music.volume =
+                        0.30;
+
+
+                    music.play()
+                        .then(function () {
+
+                            updateMusicButton(true);
+
+                        })
+                        .catch(function () {
+
+                            updateMusicButton(false);
+
+                        });
 
                 }
 
@@ -219,15 +280,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       FIRST INTERACTION UNLOCK
-    ========================================================= */
+       UNLOCK AUDIO ON FIRST USER INTERACTION
+       ========================================================= */
 
-    function firstInteraction() {
+    function unlockAudio() {
 
-        initAudio();
+        initAudioContext();
 
 
-        if (!musicStarted && !musicMuted) {
+        /*
+           Only attempt BGM if the user has not
+           intentionally muted it.
+        */
+
+        if (
+            !musicManuallyMuted &&
+            !birthdayMode
+        ) {
 
             startNormalMusic();
 
@@ -238,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener(
         "pointerdown",
-        firstInteraction,
+        unlockAudio,
         {
             once: true
         }
@@ -246,7 +315,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       CLEAN AUDIO EFFECT
+       INITIAL BGM ATTEMPT
+       ========================================================= */
+
+    /*
+       This may work on some browsers.
+
+       If the browser blocks it, the first tap
+       will start it automatically.
+    */
+
+    startNormalMusic();
+
+
+    /* =========================================================
+       SIMPLE AUDIO FILE SOUND EFFECT
     ========================================================= */
 
     function playSound(audio, volume) {
@@ -265,21 +348,27 @@ document.addEventListener("DOMContentLoaded", function () {
             audio.volume =
                 volume !== undefined
                     ? volume
-                    : 0.25;
+                    : 0.30;
 
 
-            const promise = audio.play();
+            const promise =
+                audio.play();
 
 
             if (promise) {
 
-                promise.catch(function () {});
+                promise.catch(
+                    function () {}
+                );
 
             }
 
         } catch (error) {
 
-            console.log("Sound effect error:", error);
+            console.log(
+                "Sound effect error:",
+                error
+            );
 
         }
 
@@ -287,37 +376,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       CUTE CLICK
+       CUTE UI CLICK SOUND
     ========================================================= */
 
     function uiClickSound() {
 
-        if (!initAudio()) {
+        const ctx =
+            initAudioContext();
+
+
+        if (!ctx) {
             return;
         }
 
 
-        const now = audioContext.currentTime;
+        const now =
+            ctx.currentTime;
 
 
         const oscillator =
-            audioContext.createOscillator();
+            ctx.createOscillator();
+
 
         const gain =
-            audioContext.createGain();
+            ctx.createGain();
 
 
-        oscillator.type = "sine";
+        oscillator.type =
+            "sine";
 
 
         oscillator.frequency.setValueAtTime(
-            620,
+            650,
             now
         );
 
 
         oscillator.frequency.exponentialRampToValueAtTime(
-            820,
+            900,
             now + 0.06
         );
 
@@ -343,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function () {
         oscillator.connect(gain);
 
         gain.connect(
-            audioContext.destination
+            ctx.destination
         );
 
 
@@ -357,226 +453,105 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       10 SECOND BIRTHDAY CELEBRATION AUDIO
-       
-       Happy Birthday
-       + gentle clapping
-       + soft cheering
-       
-       EVERYTHING IS GENERATED HERE.
-       NO EXTRA AUDIO FILE REQUIRED.
+       10 SECOND BIRTHDAY CELEBRATION MUSIC
     ========================================================= */
 
     function startBirthdayCelebrationMusic() {
 
-        if (celebrationPlaying) {
+        if (birthdayMode) {
             return;
         }
 
 
-        if (!initAudio()) {
-            return;
-        }
+        birthdayMode = true;
 
 
-        celebrationPlaying = true;
-
-
-        /* -----------------------------------------
-           STOP ORIGINAL MUSIC
-        ----------------------------------------- */
+        /*
+           STOP NORMAL BGM.
+        */
 
         stopNormalMusic();
 
 
-        /*
-           Cancel previous timer if somehow present.
-        */
+        const ctx =
+            initAudioContext();
 
-        if (celebrationTimer) {
 
-            clearTimeout(
-                celebrationTimer
-            );
+        if (!ctx) {
 
-            celebrationTimer = null;
+            /*
+               Even if Web Audio isn't available,
+               return to normal music after 10 sec.
+            */
+
+            celebrationMusicTimer =
+                setTimeout(
+                    function () {
+
+                        stopBirthdayCelebrationMusic();
+
+                    },
+                    10000
+                );
+
+            return;
 
         }
 
 
         const start =
-            audioContext.currentTime + 0.08;
+            ctx.currentTime + 0.05;
 
 
-        /* -----------------------------------------
-           MASTER CELEBRATION VOLUME
-        ----------------------------------------- */
-
-        const master =
-            audioContext.createGain();
-
-
-        master.gain.setValueAtTime(
-            0.0001,
-            start
-        );
-
-
-        master.gain.linearRampToValueAtTime(
-            0.55,
-            start + 0.35
-        );
-
-
-        master.gain.setValueAtTime(
-            0.55,
-            start + 9.3
-        );
-
-
-        master.gain.linearRampToValueAtTime(
-            0.0001,
-            start + 10
-        );
-
-
-        master.connect(
-            audioContext.destination
-        );
-
-
-        /* -----------------------------------------
+        /*
            HAPPY BIRTHDAY MELODY
-        ----------------------------------------- */
 
-        const melody = [
+           "Happy Birthday to You"
+        */
+
+        const notes = [
 
             [261.63, 0.45],
             [261.63, 0.45],
-            [293.66, 0.80],
-            [261.63, 0.80],
-            [349.23, 0.80],
+            [293.66, 0.85],
+            [261.63, 0.85],
+            [349.23, 0.85],
             [329.63, 1.10],
 
             [261.63, 0.45],
             [261.63, 0.45],
-            [293.66, 0.80],
-            [261.63, 0.80],
-            [392.00, 0.80],
-            [349.23, 1.10],
-
-            [261.63, 0.45],
-            [261.63, 0.45],
-            [523.25, 0.80],
-            [440.00, 0.80],
-            [349.23, 0.80],
-            [329.63, 0.80],
-            [293.66, 1.10],
-
-            [466.16, 0.45],
-            [466.16, 0.45],
-            [440.00, 0.80],
-            [349.23, 0.80],
-            [392.00, 0.80],
-            [349.23, 1.20]
+            [293.66, 0.85],
+            [261.63, 0.85],
+            [392.00, 0.85],
+            [349.23, 1.10]
 
         ];
 
 
-        let time = start;
+        let time =
+            start;
 
 
-        melody.forEach(function (note) {
+        notes.forEach(
+            function (note) {
 
-            const frequency = note[0];
-            const duration = note[1];
+                const frequency =
+                    note[0];
 
+                const duration =
+                    note[1];
 
-            const oscillator =
-                audioContext.createOscillator();
-
-
-            const gain =
-                audioContext.createGain();
-
-
-            oscillator.type = "triangle";
-
-
-            oscillator.frequency.setValueAtTime(
-                frequency,
-                time
-            );
-
-
-            gain.gain.setValueAtTime(
-                0.0001,
-                time
-            );
-
-
-            gain.gain.linearRampToValueAtTime(
-                0.32,
-                time + 0.035
-            );
-
-
-            gain.gain.linearRampToValueAtTime(
-                0.0001,
-                time + duration - 0.05
-            );
-
-
-            oscillator.connect(gain);
-
-            gain.connect(master);
-
-
-            oscillator.start(time);
-
-            oscillator.stop(
-                time + duration
-            );
-
-
-            time += duration + 0.035;
-
-        });
-
-
-        /* -----------------------------------------
-           SOFT CHORD
-        ----------------------------------------- */
-
-        const chords = [
-
-            [261.63, 329.63, 392.00],
-            [293.66, 369.99, 440.00],
-            [261.63, 329.63, 392.00]
-
-        ];
-
-
-        const chordTimes = [
-            start,
-            start + 2.7,
-            start + 5.4
-        ];
-
-
-        chords.forEach(function (chord, index) {
-
-            chord.forEach(function (frequency) {
 
                 const oscillator =
-                    audioContext.createOscillator();
+                    ctx.createOscillator();
 
 
                 const gain =
-                    audioContext.createGain();
+                    ctx.createGain();
 
 
-                oscillator.type = "sine";
+                oscillator.type =
+                    "triangle";
 
 
                 oscillator.frequency.value =
@@ -585,409 +560,168 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 gain.gain.setValueAtTime(
                     0.0001,
-                    chordTimes[index]
+                    time
                 );
 
 
-                gain.gain.linearRampToValueAtTime(
-                    0.07,
-                    chordTimes[index] + 0.25
+                gain.gain.exponentialRampToValueAtTime(
+                    0.13,
+                    time + 0.035
                 );
 
 
-                gain.gain.linearRampToValueAtTime(
+                gain.gain.exponentialRampToValueAtTime(
                     0.0001,
-                    chordTimes[index] + 2.4
+                    time +
+                    duration -
+                    0.04
                 );
 
 
                 oscillator.connect(gain);
 
-                gain.connect(master);
-
-
-                oscillator.start(
-                    chordTimes[index]
+                gain.connect(
+                    ctx.destination
                 );
+
+
+                oscillator.start(time);
 
 
                 oscillator.stop(
-                    chordTimes[index] + 2.5
-                );
-
-            });
-
-        });
-
-
-        /* -----------------------------------------
-           GENTLE CLAPPING
-        ----------------------------------------- */
-
-        function createClap(when, volume) {
-
-            const bufferSize =
-                audioContext.sampleRate * 0.12;
-
-
-            const buffer =
-                audioContext.createBuffer(
-                    1,
-                    bufferSize,
-                    audioContext.sampleRate
+                    time + duration
                 );
 
 
-            const data =
-                buffer.getChannelData(0);
-
-
-            for (
-                let i = 0;
-                i < bufferSize;
-                i++
-            ) {
-
-                data[i] =
-                    (
-                        Math.random() * 2 - 1
-                    ) *
-                    Math.pow(
-                        1 - i / bufferSize,
-                        4
-                    );
+                time +=
+                    duration + 0.04;
 
             }
-
-
-            const source =
-                audioContext.createBufferSource();
-
-
-            const filter =
-                audioContext.createBiquadFilter();
-
-
-            const gain =
-                audioContext.createGain();
-
-
-            source.buffer = buffer;
-
-
-            filter.type =
-                "bandpass";
-
-
-            filter.frequency.value =
-                1300;
-
-
-            filter.Q.value =
-                0.8;
-
-
-            gain.gain.setValueAtTime(
-                volume,
-                when
-            );
-
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                when + 0.12
-            );
-
-
-            source.connect(filter);
-
-            filter.connect(gain);
-
-            gain.connect(master);
-
-
-            source.start(when);
-
-        }
+        );
 
 
         /*
-           Clap rhythm begins after the melody starts.
-           It stays subtle so it doesn't become irritating.
+           SOFT CELEBRATION CHORD
         */
 
-        const clapStart =
-            start + 1.2;
-
-
-        for (
-            let t = clapStart;
-            t < start + 9.2;
-            t += 0.65
-        ) {
-
-            createClap(
-                t,
-                0.055
-            );
-
-
-            /*
-               occasional second clap
-            */
-
-            if (
-                Math.random() > 0.55
-            ) {
-
-                createClap(
-                    t + 0.16,
-                    0.045
-                );
-
-            }
-
-        }
-
-
-        /* -----------------------------------------
-           SOFT CHEERING
-        ----------------------------------------- */
-
-        function createCheerTone(
-            frequency,
-            when,
-            duration
-        ) {
-
-            const oscillator =
-                audioContext.createOscillator();
-
-
-            const gain =
-                audioContext.createGain();
-
-
-            oscillator.type =
-                "sine";
-
-
-            oscillator.frequency.setValueAtTime(
-                frequency,
-                when
-            );
-
-
-            oscillator.frequency.linearRampToValueAtTime(
-                frequency * 1.12,
-                when + duration
-            );
-
-
-            gain.gain.setValueAtTime(
-                0.0001,
-                when
-            );
-
-
-            gain.gain.linearRampToValueAtTime(
-                0.035,
-                when + 0.15
-            );
-
-
-            gain.gain.linearRampToValueAtTime(
-                0.0001,
-                when + duration
-            );
-
-
-            oscillator.connect(gain);
-
-            gain.connect(master);
-
-
-            oscillator.start(when);
-
-            oscillator.stop(
-                when + duration
-            );
-
-        }
-
-
-        /*
-           Small celebratory "woo!" style tones.
-        */
-
-        createCheerTone(
-            392,
-            start + 2.0,
-            0.8
-        );
-
-
-        createCheerTone(
-            493.88,
-            start + 2.2,
-            0.8
-        );
-
-
-        createCheerTone(
-            587.33,
-            start + 2.4,
-            0.9
-        );
-
-
-        createCheerTone(
-            392,
-            start + 6.0,
-            0.8
-        );
-
-
-        createCheerTone(
-            523.25,
-            start + 6.2,
-            0.8
-        );
-
-
-        createCheerTone(
-            659.25,
-            start + 6.4,
-            1.0
-        );
-
-
-        /* -----------------------------------------
-           FINAL CELEBRATION CHIME
-        ----------------------------------------- */
-
-        const finalNotes = [
-            523.25,
-            659.25,
-            783.99
+        const chord = [
+            261.63,
+            329.63,
+            392.00
         ];
 
 
-        finalNotes.forEach(function (
-            frequency,
-            index
-        ) {
+        chord.forEach(
+            function (frequency) {
 
-            const when =
-                start +
-                8.7 +
-                index * 0.18;
+                const oscillator =
+                    ctx.createOscillator();
 
 
-            const oscillator =
-                audioContext.createOscillator();
+                const gain =
+                    ctx.createGain();
 
 
-            const gain =
-                audioContext.createGain();
+                oscillator.type =
+                    "sine";
 
 
-            oscillator.type =
-                "triangle";
+                oscillator.frequency.value =
+                    frequency;
 
 
-            oscillator.frequency.value =
-                frequency;
+                gain.gain.setValueAtTime(
+                    0.0001,
+                    start
+                );
 
 
-            gain.gain.setValueAtTime(
-                0.0001,
-                when
+                gain.gain.exponentialRampToValueAtTime(
+                    0.025,
+                    start + 0.5
+                );
+
+
+                gain.gain.exponentialRampToValueAtTime(
+                    0.0001,
+                    start + 9.5
+                );
+
+
+                oscillator.connect(gain);
+
+                gain.connect(
+                    ctx.destination
+                );
+
+
+                oscillator.start(start);
+
+                oscillator.stop(
+                    start + 9.7
+                );
+
+            }
+        );
+
+
+        /*
+           10 SECOND TIMER
+        */
+
+        celebrationMusicTimer =
+            setTimeout(
+                function () {
+
+                    stopBirthdayCelebrationMusic();
+
+                },
+                10000
             );
-
-
-            gain.gain.linearRampToValueAtTime(
-                0.20,
-                when + 0.05
-            );
-
-
-            gain.gain.exponentialRampToValueAtTime(
-                0.0001,
-                when + 0.8
-            );
-
-
-            oscillator.connect(gain);
-
-            gain.connect(master);
-
-
-            oscillator.start(when);
-
-            oscillator.stop(
-                when + 0.85
-            );
-
-        });
-
-
-        /* -----------------------------------------
-           EXACTLY 10 SECONDS
-        ----------------------------------------- */
-
-        celebrationTimer =
-            setTimeout(function () {
-
-                stopBirthdayCelebrationMusic();
-
-            }, 10000);
 
     }
 
 
     /* =========================================================
-       STOP CELEBRATION AUDIO
+       STOP CELEBRATION MUSIC
     ========================================================= */
 
     function stopBirthdayCelebrationMusic() {
 
-        if (!celebrationPlaying) {
-            return;
-        }
+        birthdayMode = false;
 
 
-        celebrationPlaying = false;
-
-
-        if (celebrationTimer) {
+        if (celebrationMusicTimer) {
 
             clearTimeout(
-                celebrationTimer
+                celebrationMusicTimer
             );
 
-            celebrationTimer = null;
+            celebrationMusicTimer =
+                null;
 
         }
 
 
         /*
-           Give the final note a tiny moment,
-           then return to the original BGM.
+           RETURN TO ORIGINAL BGM.
         */
 
-        setTimeout(function () {
+        if (
+            music &&
+            !musicManuallyMuted
+        ) {
 
-            if (
-                !musicMuted &&
-                !celebrationPlaying
-            ) {
+            setTimeout(
+                function () {
 
-                startNormalMusic();
+                    startNormalMusic();
 
-            }
+                },
+                150
+            );
 
-        }, 120);
+        }
 
     }
 
@@ -999,17 +733,22 @@ document.addEventListener("DOMContentLoaded", function () {
     function showSection(id) {
 
         document
-            .querySelectorAll(".party-section")
-            .forEach(function (section) {
+            .querySelectorAll(
+                ".party-section"
+            )
+            .forEach(
+                function (section) {
 
-                section.classList.remove(
-                    "active"
-                );
+                    section.classList.remove(
+                        "active"
+                    );
 
-            });
+                }
+            );
 
 
-        const target = get(id);
+        const target =
+            get(id);
 
 
         if (!target) {
@@ -1017,13 +756,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        setTimeout(function () {
+        setTimeout(
+            function () {
 
-            target.classList.add(
-                "active"
-            );
+                target.classList.add(
+                    "active"
+                );
 
-        }, 50);
+            },
+            50
+        );
 
     }
 
@@ -1044,60 +786,77 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    welcomeButtons.forEach(function (button) {
+    welcomeButtons.forEach(
+        function (button) {
 
-        button.addEventListener(
-            "click",
-            function () {
+            button.addEventListener(
+                "click",
+                function () {
 
-                initAudio();
-
-                uiClickSound();
-
-
-                const next =
-                    button.getAttribute(
-                        "data-next"
-                    );
+                    uiClickSound();
 
 
-                welcomeSteps.forEach(
-                    function (step) {
+                    /*
+                       THIS IS THE FIRST USER
+                       INTERACTION.
 
-                        step.classList.remove(
-                            "active"
-                        );
+                       Start BGM here.
+                    */
+
+                    if (
+                        !musicManuallyMuted &&
+                        !birthdayMode
+                    ) {
+
+                        startNormalMusic();
 
                     }
-                );
 
 
-                const nextStep =
-                    get(
-                        "welcome-step-" +
-                        next
-                    );
+                    const next =
+                        button.getAttribute(
+                            "data-next"
+                        );
 
 
-                if (nextStep) {
+                    welcomeSteps.forEach(
+                        function (step) {
 
-                    setTimeout(
-                        function () {
-
-                            nextStep.classList.add(
+                            step.classList.remove(
                                 "active"
                             );
 
-                        },
-                        100
+                        }
                     );
 
+
+                    const nextStep =
+                        get(
+                            "welcome-step-" +
+                            next
+                        );
+
+
+                    if (nextStep) {
+
+                        setTimeout(
+                            function () {
+
+                                nextStep.classList.add(
+                                    "active"
+                                );
+
+                            },
+                            100
+                        );
+
+                    }
+
                 }
+            );
 
-            }
-        );
-
-    });
+        }
+    );
 
 
     /* =========================================================
@@ -1114,27 +873,22 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                initAudio();
-
                 uiClickSound();
+
+
+                if (
+                    !musicManuallyMuted &&
+                    !birthdayMode
+                ) {
+
+                    startNormalMusic();
+
+                }
 
 
                 showSection(
                     "cake-section"
                 );
-
-
-                /*
-                   This is now guaranteed to be
-                   the user's interaction that unlocks
-                   the original BGM.
-                */
-
-                if (!musicMuted) {
-
-                    startNormalMusic();
-
-                }
 
             }
         );
@@ -1166,107 +920,113 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let candlesOff = 0;
 
-    let celebrationStarted = false;
+    let celebrationStarted =
+        false;
 
 
-    candles.forEach(function (candle) {
+    candles.forEach(
+        function (candle) {
 
-        candle.addEventListener(
-            "click",
-            function () {
+            candle.addEventListener(
+                "click",
+                function () {
 
-                initAudio();
+                    /*
+                       Make absolutely sure audio
+                       is unlocked.
+                    */
+
+                    initAudioContext();
 
 
-                if (
-                    candle.classList.contains(
+                    if (
+                        candle.classList.contains(
+                            "off"
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    candle.classList.add(
                         "off"
-                    )
-                ) {
-
-                    return;
-
-                }
+                    );
 
 
-                candle.classList.add(
-                    "off"
-                );
-
-
-                candlesOff++;
-
-
-                /*
-                   VERY SOFT candle sound.
-                */
-
-                playSound(
-                    candleSound,
-                    0.22
-                );
-
-
-                createSmallSparkle(
-                    candle
-                );
-
-
-                const remaining =
-                    candles.length -
-                    candlesOff;
-
-
-                if (remaining > 0) {
-
-                    cakeInstruction.textContent =
-                        remaining +
-                        " candle" +
-                        (
-                            remaining === 1
-                                ? ""
-                                : "s"
-                        ) +
-                        " left, sweetheart... 🕯️❤️";
-
-                }
-
-
-                /* -------------------------------------
-                   LAST CANDLE
-                ------------------------------------- */
-
-                if (
-                    candlesOff ===
-                    candles.length
-                ) {
-
-                    cakeInstruction.textContent =
-                        "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
+                    candlesOff++;
 
 
                     /*
-                       IMPORTANT:
-
-                       Start the birthday audio FIRST.
-                       Normal BGM stops automatically.
+                       CANDLE SOUND
                     */
 
-                    startBirthdayCelebrationMusic();
+                    playSound(
+                        candleSound,
+                        0.28
+                    );
+
+
+                    createSmallSparkle(
+                        candle
+                    );
+
+
+                    const remaining =
+                        candles.length -
+                        candlesOff;
+
+
+                    if (remaining > 0) {
+
+                        cakeInstruction.textContent =
+                            remaining +
+                            " candle" +
+                            (
+                                remaining === 1
+                                    ? ""
+                                    : "s"
+                            ) +
+                            " left, sweetheart... 🕯️❤️";
+
+                    }
 
 
                     /*
-                       Then start the visual celebration.
+                       LAST CANDLE
                     */
 
-                    startMegaCelebration();
+                    if (
+                        candlesOff ===
+                        candles.length
+                    ) {
+
+                        cakeInstruction.textContent =
+                            "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
+
+
+                        /*
+                           START THE 10-SECOND
+                           BIRTHDAY MUSIC.
+                        */
+
+                        startBirthdayCelebrationMusic();
+
+
+                        /*
+                           START VISUAL CELEBRATION.
+                        */
+
+                        startMegaCelebration();
+
+                    }
 
                 }
+            );
 
-            }
-        );
-
-    });
+        }
+    );
 
 
     /* =========================================================
@@ -1287,7 +1047,11 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
 
-        for (let i = 0; i < 8; i++) {
+        for (
+            let i = 0;
+            i < 8;
+            i++
+        ) {
 
             const sparkle =
                 document.createElement(
@@ -1333,7 +1097,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const x =
                 (
-                    Math.random() - 0.5
+                    Math.random() -
+                    0.5
                 ) * 120;
 
 
@@ -1397,7 +1162,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        celebrationStarted = true;
+        celebrationStarted =
+            true;
 
 
         if (celebrationLayer) {
@@ -1418,30 +1184,30 @@ document.addEventListener("DOMContentLoaded", function () {
         createFirework();
 
 
-        const celebrationStart =
+        const startTime =
             Date.now();
 
 
-        const celebrationDuration =
+        const duration =
             10000;
 
 
-        const celebrationTimer =
+        const timer =
             setInterval(
                 function () {
 
                     const elapsed =
                         Date.now() -
-                        celebrationStart;
+                        startTime;
 
 
                     if (
                         elapsed >=
-                        celebrationDuration
+                        duration
                     ) {
 
                         clearInterval(
-                            celebrationTimer
+                            timer
                         );
 
 
@@ -1487,7 +1253,11 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
 
-        for (let i = 0; i < 55; i++) {
+        for (
+            let i = 0;
+            i < 55;
+            i++
+        ) {
 
             const particle =
                 document.createElement(
@@ -1605,7 +1375,11 @@ document.addEventListener("DOMContentLoaded", function () {
         ];
 
 
-        for (let i = 0; i < 15; i++) {
+        for (
+            let i = 0;
+            i < 15;
+            i++
+        ) {
 
             const particle =
                 document.createElement(
@@ -1714,7 +1488,11 @@ document.addEventListener("DOMContentLoaded", function () {
             0.1;
 
 
-        for (let i = 0; i < 18; i++) {
+        for (
+            let i = 0;
+            i < 18;
+            i++
+        ) {
 
             const piece =
                 document.createElement(
@@ -1750,7 +1528,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const moveX =
                 (
-                    Math.random() - 0.5
+                    Math.random() -
+                    0.5
                 ) * 350;
 
 
@@ -1805,8 +1584,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       BALLOON VISUAL
-       NO AUDIO DURING REPEATED CELEBRATION WAVES
+       BALLOON POP
     ========================================================= */
 
     function createBalloonBurst() {
@@ -1823,6 +1601,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.innerHeight *
                 0.45
             );
+
+
+        playSound(
+            balloonSound,
+            0.18
+        );
 
 
         const particle =
@@ -1889,8 +1673,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       PARTY POPPER VISUAL
-       NO AUDIO DURING REPEATED WAVES
+       PARTY POPPER
     ========================================================= */
 
     function createPopperBurst() {
@@ -1907,6 +1690,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 0.35 +
                 Math.random() * 0.3
             );
+
+
+        playSound(
+            popperSound,
+            0.20
+        );
 
 
         const popper =
@@ -1960,7 +1749,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        for (let i = 0; i < 12; i++) {
+        for (
+            let i = 0;
+            i < 12;
+            i++
+        ) {
 
             const piece =
                 document.createElement(
@@ -2015,7 +1808,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const moveY =
                 (
-                    Math.random() - 0.5
+                    Math.random() -
+                    0.5
                 ) * 250;
 
 
@@ -2072,8 +1866,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =========================================================
-       FIREWORK VISUAL
-       NO REPEATED AUDIO
+       FIREWORK
     ========================================================= */
 
     function createFirework() {
@@ -2086,6 +1879,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const y =
             15 +
             Math.random() * 45;
+
+
+        playSound(
+            crackleSound,
+            0.16
+        );
 
 
         const firework =
@@ -2149,7 +1948,11 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        for (let i = 0; i < 20; i++) {
+        for (
+            let i = 0;
+            i < 20;
+            i++
+        ) {
 
             const spark =
                 document.createElement(
@@ -2194,8 +1997,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const distance =
                 40 +
-                Math.random() *
-                170;
+                Math.random() * 170;
 
 
             const moveX =
@@ -2268,6 +2070,11 @@ document.addEventListener("DOMContentLoaded", function () {
         createMegaBurst();
 
 
+        /*
+           Make sure celebration BGM
+           has finished before normal BGM.
+        */
+
         setTimeout(
             function () {
 
@@ -2317,1671 +2124,8 @@ document.addEventListener("DOMContentLoaded", function () {
             "click",
             function () {
 
-                initAudio();
-
                 uiClickSound();
 
-
-                window.location.href =
-                    "page3.html";
-
-            }
-        );
-
-    }
-
-});
-    const candleSound = get("candle-sound");
-    const balloonSound = get("balloon-pop-sound");
-    const popperSound = get("popper-sound");
-    const crackleSound = get("crackle-sound");
-
-
-    /*
-       IMPORTANT:
-
-       The celebration audio is created here instead of depending
-       on another HTML <audio> element.
-
-       It uses a real online applause/cheering source.
-    */
-
-    const celebrationAudio = new Audio(
-        "https://cdn.pixabay.com/audio/2024/09/16/audio_6f9e1e6c9c.mp3"
-    );
-
-    celebrationAudio.preload = "auto";
-    celebrationAudio.loop = true;
-
-
-    let musicStarted = false;
-    let celebrationAudioPlaying = false;
-    let celebrationTimeout = null;
-
-
-    /* =========================================================
-       GENERIC SOUND PLAYER
-       ========================================================= */
-
-    function playSound(audio, volume) {
-
-        if (!audio) {
-            return;
-        }
-
-        try {
-
-            audio.pause();
-            audio.currentTime = 0;
-            audio.volume = volume || 0.5;
-
-            const promise = audio.play();
-
-            if (promise) {
-                promise.catch(function () {});
-            }
-
-        } catch (error) {
-            console.log("Sound error:", error);
-        }
-    }
-
-
-    /* =========================================================
-       ORIGINAL PAGE 2 BGM
-       ========================================================= */
-
-    function startOriginalMusic() {
-
-        if (!music || musicStarted) {
-            return;
-        }
-
-        musicStarted = true;
-
-        music.volume = 0.35;
-
-        const promise = music.play();
-
-        if (promise) {
-
-            promise
-                .then(function () {
-
-                    if (musicButton) {
-                        musicButton.textContent = "♫";
-                    }
-
-                })
-                .catch(function () {
-
-                    /*
-                       Browser autoplay protection may still block
-                       audio. That's why this function is triggered
-                       by the FIRST user interaction.
-                    */
-
-                    musicStarted = false;
-
-                    if (musicButton) {
-                        musicButton.textContent = "🔇";
-                    }
-
-                });
-
-        }
-    }
-
-
-    /* =========================================================
-       FIRST USER INTERACTION
-       ========================================================= */
-
-    let firstInteractionDone = false;
-
-
-    function handleFirstInteraction() {
-
-        if (firstInteractionDone) {
-            return;
-        }
-
-        firstInteractionDone = true;
-
-        startOriginalMusic();
-
-    }
-
-
-    /*
-       Any first click/touch/key interaction on Page 2
-       unlocks the BGM.
-    */
-
-    document.addEventListener(
-        "click",
-        handleFirstInteraction,
-        {
-            once: true
-        }
-    );
-
-    document.addEventListener(
-        "touchstart",
-        handleFirstInteraction,
-        {
-            once: true,
-            passive: true
-        }
-    );
-
-    document.addEventListener(
-        "keydown",
-        handleFirstInteraction,
-        {
-            once: true
-        }
-    );
-
-
-    /* =========================================================
-       MUSIC BUTTON
-       ========================================================= */
-
-    if (musicButton) {
-
-        musicButton.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                if (!music) {
-                    return;
-                }
-
-
-                if (music.paused) {
-
-                    music.play()
-                        .then(function () {
-
-                            musicButton.textContent = "♫";
-                            musicStarted = true;
-
-                        })
-                        .catch(function () {});
-
-                } else {
-
-                    music.pause();
-
-                    musicButton.textContent = "🔇";
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       FADE ORIGINAL MUSIC
-       ========================================================= */
-
-    function fadeMusicOut(duration) {
-
-        if (!music || music.paused) {
-            return;
-        }
-
-        const startVolume = music.volume;
-        const steps = 20;
-        const stepTime = duration / steps;
-
-        let step = 0;
-
-
-        const fade = setInterval(function () {
-
-            step++;
-
-            music.volume =
-                Math.max(
-                    0,
-                    startVolume * (1 - step / steps)
-                );
-
-
-            if (step >= steps) {
-
-                clearInterval(fade);
-
-                music.pause();
-
-                music.volume = startVolume;
-
-            }
-
-        }, stepTime);
-
-    }
-
-
-    /* =========================================================
-       FADE ORIGINAL MUSIC BACK IN
-       ========================================================= */
-
-    function fadeMusicIn() {
-
-        if (!music) {
-            return;
-        }
-
-        music.volume = 0;
-
-        music.play()
-            .then(function () {
-
-                if (musicButton) {
-                    musicButton.textContent = "♫";
-                }
-
-            })
-            .catch(function () {});
-
-
-        const targetVolume = 0.35;
-        const steps = 20;
-        const duration = 1200;
-        const stepTime = duration / steps;
-
-        let step = 0;
-
-
-        const fade = setInterval(function () {
-
-            step++;
-
-            music.volume =
-                targetVolume *
-                (step / steps);
-
-
-            if (step >= steps) {
-
-                clearInterval(fade);
-
-                music.volume = targetVolume;
-
-            }
-
-        }, stepTime);
-
-    }
-
-
-    /* =========================================================
-       10 SECOND BIRTHDAY CELEBRATION AUDIO
-       ========================================================= */
-
-    function startBirthdayCelebrationAudio() {
-
-        if (celebrationAudioPlaying) {
-            return;
-        }
-
-        celebrationAudioPlaying = true;
-
-
-        /*
-           Stop normal BGM first.
-        */
-
-        fadeMusicOut(700);
-
-
-        /*
-           Small delay makes the transition feel intentional.
-        */
-
-        setTimeout(function () {
-
-            celebrationAudio.currentTime = 0;
-            celebrationAudio.volume = 0.65;
-
-
-            const promise =
-                celebrationAudio.play();
-
-
-            if (promise) {
-
-                promise.catch(function () {
-
-                    celebrationAudioPlaying = false;
-
-                });
-
-            }
-
-
-            /*
-               EXACTLY 10 SECONDS
-            */
-
-            celebrationTimeout =
-                setTimeout(function () {
-
-                    stopBirthdayCelebrationAudio();
-
-                }, 10000);
-
-
-        }, 750);
-
-    }
-
-
-    /* =========================================================
-       STOP CELEBRATION AUDIO
-       ========================================================= */
-
-    function stopBirthdayCelebrationAudio() {
-
-        if (!celebrationAudioPlaying) {
-            return;
-        }
-
-
-        celebrationAudioPlaying = false;
-
-
-        if (celebrationTimeout) {
-
-            clearTimeout(
-                celebrationTimeout
-            );
-
-            celebrationTimeout = null;
-
-        }
-
-
-        /*
-           Fade celebration audio out gently.
-        */
-
-        const startVolume =
-            celebrationAudio.volume;
-
-        const steps = 15;
-        const duration = 500;
-        const stepTime = duration / steps;
-
-        let step = 0;
-
-
-        const fadeOut =
-            setInterval(function () {
-
-                step++;
-
-                celebrationAudio.volume =
-                    Math.max(
-                        0,
-                        startVolume *
-                        (1 - step / steps)
-                    );
-
-
-                if (step >= steps) {
-
-                    clearInterval(fadeOut);
-
-                    celebrationAudio.pause();
-
-                    celebrationAudio.currentTime = 0;
-
-                    celebrationAudio.volume = 0.65;
-
-
-                    /*
-                       Bring original BGM back.
-                    */
-
-                    fadeMusicIn();
-
-                }
-
-            }, stepTime);
-
-    }
-
-
-    /* =========================================================
-       SECTION SWITCH
-       ========================================================= */
-
-    function showSection(id) {
-
-        document
-            .querySelectorAll(".party-section")
-            .forEach(function (section) {
-
-                section.classList.remove("active");
-
-            });
-
-
-        const target = get(id);
-
-        if (!target) {
-            return;
-        }
-
-
-        setTimeout(function () {
-
-            target.classList.add("active");
-
-        }, 50);
-
-    }
-
-
-    /* =========================================================
-       WELCOME
-       ========================================================= */
-
-    const welcomeSteps =
-        document.querySelectorAll(".welcome-step");
-
-    const welcomeButtons =
-        document.querySelectorAll(".welcome-next");
-
-
-    welcomeButtons.forEach(function (button) {
-
-        button.addEventListener(
-            "click",
-            function () {
-
-                handleFirstInteraction();
-
-
-                const next =
-                    button.getAttribute("data-next");
-
-
-                welcomeSteps.forEach(function (step) {
-
-                    step.classList.remove("active");
-
-                });
-
-
-                const nextStep =
-                    get("welcome-step-" + next);
-
-
-                if (nextStep) {
-
-                    setTimeout(function () {
-
-                        nextStep.classList.add("active");
-
-                    }, 100);
-
-                }
-
-            }
-        );
-
-    });
-
-
-    /* =========================================================
-       ENTER CAKE
-       ========================================================= */
-
-    const startCakeButton =
-        get("start-cake");
-
-
-    if (startCakeButton) {
-
-        startCakeButton.addEventListener(
-            "click",
-            function () {
-
-                handleFirstInteraction();
-
-                showSection("cake-section");
-
-            }
-        );
-
-    }
-
-
-    /* =========================================================
-       CAKE / CANDLES
-       ========================================================= */
-
-    const candles =
-        document.querySelectorAll(".candle");
-
-    const cakeInstruction =
-        get("cake-instruction");
-
-    const celebrationLayer =
-        get("celebration-layer");
-
-    const birthdayPopup =
-        get("birthday-popup");
-
-
-    let candlesOff = 0;
-    let celebrationStarted = false;
-
-
-    candles.forEach(function (candle) {
-
-        candle.addEventListener(
-            "click",
-            function () {
-
-                handleFirstInteraction();
-
-
-                if (
-                    candle.classList.contains("off")
-                ) {
-                    return;
-                }
-
-
-                candle.classList.add("off");
-
-                candlesOff++;
-
-
-                /*
-                   CLEAN CANDLE SOUND
-                */
-
-                playSound(
-                    candleSound,
-                    0.38
-                );
-
-
-                createSmallSparkle(candle);
-
-
-                const remaining =
-                    candles.length -
-                    candlesOff;
-
-
-                if (remaining > 0) {
-
-                    cakeInstruction.textContent =
-                        remaining +
-                        " candle" +
-                        (
-                            remaining === 1
-                                ? ""
-                                : "s"
-                        ) +
-                        " left, sweetheart... 🕯️❤️";
-
-                }
-
-
-                /*
-                   LAST CANDLE
-                */
-
-                if (
-                    candlesOff ===
-                    candles.length
-                ) {
-
-                    cakeInstruction.textContent =
-                        "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
-
-
-                    /*
-                       START 10 SECOND CELEBRATION
-                    */
-
-                    startMegaCelebration();
-
-                }
-
-            }
-        );
-
-    });
-
-
-    /* =========================================================
-       SMALL SPARKLES
-       ========================================================= */
-
-    function createSmallSparkle(candle) {
-
-        const rect =
-            candle.getBoundingClientRect();
-
-
-        const symbols = [
-            "✦",
-            "✧",
-            "✨",
-            "♥"
-        ];
-
-
-        for (let i = 0; i < 8; i++) {
-
-            const sparkle =
-                document.createElement("div");
-
-
-            sparkle.className =
-                "celebration-particle sparkle";
-
-
-            sparkle.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
-
-
-            sparkle.style.left =
-                (
-                    rect.left +
-                    rect.width / 2
-                ) + "px";
-
-
-            sparkle.style.top =
-                rect.top + "px";
-
-
-            sparkle.style.fontSize =
-                (
-                    12 +
-                    Math.random() * 10
-                ) + "px";
-
-
-            document.body.appendChild(
-                sparkle
-            );
-
-
-            const x =
-                (
-                    Math.random() - 0.5
-                ) * 120;
-
-
-            const y =
-                -(
-                    30 +
-                    Math.random() * 100
-                );
-
-
-            sparkle.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) scale(1)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            x +
-                            "px," +
-                            y +
-                            "px) scale(0)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        600 +
-                        Math.random() * 400,
-
-                    easing: "ease-out"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                sparkle.remove();
-
-            }, 1200);
-
-        }
-
-    }
-
-
-    /* =========================================================
-       10 SECOND VISUAL CELEBRATION
-       ========================================================= */
-
-    function startMegaCelebration() {
-
-        if (celebrationStarted) {
-            return;
-        }
-
-
-        celebrationStarted = true;
-
-
-        if (celebrationLayer) {
-            celebrationLayer.classList.add("active");
-        }
-
-
-        /*
-           AUDIO SWITCH
-        */
-
-        startBirthdayCelebrationAudio();
-
-
-        /*
-           INITIAL BIG BURST
-        */
-
-        createMegaBurst();
-        createBalloonBurst();
-        createPopperBurst();
-        createFirework();
-
-
-        const celebrationStart =
-            Date.now();
-
-
-        const celebrationDuration =
-            10000;
-
-
-        const celebrationTimer =
-            setInterval(function () {
-
-                const elapsed =
-                    Date.now() -
-                    celebrationStart;
-
-
-                if (
-                    elapsed >=
-                    celebrationDuration
-                ) {
-
-                    clearInterval(
-                        celebrationTimer
-                    );
-
-
-                    finishCelebration();
-
-
-                    return;
-                }
-
-
-                /*
-                   Visual effects only.
-                   No audio is triggered here.
-                   This prevents sound clutter.
-                */
-
-                createSparkleWave();
-
-                createConfettiBurst();
-
-                createFirework();
-
-                createBalloonBurst();
-
-                createPopperBurst();
-
-
-            }, 650);
-
-    }
-
-
-    /* =========================================================
-       MEGA BURST
-       ========================================================= */
-
-    function createMegaBurst() {
-
-        const symbols = [
-            "✨",
-            "✦",
-            "✧",
-            "🎉",
-            "🎊",
-            "❤️",
-            "💖"
-        ];
-
-
-        for (let i = 0; i < 55; i++) {
-
-            const particle =
-                document.createElement("div");
-
-
-            particle.className =
-                "celebration-particle sparkle";
-
-
-            particle.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
-
-
-            particle.style.left = "50%";
-            particle.style.top = "50%";
-
-
-            document.body.appendChild(
-                particle
-            );
-
-
-            const angle =
-                Math.random() *
-                Math.PI *
-                2;
-
-
-            const distance =
-                100 +
-                Math.random() *
-                420;
-
-
-            const x =
-                Math.cos(angle) *
-                distance;
-
-
-            const y =
-                Math.sin(angle) *
-                distance;
-
-
-            particle.animate(
-                [
-                    {
-                        transform:
-                            "translate(-50%,-50%) scale(.2)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "translate(-50%,-50%) scale(1.2)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(calc(-50% + " +
-                            x +
-                            "px), calc(-50% + " +
-                            y +
-                            "px)) scale(.2)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        900 +
-                        Math.random() *
-                        1000,
-
-                    easing:
-                        "cubic-bezier(.2,.8,.2,1)"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                particle.remove();
-
-            }, 2200);
-
-        }
-
-    }
-
-
-    /* =========================================================
-       SPARKLE WAVE
-       ========================================================= */
-
-    function createSparkleWave() {
-
-        const symbols = [
-            "✨",
-            "✦",
-            "✧",
-            "⭐",
-            "💫"
-        ];
-
-
-        for (let i = 0; i < 15; i++) {
-
-            const particle =
-                document.createElement("div");
-
-
-            particle.className =
-                "celebration-particle sparkle";
-
-
-            particle.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
-
-
-            particle.style.left =
-                Math.random() * 100 + "%";
-
-
-            particle.style.top =
-                Math.random() * 100 + "%";
-
-
-            particle.style.fontSize =
-                (
-                    12 +
-                    Math.random() * 25
-                ) + "px";
-
-
-            document.body.appendChild(
-                particle
-            );
-
-
-            particle.animate(
-                [
-                    {
-                        transform:
-                            "scale(.2) rotate(0deg)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "scale(1.3) rotate(180deg)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "scale(.1) rotate(360deg)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        900 +
-                        Math.random() * 800
-                }
-            );
-
-
-            setTimeout(function () {
-
-                particle.remove();
-
-            }, 1800);
-
-        }
-
-    }
-
-
-    /* =========================================================
-       CONFETTI
-       ========================================================= */
-
-    function createConfettiBurst() {
-
-        const symbols = [
-            "🎀",
-            "🎊",
-            "♥",
-            "✦",
-            "•",
-            "⭐"
-        ];
-
-
-        const x =
-            Math.random() *
-            window.innerWidth;
-
-
-        const y =
-            window.innerHeight * 0.1;
-
-
-        for (let i = 0; i < 18; i++) {
-
-            const piece =
-                document.createElement("div");
-
-
-            piece.className =
-                "celebration-particle confetti";
-
-
-            piece.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
-
-
-            piece.style.left =
-                x + "px";
-
-
-            piece.style.top =
-                y + "px";
-
-
-            document.body.appendChild(
-                piece
-            );
-
-
-            const moveX =
-                (
-                    Math.random() - 0.5
-                ) * 350;
-
-
-            const moveY =
-                250 +
-                Math.random() * 500;
-
-
-            piece.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) rotate(0deg)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            moveX +
-                            "px," +
-                            moveY +
-                            "px) rotate(" +
-                            Math.random() *
-                            720 +
-                            "deg)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        1200 +
-                        Math.random() * 900,
-
-                    easing: "ease-out"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                piece.remove();
-
-            }, 2300);
-
-        }
-
-    }
-
-
-    /* =========================================================
-       BALLOON POP
-       ========================================================= */
-
-    function createBalloonBurst() {
-
-        const x =
-            Math.random() *
-            window.innerWidth;
-
-
-        const y =
-            100 +
-            Math.random() *
-            (
-                window.innerHeight *
-                0.45
-            );
-
-
-        /*
-           IMPORTANT:
-           Visual balloon effect only.
-           NO SOUND HERE.
-
-           This is what keeps the celebration
-           from becoming noisy.
-        */
-
-
-        const particle =
-            document.createElement("div");
-
-
-        particle.className =
-            "celebration-particle";
-
-
-        particle.textContent =
-            "🎈💥";
-
-
-        particle.style.left =
-            x + "px";
-
-
-        particle.style.top =
-            y + "px";
-
-
-        document.body.appendChild(
-            particle
-        );
-
-
-        particle.animate(
-            [
-                {
-                    transform: "scale(.2)",
-                    opacity: 0
-                },
-                {
-                    transform: "scale(1.5)",
-                    opacity: 1
-                },
-                {
-                    transform: "scale(0)",
-                    opacity: 0
-                }
-            ],
-            {
-                duration: 650
-            }
-        );
-
-
-        setTimeout(function () {
-
-            particle.remove();
-
-        }, 900);
-
-    }
-
-
-    /* =========================================================
-       PARTY POPPER
-       ========================================================= */
-
-    function createPopperBurst() {
-
-        const x =
-            Math.random() < 0.5
-                ? 80
-                : window.innerWidth - 80;
-
-
-        const y =
-            window.innerHeight *
-            (
-                0.35 +
-                Math.random() * 0.3
-            );
-
-
-        /*
-           NO SOUND HERE.
-           Celebration audio handles the crowd sound.
-        */
-
-
-        const popper =
-            document.createElement("div");
-
-
-        popper.className =
-            "celebration-particle";
-
-
-        popper.textContent =
-            "🎉";
-
-
-        popper.style.left =
-            x + "px";
-
-
-        popper.style.top =
-            y + "px";
-
-
-        document.body.appendChild(
-            popper
-        );
-
-
-        popper.animate(
-            [
-                {
-                    transform:
-                        "scale(.3) rotate(-20deg)",
-                    opacity: 0
-                },
-                {
-                    transform:
-                        "scale(1.4) rotate(10deg)",
-                    opacity: 1
-                },
-                {
-                    transform:
-                        "scale(.2) rotate(40deg)",
-                    opacity: 0
-                }
-            ],
-            {
-                duration: 700
-            }
-        );
-
-
-        for (let i = 0; i < 12; i++) {
-
-            const piece =
-                document.createElement("div");
-
-
-            piece.className =
-                "celebration-particle confetti";
-
-
-            piece.textContent =
-                [
-                    "✦",
-                    "♥",
-                    "🎀",
-                    "•"
-                ][
-                    Math.floor(
-                        Math.random() * 4
-                    )
-                ];
-
-
-            piece.style.left =
-                x + "px";
-
-
-            piece.style.top =
-                y + "px";
-
-
-            document.body.appendChild(
-                piece
-            );
-
-
-            const direction =
-                x <
-                window.innerWidth / 2
-                    ? 1
-                    : -1;
-
-
-            const moveX =
-                direction *
-                (
-                    80 +
-                    Math.random() * 250
-                );
-
-
-            const moveY =
-                (
-                    Math.random() - 0.5
-                ) * 250;
-
-
-            piece.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) scale(1)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            moveX +
-                            "px," +
-                            moveY +
-                            "px) scale(.2)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        700 +
-                        Math.random() * 700,
-
-                    easing: "ease-out"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                piece.remove();
-
-            }, 1700);
-
-        }
-
-
-        setTimeout(function () {
-
-            popper.remove();
-
-        }, 1000);
-
-    }
-
-
-    /* =========================================================
-       FIREWORK
-       ========================================================= */
-
-    function createFirework() {
-
-        const x =
-            10 +
-            Math.random() * 80;
-
-
-        const y =
-            15 +
-            Math.random() * 45;
-
-
-        /*
-           NO FIREWORK SOUND HERE.
-
-           The 10-second celebration audio is the
-           ONLY large celebration sound.
-        */
-
-
-        const firework =
-            document.createElement("div");
-
-
-        firework.className =
-            "celebration-particle crackle";
-
-
-        firework.textContent =
-            "💥";
-
-
-        firework.style.left =
-            x + "%";
-
-
-        firework.style.top =
-            y + "%";
-
-
-        document.body.appendChild(
-            firework
-        );
-
-
-        firework.animate(
-            [
-                {
-                    transform:
-                        "scale(.1)",
-                    opacity: 0
-                },
-                {
-                    transform:
-                        "scale(1.5)",
-                    opacity: 1
-                },
-                {
-                    transform:
-                        "scale(.1)",
-                    opacity: 0
-                }
-            ],
-            {
-                duration: 500
-            }
-        );
-
-
-        setTimeout(function () {
-
-            firework.remove();
-
-        }, 700);
-
-
-        for (let i = 0; i < 20; i++) {
-
-            const spark =
-                document.createElement("div");
-
-
-            spark.className =
-                "celebration-particle sparkle";
-
-
-            spark.textContent =
-                [
-                    "✦",
-                    "✧",
-                    "✨"
-                ][
-                    Math.floor(
-                        Math.random() * 3
-                    )
-                ];
-
-
-            spark.style.left =
-                x + "%";
-
-
-            spark.style.top =
-                y + "%";
-
-
-            document.body.appendChild(
-                spark
-            );
-
-
-            const angle =
-                Math.random() *
-                Math.PI *
-                2;
-
-
-            const distance =
-                40 +
-                Math.random() *
-                170;
-
-
-            const moveX =
-                Math.cos(angle) *
-                distance;
-
-
-            const moveY =
-                Math.sin(angle) *
-                distance;
-
-
-            spark.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) scale(.2)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            moveX +
-                            "px," +
-                            moveY +
-                            "px) scale(1)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            moveX * 1.2 +
-                            "px," +
-                            moveY * 1.2 +
-                            "px) scale(.1)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        600 +
-                        Math.random() * 500,
-
-                    easing: "ease-out"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                spark.remove();
-
-            }, 1500);
-
-        }
-
-    }
-
-
-    /* =========================================================
-       FINISH CELEBRATION
-       ========================================================= */
-
-    function finishCelebration() {
-
-        createMegaBurst();
-
-
-        setTimeout(function () {
-
-            if (celebrationLayer) {
-
-                celebrationLayer.classList.remove(
-                    "active"
-                );
-
-            }
-
-
-            if (birthdayPopup) {
-
-                birthdayPopup.classList.add(
-                    "show"
-                );
-
-            }
-
-
-            if (cakeInstruction) {
-
-                cakeInstruction.textContent =
-                    "Happy Birthday, beautiful girl. ❤️";
-
-            }
-
-        }, 900);
-
-    }
-
-
-    /* =========================================================
-       PAGE 3
-       ========================================================= */
-
-    const page3Button =
-        get("page3-button");
-
-
-    if (page3Button) {
-
-        page3Button.addEventListener(
-            "click",
-            function () {
 
                 window.location.href =
                     "page3.html";
