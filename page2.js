@@ -9,50 +9,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function playSound(audio, volume) {
-
-        if (!audio) {
-            return;
-        }
-
-        try {
-
-            audio.pause();
-
-            audio.currentTime = 0;
-
-            audio.volume = volume || 0.5;
-
-            const promise = audio.play();
-
-            if (promise) {
-                promise.catch(function () {});
-            }
-
-        } catch (error) {
-            console.log("Audio error:", error);
-        }
-    }
-
-
     /* =====================================================
        AUDIO
     ====================================================== */
 
-    const music =
-        get("birthday-music");
-
-    const musicButton =
-        get("music-button");
-
-    const cameraSound =
-        get("camera-sound");
-
-    const wineSound =
-        get("wine-sound");
-
-    const glassSound =
-        get("glass-sound");
+    const music = get("birthday-music");
+    const musicButton = get("music-button");
 
 
     function startMusic() {
@@ -61,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        music.volume = 0.38;
+        music.volume = 0.35;
 
         const promise = music.play();
 
@@ -76,36 +38,38 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
         }
-
     }
 
 
-    musicButton.addEventListener(
-        "click",
-        function () {
+    if (musicButton) {
 
-            if (!music) {
-                return;
+        musicButton.addEventListener(
+            "click",
+            function () {
+
+                if (!music) {
+                    return;
+                }
+
+                if (music.paused) {
+
+                    music.play()
+                        .then(function () {
+                            musicButton.textContent = "♫";
+                        })
+                        .catch(function () {});
+
+                } else {
+
+                    music.pause();
+
+                    musicButton.textContent = "🔇";
+                }
+
             }
+        );
 
-            if (music.paused) {
-
-                music.play()
-                    .then(function () {
-                        musicButton.textContent = "♫";
-                    })
-                    .catch(function () {});
-
-            } else {
-
-                music.pause();
-
-                musicButton.textContent = "🔇";
-
-            }
-
-        }
-    );
+    }
 
 
     /* =====================================================
@@ -114,13 +78,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function showSection(id) {
 
-        document
-            .querySelectorAll(".page-section")
-            .forEach(function (section) {
+        const sections =
+            document.querySelectorAll(
+                ".page-section"
+            );
 
-                section.classList.remove("active");
+        sections.forEach(function (section) {
 
-            });
+            section.classList.remove("active");
+
+        });
 
 
         const target = get(id);
@@ -134,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             target.classList.add("active");
 
-        }, 80);
+        }, 100);
 
     }
 
@@ -143,159 +110,93 @@ document.addEventListener("DOMContentLoaded", function () {
        CAMERA INTRO
     ====================================================== */
 
-    const cameraMessages =
-        document.querySelectorAll(
-            ".intro-message"
-        );
-
-    const cameraNextButtons =
-        document.querySelectorAll(
-            ".camera-next"
-        );
-
-
-    cameraNextButtons.forEach(
-        function (button) {
-
-            button.addEventListener(
-                "click",
-                function () {
-
-                    const next =
-                        button.getAttribute(
-                            "data-message"
-                        );
-
-
-                    cameraMessages.forEach(
-                        function (message) {
-
-                            message.classList.remove(
-                                "active"
-                            );
-
-                        }
-                    );
-
-
-                    const nextMessage =
-                        get(
-                            "camera-message-" +
-                            next
-                        );
-
-
-                    if (nextMessage) {
-
-                        setTimeout(
-                            function () {
-
-                                nextMessage.classList.add(
-                                    "active"
-                                );
-
-                            },
-                            120
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-    );
-
-
-    /* =====================================================
-       OPEN CAMERA
-    ====================================================== */
-
-    const openCamera =
-        get("open-camera");
+    const cameraIntroButton =
+        get("camera-intro-button");
 
     const cameraArea =
         get("camera-area");
 
 
-    openCamera.addEventListener(
-        "click",
-        function () {
+    if (cameraIntroButton) {
 
-            cameraMessages.forEach(
-                function (message) {
+        cameraIntroButton.addEventListener(
+            "click",
+            function () {
 
-                    message.classList.remove(
-                        "active"
+                cameraIntroButton.style.display =
+                    "none";
+
+                setTimeout(function () {
+
+                    cameraArea.classList.remove(
+                        "hidden"
                     );
 
-                }
-            );
-
-
-            setTimeout(
-                function () {
-
-                    cameraArea.classList.add(
-                        "visible"
+                    cameraArea.animate(
+                        [
+                            {
+                                opacity: 0,
+                                transform:
+                                    "translateY(30px) scale(.95)"
+                            },
+                            {
+                                opacity: 1,
+                                transform:
+                                    "translateY(0) scale(1)"
+                            }
+                        ],
+                        {
+                            duration: 700,
+                            easing: "ease-out"
+                        }
                     );
 
-                },
-                300
-            );
+                }, 250);
 
+                startMusic();
 
-            startMusic();
+            }
+        );
 
-        }
-    );
+    }
 
 
     /* =====================================================
-       CAMERA SHUTTER
+       CAMERA
     ====================================================== */
 
-    const shutter =
-        get("shutter-button");
+    const camera =
+        get("camera");
 
-    const countdown =
-        get("countdown");
+    const countdownOverlay =
+        get("countdown-overlay");
 
     const countdownNumber =
         get("countdown-number");
 
-    const flashScreen =
-        get("camera-flash-screen");
+    const photoFlash =
+        get("photo-flash");
 
-    const photoResult =
-        get("photo-result");
+    const photoPopup =
+        get("photo-popup");
 
+    const photoContinue =
+        get("photo-continue");
 
-    let cameraUsed = false;
-
-
-    shutter.addEventListener(
-        "click",
-        function () {
-
-            if (cameraUsed) {
-                return;
-            }
-
-            cameraUsed = true;
-
-            shutter.disabled = true;
+    let cameraBusy = false;
 
 
-            runCountdown();
+    function takePhotograph() {
 
+        if (cameraBusy) {
+            return;
         }
-    );
 
+        cameraBusy = true;
 
-    function runCountdown() {
-
-        countdown.classList.add("active");
+        countdownOverlay.classList.add(
+            "active"
+        );
 
 
         const numbers = [
@@ -307,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let index = 0;
 
 
-        function nextNumber() {
+        function showNumber() {
 
             countdownNumber.textContent =
                 numbers[index];
@@ -316,12 +217,10 @@ document.addEventListener("DOMContentLoaded", function () {
             countdownNumber.style.animation =
                 "none";
 
-
             void countdownNumber.offsetWidth;
 
-
             countdownNumber.style.animation =
-                "countdownPulse 0.9s ease";
+                "countdownPop 0.9s ease forwards";
 
 
             index++;
@@ -330,15 +229,15 @@ document.addEventListener("DOMContentLoaded", function () {
             if (index < numbers.length) {
 
                 setTimeout(
-                    nextNumber,
+                    showNumber,
                     900
                 );
 
             } else {
 
                 setTimeout(
-                    takePhotograph,
-                    700
+                    photographFlash,
+                    900
                 );
 
             }
@@ -346,68 +245,127 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        nextNumber();
+        showNumber();
 
     }
 
 
-    function takePhotograph() {
+    function photographFlash() {
 
-        countdown.classList.remove(
+        countdownOverlay.classList.remove(
             "active"
-        );
-
-
-        playSound(
-            cameraSound,
-            0.75
         );
 
 
         /* BIG FLASH */
 
-        flashScreen.classList.add(
+        photoFlash.classList.add(
             "active"
         );
 
 
-        setTimeout(
-            function () {
+        /* Camera shake */
 
-                flashScreen.classList.remove(
-                    "active"
-                );
+        camera.animate(
+            [
+                {
+                    transform:
+                        "translateX(0)"
+                },
+                {
+                    transform:
+                        "translateX(-8px)"
+                },
+                {
+                    transform:
+                        "translateX(8px)"
+                },
+                {
+                    transform:
+                        "translateX(-5px)"
+                },
+                {
+                    transform:
+                        "translateX(5px)"
+                },
+                {
+                    transform:
+                        "translateX(0)"
+                }
+            ],
+            {
+                duration: 450,
+                easing: "ease-out"
+            }
+        );
 
-                photoResult.classList.add(
-                    "show"
-                );
 
-            },
-            850
+        setTimeout(function () {
+
+            photoFlash.classList.remove(
+                "active"
+            );
+
+            photoPopup.classList.add(
+                "show"
+            );
+
+        }, 700);
+
+    }
+
+
+    if (camera) {
+
+        camera.addEventListener(
+            "click",
+            takePhotograph
+        );
+
+
+        camera.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+                    takePhotograph();
+
+                }
+
+            }
         );
 
     }
 
 
     /* =====================================================
-       CAMERA CONTINUE
+       PHOTO → LETTER
     ====================================================== */
 
-    get("camera-continue")
-        .addEventListener(
+    if (photoContinue) {
+
+        photoContinue.addEventListener(
             "click",
             function () {
 
-                photoResult.classList.remove(
+                photoPopup.classList.remove(
                     "show"
                 );
 
                 showSection(
-                    "bouquet-section"
+                    "letter-section"
                 );
 
             }
         );
+
+    }
 
 
     /* =====================================================
@@ -417,158 +375,36 @@ document.addEventListener("DOMContentLoaded", function () {
     const bouquet =
         get("bouquet");
 
-    let bouquetClicked = false;
 
+    if (bouquet) {
 
-    bouquet.addEventListener(
-        "click",
-        function () {
+        bouquet.addEventListener(
+            "click",
+            function () {
 
-            if (bouquetClicked) {
-                return;
-            }
-
-            bouquetClicked = true;
-
-
-            bouquet.classList.add(
-                "opened"
-            );
-
-
-            createBouquetSparkles();
-
-
-            setTimeout(
-                function () {
-
-                    document
-                        .querySelector(
-                            ".bouquet-hint"
-                        )
-                        .textContent =
-                        "A little something for you... ❤️";
-
-                },
-                500
-            );
-
-        }
-    );
-
-
-    function createBouquetSparkles() {
-
-        const symbols = [
-            "✦",
-            "✧",
-            "✨",
-            "♥"
-        ];
-
-
-        for (
-            let i = 0;
-            i < 18;
-            i++
-        ) {
-
-            const sparkle =
-                document.createElement(
-                    "span"
+                bouquet.animate(
+                    [
+                        {
+                            transform:
+                                "scale(1)"
+                        },
+                        {
+                            transform:
+                                "scale(1.08) rotate(-2deg)"
+                        },
+                        {
+                            transform:
+                                "scale(1) rotate(0deg)"
+                        }
+                    ],
+                    {
+                        duration: 550,
+                        easing: "ease-out"
+                    }
                 );
 
-
-            sparkle.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
-
-
-            sparkle.style.position =
-                "fixed";
-
-            sparkle.style.left =
-                (35 + Math.random() * 30) +
-                "%";
-
-            sparkle.style.top =
-                (30 + Math.random() * 30) +
-                "%";
-
-
-            sparkle.style.color =
-                "#b88b35";
-
-            sparkle.style.fontSize =
-                (12 + Math.random() * 14) +
-                "px";
-
-            sparkle.style.pointerEvents =
-                "none";
-
-            sparkle.style.zIndex =
-                "1000";
-
-
-            document.body.appendChild(
-                sparkle
-            );
-
-
-            const x =
-                (Math.random() - 0.5) *
-                220;
-
-            const y =
-                -(50 + Math.random() * 160);
-
-
-            sparkle.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) scale(.3)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "translate(0,0) scale(1)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            x +
-                            "px," +
-                            y +
-                            "px) scale(.2)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        900 +
-                        Math.random() *
-                        700,
-
-                    easing:
-                        "ease-out"
-                }
-            );
-
-
-            setTimeout(
-                function () {
-                    sparkle.remove();
-                },
-                1800
-            );
-
-        }
+            }
+        );
 
     }
 
@@ -580,220 +416,407 @@ document.addEventListener("DOMContentLoaded", function () {
     const envelope =
         get("envelope");
 
-    const letter =
-        get("letter");
+    const letterButton =
+        get("letter-button");
 
 
-    envelope.addEventListener(
-        "click",
-        function () {
+    function openLetter() {
 
-            envelope.classList.add(
+        if (!envelope) {
+            return;
+        }
+
+        envelope.classList.toggle(
+            "open"
+        );
+
+
+        if (
+            envelope.classList.contains(
                 "open"
-            );
+            )
+        ) {
 
+            if (letterButton) {
 
-            setTimeout(
-                function () {
+                letterButton.textContent =
+                    "CLOSE LETTER ❤️";
 
-                    letter.classList.add(
-                        "show"
-                    );
+            }
 
-                },
-                650
-            );
+        } else {
+
+            if (letterButton) {
+
+                letterButton.textContent =
+                    "OPEN YOUR LETTER 💌";
+
+            }
 
         }
-    );
+
+    }
+
+
+    if (envelope) {
+
+        envelope.addEventListener(
+            "click",
+            openLetter
+        );
+
+    }
+
+
+    if (letterButton) {
+
+        letterButton.addEventListener(
+            "click",
+            openLetter
+        );
+
+    }
 
 
     /* =====================================================
-       LETTER CONTINUE
+       AFTER LETTER
     ====================================================== */
 
-    get("letter-continue")
-        .addEventListener(
+    if (letterButton) {
+
+        let firstClick = true;
+
+        letterButton.addEventListener(
             "click",
             function () {
 
-                letter.classList.remove(
-                    "show"
-                );
+                if (
+                    envelope.classList.contains(
+                        "open"
+                    ) &&
+                    firstClick
+                ) {
+
+                    firstClick = false;
+
+                    setTimeout(
+                        function () {
+
+                            letterButton.textContent =
+                                "LET'S HAVE A DRINK 🍷";
+
+                        },
+                        800
+                    );
+
+                } else if (
+                    !envelope.classList.contains(
+                        "open"
+                    )
+                ) {
+
+                    firstClick = true;
+
+                }
+
+            }
+        );
+
+    }
 
 
-                setTimeout(
-                    function () {
+    /*
+       Clicking the bouquet after reading the letter
+       moves forward.
+    */
 
-                        showSection(
-                            "wine-section"
-                        );
+    if (bouquet) {
 
-                    },
-                    500
+        bouquet.addEventListener(
+            "dblclick",
+            function () {
+
+                showSection(
+                    "wine-section"
                 );
 
             }
         );
 
+    }
+
+
+    /*
+       Convenient transition:
+       once the letter has been opened,
+       clicking the button again after its text
+       changes goes to wine.
+    */
+
+    let letterOpenedOnce = false;
+
+    if (letterButton) {
+
+        letterButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    envelope.classList.contains(
+                        "open"
+                    )
+                ) {
+
+                    if (!letterOpenedOnce) {
+
+                        letterOpenedOnce = true;
+
+                    } else {
+
+                        setTimeout(
+                            function () {
+
+                                showSection(
+                                    "wine-section"
+                                );
+
+                            },
+                            350
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
 
     /* =====================================================
-       WINE SYSTEM
+       WINE
     ====================================================== */
 
     const bottle =
         get("wine-bottle");
 
-    const bottleWine =
-        get("bottle-wine");
+    const liquidOne =
+        get("wine-liquid-one");
 
-    const glassLiquidOne =
-        get("glass-liquid-1");
-
-    const glassLiquidTwo =
-        get("glass-liquid-2");
-
-    const wineCount =
-        get("wine-count");
+    const liquidTwo =
+        get("wine-liquid-two");
 
     const wineInstruction =
         get("wine-instruction");
 
-    const wineGlasses =
+    const progressDots =
+        document.querySelectorAll(
+            ".progress-dot"
+        );
+
+    const drunkOverlay =
+        get("drunk-overlay");
+
+    const nextPageButton =
+        get("next-page-button");
+
+
+    let pours = 0;
+
+    const maximumPours = 5;
+
+    let glassesFilled = false;
+
+    let wineFinished = false;
+
+
+    function updateProgress() {
+
+        progressDots.forEach(
+            function (dot, index) {
+
+                dot.classList.remove(
+                    "active"
+                );
+
+                if (index < pours) {
+
+                    dot.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    function pourWine() {
+
+        if (wineFinished) {
+            return;
+        }
+
+
+        if (glassesFilled) {
+
+            wineInstruction.textContent =
+                "The glasses are full... tap either glass. 🍷";
+
+            return;
+        }
+
+
+        if (pours >= maximumPours) {
+            return;
+        }
+
+
+        pours++;
+
+
+        const percentage =
+            pours * 20;
+
+
+        /*
+            Bottle visually empties
+        */
+
+        const bottleBody =
+            bottle.querySelector(
+                ".bottle-body"
+            );
+
+
+        if (bottleBody) {
+
+            bottleBody.style.opacity =
+                String(
+                    1 - (pours * 0.07)
+                );
+
+        }
+
+
+        /*
+            Both glasses fill together
+        */
+
+        liquidOne.style.height =
+            percentage + "%";
+
+        liquidTwo.style.height =
+            percentage + "%";
+
+
+        updateProgress();
+
+
+        /*
+            Bottle reaches final empty state
+        */
+
+        if (pours === maximumPours) {
+
+            glassesFilled = true;
+
+            wineInstruction.textContent =
+                "Perfect. Now take a sip... 🍷";
+
+        } else {
+
+            const remaining =
+                maximumPours - pours;
+
+            wineInstruction.textContent =
+                remaining +
+                (
+                    remaining === 1
+                        ? " pour"
+                        : " pours"
+                ) +
+                " left...";
+
+        }
+
+    }
+
+
+    function emptyGlasses() {
+
+        if (!glassesFilled) {
+
+            wineInstruction.textContent =
+                "Pour the wine first, sweetheart. 🍷";
+
+            return;
+        }
+
+
+        liquidOne.style.height =
+            "0%";
+
+        liquidTwo.style.height =
+            "0%";
+
+
+        wineInstruction.textContent =
+            "Oh no... somebody finished it. 😂";
+
+
+        setTimeout(
+            finishWineScene,
+            700
+        );
+
+    }
+
+
+    if (bottle) {
+
+        bottle.addEventListener(
+            "click",
+            pourWine
+        );
+
+
+        bottle.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+                    pourWine();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    const glasses =
         document.querySelectorAll(
             ".wine-glass"
         );
 
 
-    let wineClicks = 0;
-
-    let glassesReady = false;
-
-    let endingStarted = false;
-
-
-    bottle.addEventListener(
-        "click",
-        function () {
-
-            if (
-                glassesReady ||
-                endingStarted
-            ) {
-                return;
-            }
-
-
-            if (wineClicks >= 5) {
-                return;
-            }
-
-
-            wineClicks++;
-
-
-            playSound(
-                wineSound,
-                0.5
-            );
-
-
-            /*
-
-                BOTTLE DECREASES
-                20% EACH CLICK
-
-            */
-
-            const bottleRemaining =
-                100 -
-                (wineClicks * 20);
-
-
-            bottleWine.style.height =
-                bottleRemaining + "%";
-
-
-            /*
-
-                BOTH GLASSES
-                FILL TOGETHER
-
-            */
-
-            const glassFill =
-                wineClicks * 20;
-
-
-            glassLiquidOne.style.height =
-                glassFill + "%";
-
-            glassLiquidTwo.style.height =
-                glassFill + "%";
-
-
-            wineCount.textContent =
-                wineClicks;
-
-
-            /* TEXT */
-
-            if (wineClicks < 5) {
-
-                const remaining =
-                    5 - wineClicks;
-
-                wineInstruction.textContent =
-                    remaining +
-                    " more pour" +
-                    (
-                        remaining === 1
-                            ? ""
-                            : "s"
-                    ) +
-                    "... 🍷";
-
-            }
-
-
-            /* LAST POUR */
-
-            if (wineClicks === 5) {
-
-                glassesReady = true;
-
-
-                wineInstruction.textContent =
-                    "Perfect. Now, birthday girl... bottoms up. 🍷❤️";
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       GLASS CLICK
-    ====================================================== */
-
-    wineGlasses.forEach(
+    glasses.forEach(
         function (glass) {
 
             glass.addEventListener(
                 "click",
-                function () {
-
-                    if (
-                        !glassesReady ||
-                        endingStarted
-                    ) {
-                        return;
-                    }
-
-
-                    endWineSequence();
-
-                }
+                emptyGlasses
             );
 
         }
@@ -801,90 +824,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
-       WINE ENDING
+       DRUNK ENDING
     ====================================================== */
 
-    function endWineSequence() {
+    function finishWineScene() {
 
-        endingStarted = true;
+        if (wineFinished) {
+            return;
+        }
+
+        wineFinished = true;
 
 
-        playSound(
-            glassSound,
-            0.7
+        /*
+            Fade everything
+        */
+
+        const wineSection =
+            get("wine-section");
+
+
+        wineSection.animate(
+            [
+                {
+                    filter:
+                        "blur(0px)",
+                    opacity: 1
+                },
+                {
+                    filter:
+                        "blur(5px)",
+                    opacity: 0.7
+                },
+                {
+                    filter:
+                        "blur(10px)",
+                    opacity: 0.35
+                }
+            ],
+            {
+                duration: 1400,
+                easing: "ease-in-out"
+            }
         );
 
 
         /*
-
-            BOTH GLASSES EMPTY
-            SIMULTANEOUSLY
-
-        */
-
-        glassLiquidOne.style.height =
-            "0%";
-
-        glassLiquidTwo.style.height =
-            "0%";
-
-
-        /*
-
-            SMALL GLASS MOVEMENT
-
-        */
-
-        document
-            .querySelectorAll(
-                ".wine-glass"
-            )
-            .forEach(
-                function (glass) {
-
-                    glass.animate(
-                        [
-                            {
-                                transform:
-                                    "rotate(0deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(-8deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(8deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(0deg)"
-                            }
-                        ],
-                        {
-                            duration: 800,
-                            easing: "ease-in-out"
-                        }
-                    );
-
-                }
-            );
-
-
-        wineInstruction.textContent =
-            "Oh no... 🥴";
-
-
-        /*
-
-            WAIT BEFORE DIZZY EFFECT
-
+            Show drunk overlay
         */
 
         setTimeout(
             function () {
 
-                startDrunkEffect();
+                drunkOverlay.classList.add(
+                    "show"
+                );
 
             },
             900
@@ -894,94 +888,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
-       DRUNK EFFECT
+       NEXT PAGE
     ====================================================== */
 
-    function startDrunkEffect() {
+    if (nextPageButton) {
 
-        const overlay =
-            get("drunk-overlay");
-
-        const popup =
-            get("drunk-popup");
-
-
-        overlay.classList.add(
-            "active"
-        );
-
-
-        /*
-
-            MAKE PAGE SWAY
-
-        */
-
-        document
-            .querySelectorAll(
-                ".page-section.active > *:not(.drunk-popup)"
-            )
-            .forEach(
-                function (element) {
-
-                    element.animate(
-                        [
-                            {
-                                transform:
-                                    "rotate(0deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(2deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(-2deg)"
-                            },
-                            {
-                                transform:
-                                    "rotate(1deg)"
-                            }
-                        ],
-                        {
-                            duration: 2200,
-                            iterations: 2,
-                            easing:
-                                "ease-in-out"
-                        }
-                    );
-
-                }
-            );
-
-
-        /*
-
-            SCREEN FADES AND
-            POPUP APPEARS
-
-        */
-
-        setTimeout(
-            function () {
-
-                popup.classList.add(
-                    "show"
-                );
-
-            },
-            3200
-        );
-
-    }
-
-
-    /* =====================================================
-       PAGE 4
-    ====================================================== */
-
-    get("page4-button")
-        .addEventListener(
+        nextPageButton.addEventListener(
             "click",
             function () {
 
@@ -990,5 +902,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
         );
+
+    }
 
 });
