@@ -110,12 +110,8 @@ document.addEventListener(
 
                 masterGain.gain.value = 0.85;
 
-                /*
-                   BGM is intentionally quiet.
-                   This keeps it atmospheric rather
-                   than distracting.
-                */
-                musicGain.gain.value = 0.20;
+                /* Soft romantic background level */
+                musicGain.gain.value = 0.14;
 
                 effectGain.gain.value = 0.42;
 
@@ -368,9 +364,11 @@ document.addEventListener(
 
 
         /* =====================================================
-           SOFT SENSUAL ROMANTIC BGM
-           Elegant dinner-date atmosphere
-           Slow piano-like sustained chords
+           SOFT SENSUAL DINNER-DATE PIANO BGM
+           
+           No strumming.
+           No cute music-box melody.
+           Slow, warm, intimate piano chords.
         ====================================================== */
 
         function startRomanticBGM() {
@@ -399,12 +397,12 @@ document.addEventListener(
             }
 
 
-            playSensualRomanticLoop();
+            playRomanticLoop();
 
         }
 
 
-        function playSensualRomanticLoop() {
+        function playRomanticLoop() {
 
             if (
                 !musicPlaying ||
@@ -416,86 +414,30 @@ document.addEventListener(
 
 
             /*
-               Slow sophisticated chord progression.
+               Slow sensual dinner-date progression.
 
-               This is deliberately atmospheric.
-               It should feel like a quiet dinner date,
-               not like someone playing a melody.
+               These are chord tones rather than
+               a bright melody, which keeps the music
+               soft and intimate.
             */
 
             const chords = [
 
-                /*
-                   A minor
-                */
-                [
-                    220.00,
-                    261.63,
-                    329.63
-                ],
+                [261.63, 329.63, 392.00],
 
-                /*
-                   F major
-                */
-                [
-                    174.61,
-                    220.00,
-                    261.63
-                ],
+                [220.00, 277.18, 329.63],
 
-                /*
-                   C major
-                */
-                [
-                    130.81,
-                    196.00,
-                    261.63
-                ],
+                [246.94, 293.66, 369.99],
 
-                /*
-                   G major
-                */
-                [
-                    196.00,
-                    246.94,
-                    293.66
-                ],
+                [196.00, 246.94, 293.66],
 
-                /*
-                   A minor
-                */
-                [
-                    220.00,
-                    261.63,
-                    329.63
-                ],
+                [261.63, 329.63, 392.00],
 
-                /*
-                   F major
-                */
-                [
-                    174.61,
-                    220.00,
-                    261.63
-                ],
+                [233.08, 293.66, 349.23],
 
-                /*
-                   D minor
-                */
-                [
-                    146.83,
-                    220.00,
-                    293.66
-                ],
+                [220.00, 277.18, 329.63],
 
-                /*
-                   E major
-                */
-                [
-                    164.81,
-                    207.65,
-                    246.94
-                ]
+                [196.00, 246.94, 329.63]
 
             ];
 
@@ -505,145 +447,72 @@ document.addEventListener(
 
 
             /*
-               Main sustained chord.
-
-               Triangle for the bass/root
-               and sine waves for the upper tones.
-            */
-
-            chord.forEach(
-                function (frequency, index) {
-
-                    if (!audioContext) {
-                        return;
-                    }
-
-
-                    const start =
-                        audioContext.currentTime;
-
-
-                    const oscillator =
-                        audioContext.createOscillator();
-
-                    const gain =
-                        audioContext.createGain();
-
-
-                    oscillator.type =
-                        index === 0
-                            ? "triangle"
-                            : "sine";
-
-
-                    oscillator.frequency.setValueAtTime(
-                        frequency,
-                        start
-                    );
-
-
-                    /*
-                       Very slow entrance.
-                    */
-
-                    gain.gain.setValueAtTime(
-                        0.0001,
-                        start
-                    );
-
-
-                    gain.gain.linearRampToValueAtTime(
-                        index === 0
-                            ? 0.018
-                            : 0.012,
-                        start + 0.45
-                    );
-
-
-                    /*
-                       Long smooth release.
-                    */
-
-                    gain.gain.exponentialRampToValueAtTime(
-                        0.0001,
-                        start + 2.7
-                    );
-
-
-                    oscillator.connect(gain);
-
-                    gain.connect(
-                        musicGain
-                    );
-
-
-                    oscillator.start(start);
-
-                    oscillator.stop(
-                        start + 2.9
-                    );
-
-                }
-            );
-
-
-            /*
-               Very soft upper note.
-
-               This gives the feeling of a distant
-               piano note without creating a busy melody.
-            */
-
-            const upperNotes = [
-
-                659.25,
-                622.25,
-                587.33,
-                659.25,
-                698.46,
-                659.25,
-                587.33,
-                622.25
-
-            ];
-
-
-            const upperNote =
-                upperNotes[musicStep];
-
-
-            tone(
-                upperNote,
-                1.8,
-                0.006,
-                "sine",
-                musicGain,
-                0.45
-            );
-
-
-            /*
-               Extremely soft bass.
-
-               This fills the background without
-               becoming a beat.
+               Deep soft bass note.
             */
 
             tone(
                 chord[0] / 2,
-                2.5,
-                0.006,
+                1.55,
+                0.010,
                 "sine",
                 musicGain
             );
 
 
             /*
-               Slow movement.
+               Main warm piano chord.
             */
 
-            musicStep++;
+            tone(
+                chord[0],
+                1.35,
+                0.014,
+                "triangle",
+                musicGain
+            );
 
+
+            tone(
+                chord[1],
+                1.25,
+                0.011,
+                "triangle",
+                musicGain,
+                0.08
+            );
+
+
+            tone(
+                chord[2],
+                1.20,
+                0.009,
+                "sine",
+                musicGain,
+                0.16
+            );
+
+
+            /*
+               Very subtle high piano note.
+               This keeps it romantic without
+               becoming cute or playful.
+            */
+
+            if (musicStep % 2 === 1) {
+
+                tone(
+                    chord[2] * 2,
+                    0.65,
+                    0.004,
+                    "sine",
+                    musicGain,
+                    0.35
+                );
+
+            }
+
+
+            musicStep++;
 
             if (
                 musicStep >= chords.length
@@ -655,14 +524,13 @@ document.addEventListener(
 
 
             /*
-               2.7 seconds per chord.
-               Very relaxed and sensual.
+               Slow tempo.
             */
 
             musicTimer =
                 setTimeout(
-                    playSensualRomanticLoop,
-                    2700
+                    playRomanticLoop,
+                    1550
                 );
 
         }
@@ -859,9 +727,14 @@ document.addEventListener(
 
         /* =====================================================
            PHOTO REVEAL
+           Existing magical reveal + NEW WHISTLE
         ====================================================== */
 
         function photoReveal() {
+
+            /*
+               Existing reveal sound
+            */
 
             tone(
                 783.99,
@@ -888,6 +761,84 @@ document.addEventListener(
                 "triangle",
                 effectGain,
                 0.20
+            );
+
+
+            /*
+               NEW:
+               Soft playful whistle when
+               her photo appears.
+            */
+
+            if (!initAudio()) {
+                return;
+            }
+
+
+            const start =
+                audioContext.currentTime + 0.18;
+
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type =
+                "sine";
+
+
+            /*
+               Rising whistle
+            */
+
+            oscillator.frequency.setValueAtTime(
+                900,
+                start
+            );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                1450,
+                start + 0.32
+            );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                1150,
+                start + 0.55
+            );
+
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.055,
+                start + 0.06
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + 0.62
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(effectGain);
+
+
+            oscillator.start(start);
+
+            oscillator.stop(
+                start + 0.68
             );
 
         }
@@ -940,10 +891,160 @@ document.addEventListener(
 
 
         /* =====================================================
+           ENVELOPE PAGE TURN SOUND
+           
+           New realistic-style page flip
+           using filtered noise + soft paper movement.
+        ====================================================== */
+
+        function envelopePageTurnSound() {
+
+            if (!initAudio()) {
+                return;
+            }
+
+
+            const start =
+                audioContext.currentTime;
+
+
+            const duration = 0.65;
+
+
+            /*
+               Create soft paper noise.
+            */
+
+            const buffer =
+                audioContext.createBuffer(
+                    1,
+                    Math.floor(
+                        audioContext.sampleRate *
+                        duration
+                    ),
+                    audioContext.sampleRate
+                );
+
+
+            const data =
+                buffer.getChannelData(0);
+
+
+            for (
+                let i = 0;
+                i < data.length;
+                i++
+            ) {
+
+                const progress =
+                    i / data.length;
+
+
+                const envelope =
+                    Math.sin(
+                        Math.PI *
+                        progress
+                    );
+
+
+                data[i] =
+                    (
+                        Math.random() * 2 - 1
+                    ) *
+                    envelope;
+
+            }
+
+
+            const source =
+                audioContext.createBufferSource();
+
+
+            const filter =
+                audioContext.createBiquadFilter();
+
+
+            const gain =
+                audioContext.createGain();
+
+
+            source.buffer =
+                buffer;
+
+
+            filter.type =
+                "bandpass";
+
+
+            filter.frequency.value =
+                1800;
+
+
+            filter.Q.value =
+                0.65;
+
+
+            gain.gain.value =
+                0.045;
+
+
+            source.connect(filter);
+
+            filter.connect(gain);
+
+            gain.connect(effectGain);
+
+
+            source.start(start);
+
+
+            /*
+               Small paper movement accents.
+            */
+
+            tone(
+                420,
+                0.12,
+                0.018,
+                "triangle",
+                effectGain
+            );
+
+
+            tone(
+                620,
+                0.15,
+                0.015,
+                "triangle",
+                effectGain,
+                0.16
+            );
+
+
+            tone(
+                840,
+                0.18,
+                0.012,
+                "sine",
+                effectGain,
+                0.30
+            );
+
+        }
+
+
+        /* =====================================================
            ENVELOPE OPEN
+           
+           Original envelope sound +
+           NEW PAGE TURN EFFECT
         ====================================================== */
 
         function envelopeOpenSound() {
+
+            /*
+               Original opening tones
+            */
 
             tone(
                 392.00,
@@ -971,6 +1072,13 @@ document.addEventListener(
                 effectGain,
                 0.17
             );
+
+
+            /*
+               NEW PAGE-TURN SOUND
+            */
+
+            envelopePageTurnSound();
 
         }
 
@@ -1523,6 +1631,11 @@ document.addEventListener(
                         "show"
                     );
 
+                    /*
+                       Existing photo reveal +
+                       NEW whistle.
+                    */
+
                     photoReveal();
 
                 },
@@ -1853,6 +1966,11 @@ document.addEventListener(
                         "Open it... it's just for you. ❤️";
 
 
+                    /*
+                       Envelope opening sound
+                       + page-turn effect.
+                    */
+
                     envelopeOpenSound();
 
 
@@ -1862,6 +1980,7 @@ document.addEventListener(
                             postcard.classList.add(
                                 "show"
                             );
+
 
                             magicalReveal();
 
@@ -1985,7 +2104,6 @@ document.addEventListener(
                             "Now click either glass... 🍷";
 
                         return;
-
                     }
 
 
@@ -2003,15 +2121,12 @@ document.addEventListener(
 
 
                     /*
-                       AWESOME WINE POUR SOUND
+                       AWESOME WINE POUR / WOOSH
+                       KEPT UNCHANGED.
                     */
 
                     winePourSound();
 
-
-                    /*
-                       BOTTLE LEVEL
-                    */
 
                     const bottleLevel =
                         100 -
@@ -2025,10 +2140,6 @@ document.addEventListener(
                         bottleLevel +
                         "%";
 
-
-                    /*
-                       GLASSES FILL
-                    */
 
                     const glassLevel =
                         pourCount *
@@ -2117,14 +2228,11 @@ document.addEventListener(
 
                         /*
                            AWESOME GLASS CLINK
+                           KEPT UNCHANGED.
                         */
 
                         glassClink();
 
-
-                        /*
-                           EMPTY BOTH GLASSES
-                        */
 
                         glassWine.forEach(
                             function (wine) {
@@ -2191,26 +2299,18 @@ document.addEventListener(
             }
 
 
-            /*
-               Stop normal romantic music
-               for the dizzy sequence.
-            */
-
             drunkMode = true;
 
             stopRomanticBGM();
 
 
             /*
-               DIZZY SOUND
+               ORIGINAL DIZZY SOUND
+               KEPT UNCHANGED.
             */
 
             dizzySound();
 
-
-            /*
-               Slow page sway.
-            */
 
             document.body.animate(
                 [
@@ -2270,11 +2370,6 @@ document.addEventListener(
             );
 
 
-            /*
-               Bring romantic BGM back
-               after the drunk moment.
-            */
-
             setTimeout(
                 function () {
 
@@ -2331,7 +2426,7 @@ document.addEventListener(
 
         /* =====================================================
            START IN SILENCE
-           Audio begins safely after user interaction.
+           Audio begins safely after interaction.
         ====================================================== */
 
         if (musicButton) {
