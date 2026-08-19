@@ -1,908 +1,886 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    /* =====================================================
-       HELPERS
-    ====================================================== */
+        /* =====================================================
+           HELPERS
+        ====================================================== */
 
-    function get(id) {
-        return document.getElementById(id);
-    }
-
-
-    /* =====================================================
-       AUDIO
-    ====================================================== */
-
-    const music = get("birthday-music");
-    const musicButton = get("music-button");
-
-
-    function startMusic() {
-
-        if (!music) {
-            return;
+        function get(id) {
+            return document.getElementById(id);
         }
 
-        music.volume = 0.35;
 
-        const promise = music.play();
+        function showSection(id) {
 
-        if (promise) {
+            document
+                .querySelectorAll(".page-section")
+                .forEach(function (section) {
 
-            promise
-                .then(function () {
-                    musicButton.textContent = "♫";
-                })
-                .catch(function () {
-                    musicButton.textContent = "🔇";
+                    section.classList.remove("active");
+
                 });
 
+            setTimeout(function () {
+
+                const section = get(id);
+
+                if (section) {
+                    section.classList.add("active");
+                }
+
+            }, 80);
         }
-    }
 
 
-    if (musicButton) {
+        function playSound(audio, volume) {
 
-        musicButton.addEventListener(
-            "click",
-            function () {
+            if (!audio) {
+                return;
+            }
 
-                if (!music) {
-                    return;
+            try {
+
+                audio.pause();
+
+                audio.currentTime = 0;
+
+                audio.volume = volume || 0.5;
+
+                const promise = audio.play();
+
+                if (promise) {
+                    promise.catch(function () {});
                 }
 
-                if (music.paused) {
+            } catch (error) {
 
-                    music.play()
-                        .then(function () {
-                            musicButton.textContent = "♫";
-                        })
-                        .catch(function () {});
-
-                } else {
-
-                    music.pause();
-
-                    musicButton.textContent = "🔇";
-                }
+                console.log(
+                    "Audio error:",
+                    error
+                );
 
             }
-        );
-
-    }
+        }
 
 
-    /* =====================================================
-       SECTION SWITCH
-    ====================================================== */
+        /* =====================================================
+           AUDIO
+        ====================================================== */
 
-    function showSection(id) {
+        const cameraSound =
+            get("camera-sound");
 
-        const sections =
+        const wineSound =
+            get("wine-sound");
+
+        const glassSound =
+            get("glass-sound");
+
+
+        /* =====================================================
+           INTRO POPUPS
+        ====================================================== */
+
+        const introCards =
             document.querySelectorAll(
-                ".page-section"
+                ".intro-card"
             );
 
-        sections.forEach(function (section) {
+        let introIndex = 0;
 
-            section.classList.remove("active");
 
-        });
+        document
+            .querySelectorAll(".intro-next")
+            .forEach(function (button) {
 
+                button.addEventListener(
+                    "click",
+                    function () {
 
-        const target = get(id);
+                        introCards[
+                            introIndex
+                        ].classList.remove(
+                            "active"
+                        );
 
-        if (!target) {
-            return;
-        }
-
-
-        setTimeout(function () {
-
-            target.classList.add("active");
-
-        }, 100);
-
-    }
-
-
-    /* =====================================================
-       CAMERA INTRO
-    ====================================================== */
-
-    const cameraIntroButton =
-        get("camera-intro-button");
-
-    const cameraArea =
-        get("camera-area");
-
-
-    if (cameraIntroButton) {
-
-        cameraIntroButton.addEventListener(
-            "click",
-            function () {
-
-                cameraIntroButton.style.display =
-                    "none";
-
-                setTimeout(function () {
-
-                    cameraArea.classList.remove(
-                        "hidden"
-                    );
-
-                    cameraArea.animate(
-                        [
-                            {
-                                opacity: 0,
-                                transform:
-                                    "translateY(30px) scale(.95)"
-                            },
-                            {
-                                opacity: 1,
-                                transform:
-                                    "translateY(0) scale(1)"
-                            }
-                        ],
-                        {
-                            duration: 700,
-                            easing: "ease-out"
-                        }
-                    );
-
-                }, 250);
-
-                startMusic();
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       CAMERA
-    ====================================================== */
-
-    const camera =
-        get("camera");
-
-    const countdownOverlay =
-        get("countdown-overlay");
-
-    const countdownNumber =
-        get("countdown-number");
-
-    const photoFlash =
-        get("photo-flash");
-
-    const photoPopup =
-        get("photo-popup");
-
-    const photoContinue =
-        get("photo-continue");
-
-    let cameraBusy = false;
-
-
-    function takePhotograph() {
-
-        if (cameraBusy) {
-            return;
-        }
-
-        cameraBusy = true;
-
-        countdownOverlay.classList.add(
-            "active"
-        );
-
-
-        const numbers = [
-            "3",
-            "2",
-            "1"
-        ];
-
-        let index = 0;
-
-
-        function showNumber() {
-
-            countdownNumber.textContent =
-                numbers[index];
-
-
-            countdownNumber.style.animation =
-                "none";
-
-            void countdownNumber.offsetWidth;
-
-            countdownNumber.style.animation =
-                "countdownPop 0.9s ease forwards";
-
-
-            index++;
-
-
-            if (index < numbers.length) {
-
-                setTimeout(
-                    showNumber,
-                    900
-                );
-
-            } else {
-
-                setTimeout(
-                    photographFlash,
-                    900
-                );
-
-            }
-
-        }
-
-
-        showNumber();
-
-    }
-
-
-    function photographFlash() {
-
-        countdownOverlay.classList.remove(
-            "active"
-        );
-
-
-        /* BIG FLASH */
-
-        photoFlash.classList.add(
-            "active"
-        );
-
-
-        /* Camera shake */
-
-        camera.animate(
-            [
-                {
-                    transform:
-                        "translateX(0)"
-                },
-                {
-                    transform:
-                        "translateX(-8px)"
-                },
-                {
-                    transform:
-                        "translateX(8px)"
-                },
-                {
-                    transform:
-                        "translateX(-5px)"
-                },
-                {
-                    transform:
-                        "translateX(5px)"
-                },
-                {
-                    transform:
-                        "translateX(0)"
-                }
-            ],
-            {
-                duration: 450,
-                easing: "ease-out"
-            }
-        );
-
-
-        setTimeout(function () {
-
-            photoFlash.classList.remove(
-                "active"
-            );
-
-            photoPopup.classList.add(
-                "show"
-            );
-
-        }, 700);
-
-    }
-
-
-    if (camera) {
-
-        camera.addEventListener(
-            "click",
-            takePhotograph
-        );
-
-
-        camera.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key === "Enter" ||
-                    event.key === " "
-                ) {
-
-                    event.preventDefault();
-
-                    takePhotograph();
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       PHOTO → LETTER
-    ====================================================== */
-
-    if (photoContinue) {
-
-        photoContinue.addEventListener(
-            "click",
-            function () {
-
-                photoPopup.classList.remove(
-                    "show"
-                );
-
-                showSection(
-                    "letter-section"
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       BOUQUET
-    ====================================================== */
-
-    const bouquet =
-        get("bouquet");
-
-
-    if (bouquet) {
-
-        bouquet.addEventListener(
-            "click",
-            function () {
-
-                bouquet.animate(
-                    [
-                        {
-                            transform:
-                                "scale(1)"
-                        },
-                        {
-                            transform:
-                                "scale(1.08) rotate(-2deg)"
-                        },
-                        {
-                            transform:
-                                "scale(1) rotate(0deg)"
-                        }
-                    ],
-                    {
-                        duration: 550,
-                        easing: "ease-out"
-                    }
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       ENVELOPE
-    ====================================================== */
-
-    const envelope =
-        get("envelope");
-
-    const letterButton =
-        get("letter-button");
-
-
-    function openLetter() {
-
-        if (!envelope) {
-            return;
-        }
-
-        envelope.classList.toggle(
-            "open"
-        );
-
-
-        if (
-            envelope.classList.contains(
-                "open"
-            )
-        ) {
-
-            if (letterButton) {
-
-                letterButton.textContent =
-                    "CLOSE LETTER ❤️";
-
-            }
-
-        } else {
-
-            if (letterButton) {
-
-                letterButton.textContent =
-                    "OPEN YOUR LETTER 💌";
-
-            }
-
-        }
-
-    }
-
-
-    if (envelope) {
-
-        envelope.addEventListener(
-            "click",
-            openLetter
-        );
-
-    }
-
-
-    if (letterButton) {
-
-        letterButton.addEventListener(
-            "click",
-            openLetter
-        );
-
-    }
-
-
-    /* =====================================================
-       AFTER LETTER
-    ====================================================== */
-
-    if (letterButton) {
-
-        let firstClick = true;
-
-        letterButton.addEventListener(
-            "click",
-            function () {
-
-                if (
-                    envelope.classList.contains(
-                        "open"
-                    ) &&
-                    firstClick
-                ) {
-
-                    firstClick = false;
-
-                    setTimeout(
-                        function () {
-
-                            letterButton.textContent =
-                                "LET'S HAVE A DRINK 🍷";
-
-                        },
-                        800
-                    );
-
-                } else if (
-                    !envelope.classList.contains(
-                        "open"
-                    )
-                ) {
-
-                    firstClick = true;
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /*
-       Clicking the bouquet after reading the letter
-       moves forward.
-    */
-
-    if (bouquet) {
-
-        bouquet.addEventListener(
-            "dblclick",
-            function () {
-
-                showSection(
-                    "wine-section"
-                );
-
-            }
-        );
-
-    }
-
-
-    /*
-       Convenient transition:
-       once the letter has been opened,
-       clicking the button again after its text
-       changes goes to wine.
-    */
-
-    let letterOpenedOnce = false;
-
-    if (letterButton) {
-
-        letterButton.addEventListener(
-            "click",
-            function () {
-
-                if (
-                    envelope.classList.contains(
-                        "open"
-                    )
-                ) {
-
-                    if (!letterOpenedOnce) {
-
-                        letterOpenedOnce = true;
-
-                    } else {
+                        introIndex++;
 
                         setTimeout(
                             function () {
 
-                                showSection(
-                                    "wine-section"
-                                );
+                                if (
+                                    introCards[
+                                        introIndex
+                                    ]
+                                ) {
+
+                                    introCards[
+                                        introIndex
+                                    ].classList.add(
+                                        "active"
+                                    );
+
+                                }
 
                             },
-                            350
+                            120
                         );
 
                     }
+                );
+
+            });
+
+
+        /* =====================================================
+           CAMERA START
+        ====================================================== */
+
+        get("start-camera")
+            .addEventListener(
+                "click",
+                function () {
+
+                    showSection(
+                        "camera-section"
+                    );
 
                 }
+            );
+
+
+        /* =====================================================
+           CAMERA COUNTDOWN
+        ====================================================== */
+
+        const camera =
+            get("camera");
+
+        const countdown =
+            get("countdown");
+
+        const countdownNumber =
+            get("countdown-number");
+
+        const flash =
+            get("flash");
+
+        const photoResult =
+            get("photo-result");
+
+        let cameraUsed = false;
+
+
+        camera.addEventListener(
+            "click",
+            function () {
+
+                if (cameraUsed) {
+                    return;
+                }
+
+                cameraUsed = true;
+
+                startCountdown();
 
             }
         );
 
-    }
+
+        function startCountdown() {
+
+            countdown.classList.add(
+                "active"
+            );
+
+            const numbers = [
+                "3",
+                "2",
+                "1"
+            ];
+
+            let index = 0;
 
 
-    /* =====================================================
-       WINE
-    ====================================================== */
+            function showNumber() {
 
-    const bottle =
-        get("wine-bottle");
+                countdownNumber.textContent =
+                    numbers[index];
 
-    const liquidOne =
-        get("wine-liquid-one");
+                countdownNumber.style.animation =
+                    "none";
 
-    const liquidTwo =
-        get("wine-liquid-two");
+                void countdownNumber.offsetWidth;
 
-    const wineInstruction =
-        get("wine-instruction");
-
-    const progressDots =
-        document.querySelectorAll(
-            ".progress-dot"
-        );
-
-    const drunkOverlay =
-        get("drunk-overlay");
-
-    const nextPageButton =
-        get("next-page-button");
+                countdownNumber.style.animation =
+                    "countdownPop .9s ease";
 
 
-    let pours = 0;
+                if (index < numbers.length - 1) {
 
-    const maximumPours = 5;
+                    index++;
 
-    let glassesFilled = false;
+                    setTimeout(
+                        showNumber,
+                        900
+                    );
 
-    let wineFinished = false;
+                } else {
 
-
-    function updateProgress() {
-
-        progressDots.forEach(
-            function (dot, index) {
-
-                dot.classList.remove(
-                    "active"
-                );
-
-                if (index < pours) {
-
-                    dot.classList.add(
-                        "active"
+                    setTimeout(
+                        takePhoto,
+                        900
                     );
 
                 }
 
             }
-        );
-
-    }
 
 
-    function pourWine() {
+            showNumber();
 
-        if (wineFinished) {
-            return;
         }
 
 
-        if (glassesFilled) {
+        /* =====================================================
+           TAKE PHOTO
+        ====================================================== */
 
-            wineInstruction.textContent =
-                "The glasses are full... tap either glass. 🍷";
+        function takePhoto() {
 
-            return;
-        }
+            countdown.classList.remove(
+                "active"
+            );
 
-
-        if (pours >= maximumPours) {
-            return;
-        }
-
-
-        pours++;
-
-
-        const percentage =
-            pours * 20;
-
-
-        /*
-            Bottle visually empties
-        */
-
-        const bottleBody =
-            bottle.querySelector(
-                ".bottle-body"
+            playSound(
+                cameraSound,
+                0.7
             );
 
 
-        if (bottleBody) {
+            /* BIG FLASH */
 
-            bottleBody.style.opacity =
-                String(
-                    1 - (pours * 0.07)
+            flash.classList.add(
+                "active"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    photoResult.classList.add(
+                        "show"
+                    );
+
+                },
+                400
+            );
+
+
+            setTimeout(
+                function () {
+
+                    flash.classList.remove(
+                        "active"
+                    );
+
+                },
+                900
+            );
+
+        }
+
+
+        /* =====================================================
+           PHOTO → BOUQUET
+        ====================================================== */
+
+        get("photo-continue")
+            .addEventListener(
+                "click",
+                function () {
+
+                    photoResult.classList.remove(
+                        "show"
+                    );
+
+                    setTimeout(
+                        function () {
+
+                            showSection(
+                                "bouquet-section"
+                            );
+
+                        },
+                        300
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           BOUQUET
+        ====================================================== */
+
+        const bouquet =
+            get("bouquet");
+
+        const bouquetText =
+            get("bouquet-text");
+
+        let bouquetClicked = false;
+
+
+        bouquet.addEventListener(
+            "click",
+            function () {
+
+                if (bouquetClicked) {
+                    return;
+                }
+
+                bouquetClicked = true;
+
+                bouquet.classList.add(
+                    "glowing"
                 );
 
-        }
+
+                bouquetText.textContent =
+                    "For the prettiest girl I know... ❤️";
 
 
-        /*
-            Both glasses fill together
-        */
-
-        liquidOne.style.height =
-            percentage + "%";
-
-        liquidTwo.style.height =
-            percentage + "%";
+                createBouquetSparkles();
 
 
-        updateProgress();
+                setTimeout(
+                    function () {
+
+                        bouquetText.textContent =
+                            "I have something else for you... ✦";
+
+                    },
+                    1700
+                );
 
 
-        /*
-            Bottle reaches final empty state
-        */
+                setTimeout(
+                    function () {
 
-        if (pours === maximumPours) {
+                        showSection(
+                            "letter-section"
+                        );
 
-            glassesFilled = true;
+                    },
+                    3000
+                );
 
-            wineInstruction.textContent =
-                "Perfect. Now take a sip... 🍷";
-
-        } else {
-
-            const remaining =
-                maximumPours - pours;
-
-            wineInstruction.textContent =
-                remaining +
-                (
-                    remaining === 1
-                        ? " pour"
-                        : " pours"
-                ) +
-                " left...";
-
-        }
-
-    }
-
-
-    function emptyGlasses() {
-
-        if (!glassesFilled) {
-
-            wineInstruction.textContent =
-                "Pour the wine first, sweetheart. 🍷";
-
-            return;
-        }
-
-
-        liquidOne.style.height =
-            "0%";
-
-        liquidTwo.style.height =
-            "0%";
-
-
-        wineInstruction.textContent =
-            "Oh no... somebody finished it. 😂";
-
-
-        setTimeout(
-            finishWineScene,
-            700
+            }
         );
 
-    }
+
+        function createBouquetSparkles() {
+
+            const symbols = [
+                "✦",
+                "✧",
+                "✨",
+                "♥"
+            ];
 
 
-    if (bottle) {
+            for (
+                let i = 0;
+                i < 22;
+                i++
+            ) {
+
+                const sparkle =
+                    document.createElement(
+                        "span"
+                    );
+
+                sparkle.textContent =
+                    symbols[
+                        Math.floor(
+                            Math.random() *
+                            symbols.length
+                        )
+                    ];
+
+                sparkle.style.position =
+                    "fixed";
+
+                sparkle.style.left =
+                    (
+                        25 +
+                        Math.random() * 50
+                    ) + "%";
+
+                sparkle.style.top =
+                    (
+                        25 +
+                        Math.random() * 40
+                    ) + "%";
+
+                sparkle.style.fontSize =
+                    (
+                        12 +
+                        Math.random() * 15
+                    ) + "px";
+
+                sparkle.style.color =
+                    "#b52d51";
+
+                sparkle.style.pointerEvents =
+                    "none";
+
+                sparkle.style.zIndex =
+                    "300";
+
+                document.body.appendChild(
+                    sparkle
+                );
+
+
+                const x =
+                    (
+                        Math.random() - .5
+                    ) * 180;
+
+                const y =
+                    -(
+                        40 +
+                        Math.random() * 140
+                    );
+
+
+                sparkle.animate(
+                    [
+                        {
+                            transform:
+                                "translate(0,0) scale(.3)",
+                            opacity: 0
+                        },
+                        {
+                            transform:
+                                "translate(0,0) scale(1)",
+                            opacity: 1
+                        },
+                        {
+                            transform:
+                                "translate(" +
+                                x +
+                                "px," +
+                                y +
+                                "px) scale(.2)",
+                            opacity: 0
+                        }
+                    ],
+                    {
+                        duration:
+                            1000 +
+                            Math.random() * 700,
+
+                        easing:
+                            "ease-out"
+                    }
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        sparkle.remove();
+
+                    },
+                    1900
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ENVELOPE
+        ====================================================== */
+
+        const envelope =
+            get("envelope");
+
+        const postcard =
+            get("postcard");
+
+        const envelopeText =
+            get("envelope-text");
+
+        let envelopeOpened = false;
+
+
+        envelope.addEventListener(
+            "click",
+            function () {
+
+                if (envelopeOpened) {
+                    return;
+                }
+
+                envelopeOpened = true;
+
+                envelope.classList.add(
+                    "open"
+                );
+
+
+                envelopeText.textContent =
+                    "Open it... it's just for you. ❤️";
+
+
+                setTimeout(
+                    function () {
+
+                        postcard.classList.add(
+                            "show"
+                        );
+
+                    },
+                    900
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           POSTCARD → WINE
+        ====================================================== */
+
+        get("wine-continue")
+            .addEventListener(
+                "click",
+                function () {
+
+                    postcard.classList.remove(
+                        "show"
+                    );
+
+                    envelope.classList.remove(
+                        "open"
+                    );
+
+                    setTimeout(
+                        function () {
+
+                            showSection(
+                                "wine-section"
+                            );
+
+                        },
+                        400
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           WINE
+        ====================================================== */
+
+        const bottle =
+            get("wine-bottle");
+
+        const glasses =
+            document.querySelectorAll(
+                ".wine-glass"
+            );
+
+        const bottleLiquid =
+            document.querySelector(
+                ".bottle-liquid"
+            );
+
+        const glassWine =
+            document.querySelectorAll(
+                ".glass-wine"
+            );
+
+        const wineCounter =
+            get("wine-counter");
+
+        const wineInstruction =
+            get("wine-instruction");
+
+
+        let pourCount = 0;
+
+        const maximumPours = 5;
+
+        let glassesFilled = false;
+
+        let wineFinished = false;
+
+
+        /* =====================================================
+           BOTTLE CLICK
+        ====================================================== */
 
         bottle.addEventListener(
             "click",
-            pourWine
-        );
+            function () {
 
+                if (wineFinished) {
+                    return;
+                }
 
-        bottle.addEventListener(
-            "keydown",
-            function (event) {
+                if (glassesFilled) {
+                    wineInstruction.textContent =
+                        "Now click either glass... 🍷";
+
+                    return;
+                }
+
 
                 if (
-                    event.key === "Enter" ||
-                    event.key === " "
+                    pourCount >=
+                    maximumPours
+                ) {
+                    return;
+                }
+
+
+                pourCount++;
+
+                playSound(
+                    wineSound,
+                    0.55
+                );
+
+
+                /* BOTTLE LEVEL */
+
+                const bottleLevel =
+                    100 -
+                    (
+                        pourCount *
+                        20
+                    );
+
+                bottleLiquid.style.height =
+                    bottleLevel + "%";
+
+
+                /* GLASSES FILL */
+
+                const glassLevel =
+                    pourCount * 20;
+
+                glassWine.forEach(
+                    function (wine) {
+
+                        wine.style.height =
+                            glassLevel + "%";
+
+                    }
+                );
+
+
+                wineCounter.textContent =
+                    "POUR " +
+                    pourCount +
+                    " / 5";
+
+
+                if (
+                    pourCount <
+                    maximumPours
                 ) {
 
-                    event.preventDefault();
+                    wineInstruction.textContent =
+                        "A little more... 🍷❤️";
 
-                    pourWine();
+                } else {
+
+                    glassesFilled = true;
+
+                    wineInstruction.textContent =
+                        "Cheers, sweetheart... now drink. 🍷";
+
+                    wineCounter.textContent =
+                        "CHEERS ❤️";
 
                 }
 
             }
         );
 
-    }
+
+        /* =====================================================
+           GLASS CLICK
+        ====================================================== */
+
+        glasses.forEach(
+            function (glass) {
+
+                glass.addEventListener(
+                    "click",
+                    function () {
+
+                        if (wineFinished) {
+                            return;
+                        }
 
 
-    const glasses =
-        document.querySelectorAll(
-            ".wine-glass"
+                        if (!glassesFilled) {
+
+                            wineInstruction.textContent =
+                                "Pour the wine first, sweetheart. ❤️";
+
+                            return;
+
+                        }
+
+
+                        playSound(
+                            glassSound,
+                            0.65
+                        );
+
+
+                        /* EMPTY BOTH GLASSES */
+
+                        glassWine.forEach(
+                            function (wine) {
+
+                                wine.style.height =
+                                    "0%";
+
+                            }
+                        );
+
+
+                        glassesFilled = false;
+
+
+                        /*
+                           THE BOTTLE IS NOW EMPTY
+                           AND BOTH GLASSES ARE EMPTY.
+                        */
+
+                        if (
+                            pourCount >=
+                            maximumPours
+                        ) {
+
+                            wineFinished = true;
+
+                            wineInstruction.textContent =
+                                "Well... that was quick. 😂";
+
+                            wineCounter.textContent =
+                                "EMPTY";
+
+
+                            setTimeout(
+                                startDrunkEnding,
+                                1000
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
         );
 
 
-    glasses.forEach(
-        function (glass) {
+        /* =====================================================
+           DRUNK ENDING
+        ====================================================== */
 
-            glass.addEventListener(
-                "click",
-                emptyGlasses
+        function startDrunkEnding() {
+
+            const overlay =
+                get("drunk-overlay");
+
+            overlay.classList.add(
+                "active"
+            );
+
+
+            /*
+                Make the entire page
+                slowly sway.
+            */
+
+            document.body.animate(
+                [
+                    {
+                        transform:
+                            "rotate(0deg) scale(1)"
+                    },
+                    {
+                        transform:
+                            "rotate(-1deg) scale(1.02)"
+                    },
+                    {
+                        transform:
+                            "rotate(1deg) scale(1.04)"
+                    },
+                    {
+                        transform:
+                            "rotate(-1deg) scale(1.06)"
+                    },
+                    {
+                        transform:
+                            "rotate(1deg) scale(1.08)"
+                    },
+                    {
+                        transform:
+                            "rotate(0deg) scale(1.1)"
+                    }
+                ],
+                {
+                    duration: 5000,
+                    easing: "ease-in-out",
+                    fill: "forwards"
+                }
+            );
+
+
+            setTimeout(
+                function () {
+
+                    get("drunk-popup")
+                        .classList.add(
+                            "show"
+                        );
+
+                },
+                4200
             );
 
         }
-    );
 
 
-    /* =====================================================
-       DRUNK ENDING
-    ====================================================== */
+        /* =====================================================
+           NEXT PAGE
+        ====================================================== */
 
-    function finishWineScene() {
+        get("next-page")
+            .addEventListener(
+                "click",
+                function () {
 
-        if (wineFinished) {
-            return;
-        }
+                    window.location.href =
+                        "page4.html";
 
-        wineFinished = true;
-
-
-        /*
-            Fade everything
-        */
-
-        const wineSection =
-            get("wine-section");
-
-
-        wineSection.animate(
-            [
-                {
-                    filter:
-                        "blur(0px)",
-                    opacity: 1
-                },
-                {
-                    filter:
-                        "blur(5px)",
-                    opacity: 0.7
-                },
-                {
-                    filter:
-                        "blur(10px)",
-                    opacity: 0.35
                 }
-            ],
-            {
-                duration: 1400,
-                easing: "ease-in-out"
-            }
-        );
-
-
-        /*
-            Show drunk overlay
-        */
-
-        setTimeout(
-            function () {
-
-                drunkOverlay.classList.add(
-                    "show"
-                );
-
-            },
-            900
-        );
+            );
 
     }
-
-
-    /* =====================================================
-       NEXT PAGE
-    ====================================================== */
-
-    if (nextPageButton) {
-
-        nextPageButton.addEventListener(
-            "click",
-            function () {
-
-                window.location.href =
-                    "page4.html";
-
-            }
-        );
-
-    }
-
-});
+);
