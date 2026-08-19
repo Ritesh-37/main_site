@@ -4,337 +4,406 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Birthday Party For Tisha ❤️</title>
+    <title>A Little Surprise For Tisha ❤️</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
+    <!-- =========================================
+         LOADING SCREEN
+    ========================================== -->
+
+    <div id="loading-screen">
+
+        <div class="loading-card">
+
+            <div class="loading-bow">🎀</div>
+
+            <p>Preparing a little something...</p>
+
+            <div class="loading-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         DECORATIVE BACKGROUND
+    ========================================== -->
+
     <div class="background-glow"></div>
 
-    <div class="floating-decor">
-        <span>✦</span>
-        <span>♥</span>
-        <span>✧</span>
-        <span>♥</span>
-        <span>✦</span>
-        <span>✧</span>
-        <span>♥</span>
-        <span>✦</span>
-    </div>
+    <div class="confetti-layer" id="confetti-layer"></div>
 
-    <div class="birthday-rope">
-        <div class="rope-line"></div>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-        <span>🎀</span>
-        <span>🎈</span>
-    </div>
 
-    <button id="music-button" class="music-button" aria-label="Music">
-        ♫
+    <!-- BALLOONS -->
+
+    <div class="balloon balloon-one">🎈</div>
+    <div class="balloon balloon-two">🎈</div>
+    <div class="balloon balloon-three">🎈</div>
+    <div class="balloon balloon-four">🎈</div>
+
+
+    <!-- CAMERAS -->
+
+    <button class="camera camera-one" type="button" aria-label="Camera">
+        📷
     </button>
 
-    <audio id="birthday-music" loop preload="auto">
-        <source src="birthday-song.mp3" type="audio/mpeg">
-    </audio>
-
-    <audio id="candle-sound" preload="auto">
-        <source src="candle-out.mp3" type="audio/mpeg">
-    </audio>
-
-    <audio id="balloon-pop-sound" preload="auto">
-        <source src="balloon-pop.mp3" type="audio/mpeg">
-    </audio>
-
-    <audio id="popper-sound" preload="auto">
-        <source src="popper-pop.mp3" type="audio/mpeg">
-    </audio>
-
-    <audio id="crackle-sound" preload="auto">
-        <source src="diwali-crackle.mp3" type="audio/mpeg">
-    </audio>
+    <button class="camera camera-two" type="button" aria-label="Camera">
+        📸
+    </button>
 
 
-    <main id="party-page">
+    <!-- FLOATING FLOWERS -->
 
-        <!-- =========================
-             WELCOME
-        ========================== -->
+    <div class="floating-flower flower-one">✿</div>
+    <div class="floating-flower flower-two">❀</div>
+    <div class="floating-flower flower-three">✿</div>
+    <div class="floating-flower flower-four">❀</div>
 
-        <section id="welcome-section" class="party-section active">
 
-            <div id="welcome-step-1" class="welcome-step active">
+    <!-- RIBBONS -->
 
-                <div class="birthday-crown">👑</div>
+    <div class="ribbon ribbon-left">🎀</div>
+    <div class="ribbon ribbon-right">🎀</div>
 
-                <div class="welcome-small">
-                    A LITTLE MESSAGE FOR YOU
+
+    <!-- SPARKLES -->
+
+    <div class="sparkles" aria-hidden="true">
+
+        <span>✦</span>
+        <span>✧</span>
+        <span>✦</span>
+        <span>·</span>
+        <span>✧</span>
+        <span>✦</span>
+        <span>·</span>
+        <span>✧</span>
+        <span>✦</span>
+        <span>✧</span>
+
+    </div>
+
+
+    <!-- =========================================
+         DECORATIVE CORNERS
+    ========================================== -->
+
+    <div class="corner corner-top-left">
+        <span class="corner-flower">✿</span>
+        <span class="corner-leaf">❧</span>
+        <span class="corner-leaf second">❧</span>
+    </div>
+
+    <div class="corner corner-top-right">
+        <span class="corner-flower">✿</span>
+        <span class="corner-leaf">❧</span>
+        <span class="corner-leaf second">❧</span>
+    </div>
+
+    <div class="corner corner-bottom-left">
+        <span class="corner-flower">✿</span>
+        <span class="corner-leaf">❧</span>
+        <span class="corner-leaf second">❧</span>
+    </div>
+
+    <div class="corner corner-bottom-right">
+        <span class="corner-flower">✿</span>
+        <span class="corner-leaf">❧</span>
+        <span class="corner-leaf second">❧</span>
+    </div>
+
+
+    <!-- =========================================
+         PAGE 1
+    ========================================== -->
+
+    <main id="gift-screen" class="screen active">
+
+        <section class="gift-container">
+
+            <div class="welcome-badge">
+                <span>✦</span>
+                A LITTLE BIRTHDAY SURPRISE
+                <span>✦</span>
+            </div>
+
+
+            <div class="tiny-bow">
+                🎀
+            </div>
+
+
+            <p class="invitation-line">
+                Especially prepared for
+            </p>
+
+            <h1 class="name-title">
+                Tisha
+            </h1>
+
+
+            <!-- ENVELOPE -->
+
+            <div id="envelope" class="envelope">
+
+                <div class="envelope-back"></div>
+
+                <div class="envelope-paper">
+
+                    <p class="envelope-small">
+                        A SECRET LITTLE SURPRISE
+                    </p>
+
+                    <h2>
+                        FOR TISHA
+                    </h2>
+
+                    <p class="envelope-message">
+                        Open me... if you dare. 👀
+                    </p>
+
                 </div>
 
-                <h1>
-                    Welcome,
-                    <span>Tisha</span> ❤️
-                </h1>
+                <div class="envelope-flap"></div>
 
-                <p>
-                    Come sweetheart...
-                    your party is waiting for you. 🥹🎀
-                </p>
+                <div class="wax-seal">
+                    ♥
+                </div>
 
-                <button class="party-button welcome-next" data-next="2">
-                    COME HERE ❤️
-                </button>
+                <div class="envelope-ribbon ribbon-envelope-left"></div>
+                <div class="envelope-ribbon ribbon-envelope-right"></div>
 
             </div>
 
 
-            <div id="welcome-step-2" class="welcome-step">
-
-                <div class="welcome-big-icon">
-                    😏
-                </div>
-
-                <div class="welcome-small">
-                    EXCUSE ME, BIRTHDAY GIRL...
-                </div>
-
-                <h1>
-                    You're late
-                    <span>to your own party!</span> 😂
-                </h1>
-
-                <p>
-                    We've been waiting for you...
-                    and honestly, sweetheart,
-                    you took your sweet time. 👀❤️
-                </p>
-
-                <button class="party-button welcome-next" data-next="3">
-                    I'M HERE NOW 🥹
-                </button>
-
-            </div>
-
-
-            <div id="welcome-step-3" class="welcome-step">
-
-                <div class="welcome-big-icon">
-                    🎂✨
-                </div>
-
-                <div class="welcome-small">
-                    FINALLY...
-                </div>
-
-                <h1>
-                    Come sweetheart...
-                </h1>
-
-                <h2>
-                    It's time to cut the cake. ❤️
-                </h2>
-
-                <p>
-                    Your birthday celebration
-                    officially starts now. 🎉
-                </p>
-
-                <button id="start-cake" class="party-button">
-                    LET'S GO 🎂
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             CAKE SECTION
-        ========================== -->
-
-        <section id="cake-section" class="party-section">
-
-            <div class="cake-heading">
-
-                <div class="cake-heading-icon">
-                    ✦
-                </div>
-
-                <h2>
-                    MAKE A WISH,
-                    <span>MY LOVE</span>
-                </h2>
-
-                <p>
-                    Put out every candle,
-                    birthday girl. 🕯️❤️
-                </p>
-
-            </div>
-
-
-            <!-- CSS CAKE -->
-
-            <div class="cake-stage">
-
-                <div class="cake-wrapper">
-
-                    <!-- CANDLES -->
-
-                    <div class="cake-candles">
-
-                        <button class="candle" aria-label="Blow candle 1">
-                            <span class="flame"></span>
-                            <span class="wick"></span>
-                            <span class="candle-stick"></span>
-                        </button>
-
-                        <button class="candle" aria-label="Blow candle 2">
-                            <span class="flame"></span>
-                            <span class="wick"></span>
-                            <span class="candle-stick"></span>
-                        </button>
-
-                        <button class="candle" aria-label="Blow candle 3">
-                            <span class="flame"></span>
-                            <span class="wick"></span>
-                            <span class="candle-stick"></span>
-                        </button>
-
-                        <button class="candle" aria-label="Blow candle 4">
-                            <span class="flame"></span>
-                            <span class="wick"></span>
-                            <span class="candle-stick"></span>
-                        </button>
-
-                        <button class="candle" aria-label="Blow candle 5">
-                            <span class="flame"></span>
-                            <span class="wick"></span>
-                            <span class="candle-stick"></span>
-                        </button>
-
-                    </div>
-
-
-                    <!-- CAKE -->
-
-                    <div class="birthday-cake">
-
-                        <div class="cake-top-layer">
-
-                            <div class="cream-drip drip-one"></div>
-                            <div class="cream-drip drip-two"></div>
-                            <div class="cream-drip drip-three"></div>
-                            <div class="cream-drip drip-four"></div>
-
-                            <div class="berry berry-one"></div>
-                            <div class="berry berry-two"></div>
-                            <div class="berry berry-three"></div>
-
-                        </div>
-
-
-                        <div class="cake-middle-layer">
-
-                            <div class="cream-line"></div>
-
-                            <div class="cake-decoration">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-
-                        </div>
-
-
-                        <div class="cake-bottom-layer">
-
-                            <div class="bottom-cream-line"></div>
-
-                        </div>
-
-
-                        <div class="cake-plate"></div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <p id="cake-instruction" class="cake-instruction">
-                Click the candles to blow them out. 🥹❤️
+            <p class="hidden-code">
+                ♡ 03 • 09 ♡
             </p>
 
 
-            <!-- CELEBRATION -->
-
-            <div id="celebration-layer" class="celebration-layer">
-
-                <div class="celebration-flash"></div>
-
-                <div class="celebration-title">
-                    🎉
-                </div>
-
-            </div>
+            <button
+                id="open-gift-btn"
+                class="luxury-button"
+                type="button"
+            >
+                OPEN IT 💌
+            </button>
 
 
-            <!-- FINAL POPUP -->
-
-            <div id="birthday-popup" class="birthday-popup">
-
-                <div class="popup-sparkles">
-                    ✦ ✧ ✦
-                </div>
-
-                <div class="popup-icon">
-                    ✨
-                </div>
-
-                <h2>
-                    HAPPY BIRTHDAY,
-                    <span>TISHA</span>
-                </h2>
-
-                <div class="popup-divider"></div>
-
-                <p>
-                    The birthday girl has officially
-                    started the party! 🥳✨
-                </p>
-
-                <p class="popup-love">
-                    Now let the real celebration begin... ❤️
-                </p>
-
-                <button id="page3-button" class="party-button">
-                    CONTINUE ❤️
-                </button>
-
-            </div>
+            <p class="tiny-footer">
+                Made with an unreasonable amount of love ♡
+            </p>
 
         </section>
 
     </main>
 
 
-    <script src="page2.js"></script>
+    <!-- =========================================
+         PAGE 1B - ENTRANCE
+    ========================================== -->
+
+    <main id="entrance-screen" class="screen">
+
+        <section class="main-content">
+
+            <div class="bow">
+                🎀
+            </div>
+
+            <p class="eyebrow">
+                A VERY IMPORTANT MESSAGE...
+            </p>
+
+            <h2>
+                WAIT… YOU ACTUALLY<br>
+                FOUND THIS? 👀
+            </h2>
+
+            <p class="subtitle">
+                Well… I suppose there's no turning back now. 😏
+            </p>
+
+            <button
+                id="curious-btn"
+                class="luxury-button"
+                type="button"
+            >
+                Okay, I'm curious 👀
+            </button>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         PASSWORD PAGE
+    ========================================== -->
+
+    <main id="password-screen" class="screen">
+
+        <section class="password-card">
+
+            <div class="card-bow">
+                🎀
+            </div>
+
+            <div class="lock-icon">
+                🔐
+            </div>
+
+            <p class="card-label">
+                SECRET ACCESS
+            </p>
+
+            <h2>
+                Hmm… before I let you in… 🤨
+            </h2>
+
+            <p class="card-text">
+                I need to make sure you're actually
+                the birthday girl. 🎀
+            </p>
+
+            <label for="password-input">
+                Enter the magic code
+            </label>
+
+            <input
+                id="password-input"
+                type="password"
+                maxlength="4"
+                inputmode="numeric"
+                placeholder="••••"
+                autocomplete="off"
+            >
+
+            <button
+                id="unlock-btn"
+                class="luxury-button"
+                type="button"
+            >
+                UNLOCK MY SURPRISE ❤️
+            </button>
+
+            <p id="password-hint" class="password-hint"></p>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================
+         WRONG PASSWORD
+    ========================================== -->
+
+    <div id="wrong-popup" class="popup-overlay">
+
+        <div class="popup-card">
+
+            <div class="popup-icon">
+                🥺
+            </div>
+
+            <h2>
+                BABYYYY!!!! 😭😂
+            </h2>
+
+            <p>
+                You really thought that was
+                the password?
+            </p>
+
+            <p class="popup-small">
+                Try again, silly. ❤️
+            </p>
+
+            <button
+                id="try-again-btn"
+                class="luxury-button"
+                type="button"
+            >
+                Okay okay 😭
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SUCCESS POPUP
+    ========================================== -->
+
+    <div id="success-popup" class="popup-overlay">
+
+        <div class="popup-card success-card">
+
+            <div class="popup-icon">
+                💌
+            </div>
+
+            <p class="success-label">
+                ACCESS GRANTED
+            </p>
+
+            <h2>
+                Okay… you really are her. 😂❤️
+            </h2>
+
+            <p>
+                Welcome to your little surprise,
+                Tisha. 🌸
+            </p>
+
+            <button
+                id="continue-btn"
+                class="luxury-button"
+                type="button"
+            >
+                LET'S GO →
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MUSIC
+    ========================================== -->
+
+    <button
+        id="music-control"
+        class="music-control"
+        type="button"
+        aria-label="Toggle music"
+    >
+        ♫
+    </button>
+
+    <audio id="background-music" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+
+    <script src="script.js"></script>
 
 </body>
 </html>
