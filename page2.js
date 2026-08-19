@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return document.getElementById(id);
     }
 
-
     /* =========================
        AUDIO
     ========================== */
@@ -16,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const balloonSound = get("balloon-pop-sound");
     const popperSound = get("popper-sound");
     const crackleSound = get("crackle-sound");
-
 
     function playSound(audio, volume) {
 
@@ -41,7 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-
     function startBirthdayMusic() {
 
         if (!music) {
@@ -65,32 +62,27 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    musicButton.addEventListener("click", function () {
 
-    musicButton.addEventListener(
-        "click",
-        function () {
-
-            if (!music) {
-                return;
-            }
-
-            if (music.paused) {
-
-                music.play()
-                    .then(function () {
-                        musicButton.textContent = "♫";
-                    })
-                    .catch(function () {});
-
-            } else {
-
-                music.pause();
-
-                musicButton.textContent = "🔇";
-            }
-
+        if (!music) {
+            return;
         }
-    );
+
+        if (music.paused) {
+
+            music.play()
+                .then(function () {
+                    musicButton.textContent = "♫";
+                })
+                .catch(function () {});
+
+        } else {
+
+            music.pause();
+            musicButton.textContent = "🔇";
+        }
+
+    });
 
 
     /* =========================
@@ -107,13 +99,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             });
 
-
         const target = get(id);
 
         if (!target) {
             return;
         }
-
 
         setTimeout(function () {
 
@@ -133,40 +123,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const welcomeButtons =
         document.querySelectorAll(".welcome-next");
 
-
     welcomeButtons.forEach(function (button) {
 
-        button.addEventListener(
-            "click",
-            function () {
+        button.addEventListener("click", function () {
 
-                const next =
-                    button.getAttribute("data-next");
+            const next =
+                button.getAttribute("data-next");
 
+            welcomeSteps.forEach(function (step) {
 
-                welcomeSteps.forEach(function (step) {
+                step.classList.remove("active");
 
-                    step.classList.remove("active");
+            });
 
-                });
+            const nextStep =
+                get("welcome-step-" + next);
 
+            if (nextStep) {
 
-                const nextStep =
-                    get("welcome-step-" + next);
+                setTimeout(function () {
 
+                    nextStep.classList.add("active");
 
-                if (nextStep) {
-
-                    setTimeout(function () {
-
-                        nextStep.classList.add("active");
-
-                    }, 100);
-
-                }
+                }, 100);
 
             }
-        );
+
+        });
 
     });
 
@@ -175,16 +158,13 @@ document.addEventListener("DOMContentLoaded", function () {
        ENTER CAKE
     ========================== */
 
-    get("start-cake").addEventListener(
-        "click",
-        function () {
+    get("start-cake").addEventListener("click", function () {
 
-            showSection("cake-section");
+        showSection("cake-section");
 
-            startBirthdayMusic();
+        startBirthdayMusic();
 
-        }
-    );
+    });
 
 
     /* =========================
@@ -203,76 +183,58 @@ document.addEventListener("DOMContentLoaded", function () {
     const birthdayPopup =
         get("birthday-popup");
 
-
     let candlesOff = 0;
     let celebrationStarted = false;
 
 
     candles.forEach(function (candle) {
 
-        candle.addEventListener(
-            "click",
-            function () {
+        candle.addEventListener("click", function () {
 
-                if (
-                    candle.classList.contains("off")
-                ) {
-                    return;
-                }
+            if (candle.classList.contains("off")) {
+                return;
+            }
 
+            candle.classList.add("off");
 
-                candle.classList.add("off");
+            candlesOff++;
 
-                candlesOff++;
+            playSound(
+                candleSound,
+                0.5
+            );
 
+            createSmallSparkle(candle);
 
-                playSound(
-                    candleSound,
-                    0.5
-                );
+            const remaining =
+                candles.length - candlesOff;
 
+            if (remaining > 0) {
 
-                createSmallSparkle(candle);
-
-
-                const remaining =
-                    candles.length - candlesOff;
-
-
-                if (remaining > 0) {
-
-                    cakeInstruction.textContent =
-                        remaining +
-                        " candle" +
-                        (
-                            remaining === 1
-                                ? ""
-                                : "s"
-                        ) +
-                        " left, sweetheart... 🕯️❤️";
-
-                }
-
-
-                if (
-                    candlesOff === candles.length
-                ) {
-
-                    cakeInstruction.textContent =
-                        "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
-
-                    startMegaCelebration();
-
-                }
+                cakeInstruction.textContent =
+                    remaining +
+                    " candle" +
+                    (remaining === 1 ? "" : "s") +
+                    " left, sweetheart... 🕯️❤️";
 
             }
-        );
+
+            if (candlesOff === candles.length) {
+
+                cakeInstruction.textContent =
+                    "MAKE A WISH, BEAUTIFUL GIRL... ❤️✨";
+
+                startMegaCelebration();
+
+            }
+
+        });
 
     });
 
 
     /* =========================
-       SMALL SPARKLES
+       SMALL CANDLE SPARKLES
     ========================== */
 
     function createSmallSparkle(candle) {
@@ -280,14 +242,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const rect =
             candle.getBoundingClientRect();
 
-
         const symbols = [
             "✦",
             "✧",
             "✨",
             "♥"
         ];
-
 
         for (let i = 0; i < 8; i++) {
 
@@ -305,38 +265,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     )
                 ];
 
-
             sparkle.style.left =
-                (
-                    rect.left +
-                    rect.width / 2
-                ) + "px";
+                (rect.left + rect.width / 2) + "px";
 
             sparkle.style.top =
                 rect.top + "px";
 
-
             sparkle.style.fontSize =
-                (
-                    12 +
-                    Math.random() * 10
-                ) + "px";
-
+                (12 + Math.random() * 10) + "px";
 
             document.body.appendChild(sparkle);
 
-
             const x =
-                (
-                    Math.random() - .5
-                ) * 120;
+                (Math.random() - 0.5) * 120;
 
             const y =
-                -(
-                    30 +
-                    Math.random() * 100
-                );
-
+                -(30 + Math.random() * 100);
 
             sparkle.animate(
                 [
@@ -364,7 +308,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
-
             setTimeout(function () {
 
                 sparkle.remove();
@@ -377,8 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ==================================================
-       6 SECOND MEGA CELEBRATION
-       EVERYTHING IS CODED
+       10 SECOND DIWALI CELEBRATION
     ================================================== */
 
     function startMegaCelebration() {
@@ -389,26 +331,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
         celebrationStarted = true;
 
-
         celebrationLayer.classList.add("active");
 
         startBirthdayMusic();
 
+        /*
+            IMPORTANT:
+            No emoji-based celebration objects are used here.
+            Everything is generated with HTML/CSS.
+        */
 
-        /* FIRST MASSIVE BURST */
+        createGrandFlash();
 
-        createMegaBurst();
-        createBalloonBurst();
-        createPopperBurst();
-        createFirework();
-
+        createFireworkBurst();
+        createCrackerExplosion();
+        createFlowerShower();
+        createSparkleStorm();
+        createCodedPopper(7);
+        createGroundFountain();
 
         const celebrationStart =
             Date.now();
 
         const celebrationDuration =
-            6000;
-
+            10000;
 
         const celebrationTimer =
             setInterval(function () {
@@ -417,11 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     Date.now() -
                     celebrationStart;
 
-
-                if (
-                    elapsed >=
-                    celebrationDuration
-                ) {
+                if (elapsed >= celebrationDuration) {
 
                     clearInterval(
                         celebrationTimer
@@ -432,65 +374,155 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
+                /*
+                    Keep throwing different effects
+                    across the entire screen.
+                */
 
-                /* REPEATING EFFECTS */
+                createFireworkBurst();
+                createCrackerExplosion();
+                createSparkleStorm();
+                createFlowerShower();
+                createCodedPopper(
+                    Math.random() > 0.5 ? 1 : 2
+                );
 
-                createSparkleWave();
-                createConfettiBurst();
-                createFirework();
-                createBalloonBurst();
-                createPopperBurst();
+                if (Math.random() > 0.35) {
+                    createGroundFountain();
+                }
 
-            }, 500);
+            }, 480);
 
     }
 
 
     /* ==================================================
-       CODED MEGA BURST
+       GRAND WHITE FLASH
     ================================================== */
 
-    function createMegaBurst() {
+    function createGrandFlash() {
 
-        for (let i = 0; i < 70; i++) {
+        const flash =
+            document.createElement("div");
 
-            const particle =
+        flash.style.position = "fixed";
+        flash.style.inset = "0";
+        flash.style.background = "#ffffff";
+        flash.style.zIndex = "1500";
+        flash.style.pointerEvents = "none";
+
+        document.body.appendChild(flash);
+
+        flash.animate(
+            [
+                {
+                    opacity: 0
+                },
+                {
+                    opacity: 0.95
+                },
+                {
+                    opacity: 0
+                }
+            ],
+            {
+                duration: 900,
+                easing: "ease-out"
+            }
+        );
+
+        setTimeout(function () {
+            flash.remove();
+        }, 1000);
+
+    }
+
+
+    /* ==================================================
+       CODED FIREWORK BURST
+    ================================================== */
+
+    function createFireworkBurst() {
+
+        const x =
+            5 +
+            Math.random() * 90;
+
+        const y =
+            10 +
+            Math.random() * 55;
+
+        playSound(
+            crackleSound,
+            0.32
+        );
+
+        const core =
+            document.createElement("div");
+
+        core.className =
+            "coded-firework-core";
+
+        core.style.left =
+            x + "%";
+
+        core.style.top =
+            y + "%";
+
+        document.body.appendChild(core);
+
+        core.animate(
+            [
+                {
+                    transform: "scale(0)",
+                    opacity: 0
+                },
+                {
+                    transform: "scale(1)",
+                    opacity: 1
+                },
+                {
+                    transform: "scale(3)",
+                    opacity: 0
+                }
+            ],
+            {
+                duration: 450
+            }
+        );
+
+        setTimeout(function () {
+            core.remove();
+        }, 600);
+
+
+        /*
+            Large radial firework.
+        */
+
+        const particleCount =
+            28 +
+            Math.floor(
+                Math.random() * 18
+            );
+
+        for (
+            let i = 0;
+            i < particleCount;
+            i++
+        ) {
+
+            const spark =
                 document.createElement("div");
 
-            particle.className =
-                "celebration-particle";
+            spark.className =
+                "coded-firework-spark";
 
+            spark.style.left =
+                x + "%";
 
-            /* CODED SPARKLE */
-
-            particle.style.width =
-                (
-                    3 +
-                    Math.random() * 7
-                ) + "px";
-
-            particle.style.height =
-                (
-                    3 +
-                    Math.random() * 7
-                ) + "px";
-
-            particle.style.borderRadius =
-                "50%";
-
-            particle.style.background =
-                "#fff7b0";
-
-            particle.style.boxShadow =
-                "0 0 8px #ffffff, 0 0 18px #ffd45c";
-
-
-            particle.style.left = "50%";
-            particle.style.top = "50%";
-
-
-            document.body.appendChild(particle);
-
+            spark.style.top =
+                y + "%";
 
             const angle =
                 Math.random() *
@@ -498,20 +530,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 2;
 
             const distance =
-                100 +
-                Math.random() * 450;
+                80 +
+                Math.random() *
+                250;
 
-
-            const x =
+            const dx =
                 Math.cos(angle) *
                 distance;
 
-            const y =
+            const dy =
                 Math.sin(angle) *
                 distance;
 
+            const size =
+                3 +
+                Math.random() * 6;
 
-            particle.animate(
+            spark.style.width =
+                size + "px";
+
+            spark.style.height =
+                size + "px";
+
+            document.body.appendChild(spark);
+
+            spark.animate(
                 [
                     {
                         transform:
@@ -520,238 +563,32 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     {
                         transform:
-                            "translate(-50%,-50%) scale(1.4)",
+                            "translate(-50%,-50%) scale(1.5)",
                         opacity: 1
                     },
                     {
                         transform:
                             "translate(calc(-50% + " +
-                            x +
+                            dx +
                             "px), calc(-50% + " +
-                            y +
+                            dy +
                             "px)) scale(.1)",
                         opacity: 0
                     }
                 ],
                 {
                     duration:
-                        800 +
-                        Math.random() * 1000,
-
-                    easing:
-                        "cubic-bezier(.2,.8,.2,1)"
-                }
-            );
-
-
-            setTimeout(function () {
-
-                particle.remove();
-
-            }, 2200);
-
-        }
-
-    }
-
-
-    /* ==================================================
-       CODED SPARKLE WAVE
-    ================================================== */
-
-    function createSparkleWave() {
-
-        for (let i = 0; i < 20; i++) {
-
-            const particle =
-                document.createElement("div");
-
-            particle.className =
-                "celebration-particle";
-
-
-            particle.style.width =
-                (
-                    3 +
-                    Math.random() * 6
-                ) + "px";
-
-            particle.style.height =
-                (
-                    3 +
-                    Math.random() * 6
-                ) + "px";
-
-            particle.style.borderRadius =
-                "50%";
-
-            particle.style.background =
-                "#ffffff";
-
-            particle.style.boxShadow =
-                "0 0 8px #ffffff, 0 0 20px #ffd85c";
-
-
-            particle.style.left =
-                Math.random() * 100 + "%";
-
-            particle.style.top =
-                Math.random() * 100 + "%";
-
-
-            document.body.appendChild(particle);
-
-
-            particle.animate(
-                [
-                    {
-                        transform:
-                            "scale(.1)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "scale(2)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "scale(.1)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        600 +
-                        Math.random() * 700
-                }
-            );
-
-
-            setTimeout(function () {
-
-                particle.remove();
-
-            }, 1600);
-
-        }
-
-    }
-
-
-    /* ==================================================
-       CODED CONFETTI
-    ================================================== */
-
-    function createConfettiBurst() {
-
-        const x =
-            Math.random() *
-            window.innerWidth;
-
-        const y =
-            window.innerHeight * .08;
-
-
-        for (let i = 0; i < 25; i++) {
-
-            const piece =
-                document.createElement("div");
-
-            piece.className =
-                "celebration-particle";
-
-
-            const size =
-                5 +
-                Math.random() * 8;
-
-
-            piece.style.width =
-                size + "px";
-
-            piece.style.height =
-                (
-                    size * 1.8
-                ) + "px";
-
-
-            piece.style.borderRadius =
-                Math.random() > .5
-                    ? "2px"
-                    : "50%";
-
-
-            piece.style.background =
-                [
-                    "#8f243d",
-                    "#b52d51",
-                    "#e2a31a",
-                    "#f08ba3",
-                    "#ffffff"
-                ][
-                    Math.floor(
-                        Math.random() * 5
-                    )
-                ];
-
-
-            piece.style.left =
-                x + "px";
-
-            piece.style.top =
-                y + "px";
-
-
-            document.body.appendChild(piece);
-
-
-            const moveX =
-                (
-                    Math.random() - .5
-                ) * 400;
-
-            const moveY =
-                250 +
-                Math.random() * 500;
-
-
-            piece.animate(
-                [
-                    {
-                        transform:
-                            "translate(0,0) rotate(0deg)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            moveX +
-                            "px," +
-                            moveY +
-                            "px) rotate(" +
-                            (
-                                Math.random() * 1000
-                            ) +
-                            "deg)",
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration:
-                        1000 +
+                        700 +
                         Math.random() * 900,
 
-                    easing: "ease-out"
+                    easing:
+                        "cubic-bezier(.1,.8,.2,1)"
                 }
             );
 
-
             setTimeout(function () {
-
-                piece.remove();
-
-            }, 2300);
+                spark.remove();
+            }, 1900);
 
         }
 
@@ -759,444 +596,482 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* ==================================================
-       CODED BALLOON
+       CODED CRACKER EXPLOSION
     ================================================== */
 
-    function createBalloonBurst() {
+    function createCrackerExplosion() {
 
         const x =
-            70 +
-            Math.random() *
-            (
-                window.innerWidth - 140
-            );
+            Math.random() * 100;
 
         const y =
-            120 +
-            Math.random() *
-            (
-                window.innerHeight * .45
-            );
+            20 +
+            Math.random() * 65;
 
+        const cracker =
+            document.createElement("div");
 
-        playSound(
-            balloonSound,
-            0.35
+        cracker.className =
+            "coded-cracker";
+
+        cracker.style.left =
+            x + "%";
+
+        cracker.style.top =
+            y + "%";
+
+        document.body.appendChild(cracker);
+
+        cracker.animate(
+            [
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(.1)",
+                    opacity: 0
+                },
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(1)",
+                    opacity: 1
+                },
+                {
+                    transform:
+                        "translate(-50%,-50%) scale(1.8)",
+                    opacity: 0
+                }
+            ],
+            {
+                duration: 400
+            }
         );
 
-
-        const balloon =
-            document.createElement("div");
-
-        balloon.className =
-            "celebration-particle";
-
-
-        balloon.style.position =
-            "fixed";
-
-        balloon.style.left =
-            x + "px";
-
-        balloon.style.top =
-            y + "px";
-
-
-        balloon.style.width =
-            "42px";
-
-        balloon.style.height =
-            "52px";
-
-
-        balloon.style.borderRadius =
-            "50% 50% 48% 48%";
-
-
-        balloon.style.background =
-            [
-                "linear-gradient(135deg,#f08ba3,#a92549)",
-                "linear-gradient(135deg,#ffd2dc,#d94d6c)",
-                "linear-gradient(135deg,#ffffff,#f08ba3)"
-            ][
-                Math.floor(
-                    Math.random() * 3
-                )
-            ];
-
-
-        balloon.style.boxShadow =
-            "inset -8px -10px 15px rgba(90,10,30,.15), 0 8px 20px rgba(90,10,30,.2)";
-
-
-        balloon.style.zIndex =
-            "1200";
-
-
-        document.body.appendChild(balloon);
-
-
-        /* BALLOON STRING */
-
-        const string =
-            document.createElement("div");
-
-        string.style.position =
-            "fixed";
-
-        string.style.left =
-            (
-                x + 21
-            ) + "px";
-
-        string.style.top =
-            (
-                y + 50
-            ) + "px";
-
-        string.style.width =
-            "1px";
-
-        string.style.height =
-            "80px";
-
-        string.style.background =
-            "rgba(80,30,40,.35)";
-
-        string.style.zIndex =
-            "1199";
-
-
-        document.body.appendChild(string);
-
-
         setTimeout(function () {
-
-            balloon.animate(
-                [
-                    {
-                        transform:
-                            "scale(.5)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "scale(1.15)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "scale(1)",
-                        opacity: 1
-                    }
-                ],
-                {
-                    duration: 350
-                }
-            );
-
-        }, 10);
-
-
-        setTimeout(function () {
-
-            /* POP */
-
-            balloon.animate(
-                [
-                    {
-                        transform:
-                            "scale(1)"
-                    },
-                    {
-                        transform:
-                            "scale(1.3)"
-                    },
-                    {
-                        transform:
-                            "scale(.05)"
-                    }
-                ],
-                {
-                    duration: 280
-                }
-            );
-
-
-            string.animate(
-                [
-                    {
-                        opacity: 1
-                    },
-                    {
-                        opacity: 0
-                    }
-                ],
-                {
-                    duration: 250
-                }
-            );
-
-
-            /* CODED POP PARTICLES */
-
-            for (let i = 0; i < 18; i++) {
-
-                const spark =
-                    document.createElement("div");
-
-                spark.style.position =
-                    "fixed";
-
-                spark.style.left =
-                    x + 21 + "px";
-
-                spark.style.top =
-                    y + 25 + "px";
-
-                spark.style.width =
-                    "5px";
-
-                spark.style.height =
-                    "5px";
-
-                spark.style.borderRadius =
-                    "50%";
-
-                spark.style.background =
-                    "#ffd85c";
-
-                spark.style.boxShadow =
-                    "0 0 10px #fff";
-
-
-                document.body.appendChild(spark);
-
-
-                const angle =
-                    Math.random() *
-                    Math.PI *
-                    2;
-
-                const distance =
-                    40 +
-                    Math.random() *
-                    100;
-
-
-                spark.animate(
-                    [
-                        {
-                            transform:
-                                "translate(0,0) scale(1)",
-                            opacity: 1
-                        },
-                        {
-                            transform:
-                                "translate(" +
-                                Math.cos(angle) *
-                                distance +
-                                "px," +
-                                Math.sin(angle) *
-                                distance +
-                                "px) scale(.1)",
-                            opacity: 0
-                        }
-                    ],
-                    {
-                        duration:
-                            450 +
-                            Math.random() * 300
-                    }
-                );
-
-
-                setTimeout(function () {
-                    spark.remove();
-                }, 1000);
-
-            }
-
+            cracker.remove();
         }, 550);
 
 
-        setTimeout(function () {
+        /*
+            Tiny cracker sparks.
+        */
 
-            balloon.remove();
-            string.remove();
+        for (let i = 0; i < 14; i++) {
 
-        }, 1500);
+            const spark =
+                document.createElement("div");
+
+            spark.className =
+                "cracker-spark";
+
+            spark.style.left =
+                x + "%";
+
+            spark.style.top =
+                y + "%";
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+            const distance =
+                30 +
+                Math.random() * 120;
+
+            const dx =
+                Math.cos(angle) *
+                distance;
+
+            const dy =
+                Math.sin(angle) *
+                distance;
+
+            document.body.appendChild(spark);
+
+            spark.animate(
+                [
+                    {
+                        transform:
+                            "translate(-50%,-50%) scale(1)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "translate(calc(-50% + " +
+                            dx +
+                            "px), calc(-50% + " +
+                            dy +
+                            "px)) scale(0)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        350 +
+                        Math.random() * 450
+                }
+            );
+
+            setTimeout(function () {
+                spark.remove();
+            }, 900);
+
+        }
 
     }
 
 
     /* ==================================================
        CODED PARTY POPPER
+       NO EMOJI
     ================================================== */
 
-    function createPopperBurst() {
+    function createCodedPopper(count) {
 
-        const leftSide =
-            Math.random() < .5;
+        for (
+            let c = 0;
+            c < count;
+            c++
+        ) {
 
+            const fromLeft =
+                Math.random() > 0.5;
 
-        const x =
-            leftSide
-                ? 70
-                : window.innerWidth - 70;
+            const x =
+                fromLeft
+                    ? -10
+                    : 110;
 
+            const y =
+                55 +
+                Math.random() * 25;
 
-        const y =
-            window.innerHeight *
-            (
-                .35 +
-                Math.random() * .25
+            const popper =
+                document.createElement("div");
+
+            popper.className =
+                "coded-popper";
+
+            popper.style.left =
+                x + "%";
+
+            popper.style.top =
+                y + "%";
+
+            popper.style.transform =
+                fromLeft
+                    ? "rotate(-25deg)"
+                    : "rotate(25deg)";
+
+            document.body.appendChild(popper);
+
+            playSound(
+                popperSound,
+                0.25
             );
 
 
-        playSound(
-            popperSound,
-            0.4
-        );
+            for (let i = 0; i < 18; i++) {
 
+                const piece =
+                    document.createElement("div");
 
-        /* POPPER BODY */
+                piece.className =
+                    "coded-popper-piece";
 
-        const popper =
-            document.createElement("div");
+                piece.style.left =
+                    x + "%";
 
-        popper.style.position =
-            "fixed";
+                piece.style.top =
+                    y + "%";
 
-        popper.style.left =
-            x + "px";
+                const direction =
+                    fromLeft ? 1 : -1;
 
-        popper.style.top =
-            y + "px";
+                const dx =
+                    direction *
+                    (
+                        100 +
+                        Math.random() * 350
+                    );
 
-        popper.style.width =
-            "25px";
+                const dy =
+                    (
+                        Math.random() - 0.5
+                    ) *
+                    280;
 
-        popper.style.height =
-            "70px";
+                document.body.appendChild(piece);
 
-        popper.style.borderRadius =
-            "7px";
+                piece.animate(
+                    [
+                        {
+                            transform:
+                                "translate(-50%,-50%) scale(1)",
+                            opacity: 1
+                        },
+                        {
+                            transform:
+                                "translate(calc(-50% + " +
+                                dx +
+                                "px), calc(-50% + " +
+                                dy +
+                                "px)) rotate(" +
+                                (
+                                    Math.random() * 720
+                                ) +
+                                "deg) scale(.2)",
+                            opacity: 0
+                        }
+                    ],
+                    {
+                        duration:
+                            700 +
+                            Math.random() * 700,
 
-        popper.style.background =
-            "linear-gradient(135deg,#7d1834,#e15a78)";
-
-        popper.style.transform =
-            leftSide
-                ? "rotate(-25deg)"
-                : "rotate(25deg)";
-
-        popper.style.boxShadow =
-            "0 8px 20px rgba(80,10,30,.25)";
-
-        popper.style.zIndex =
-            "1200";
-
-
-        document.body.appendChild(popper);
-
-
-        /* BURST PARTICLES */
-
-        for (let i = 0; i < 22; i++) {
-
-            const piece =
-                document.createElement("div");
-
-            piece.style.position =
-                "fixed";
-
-            piece.style.left =
-                x + "px";
-
-            piece.style.top =
-                y + "px";
-
-
-            const width =
-                4 +
-                Math.random() * 7;
-
-            const height =
-                10 +
-                Math.random() * 14;
-
-
-            piece.style.width =
-                width + "px";
-
-            piece.style.height =
-                height + "px";
-
-
-            piece.style.borderRadius =
-                "2px";
-
-
-            piece.style.background =
-                [
-                    "#a92549",
-                    "#e2a31a",
-                    "#f08ba3",
-                    "#ffffff"
-                ][
-                    Math.floor(
-                        Math.random() * 4
-                    )
-                ];
-
-
-            piece.style.zIndex =
-                "1250";
-
-
-            document.body.appendChild(piece);
-
-
-            const direction =
-                leftSide
-                    ? 1
-                    : -1;
-
-
-            const moveX =
-                direction *
-                (
-                    80 +
-                    Math.random() * 260
+                        easing: "ease-out"
+                    }
                 );
 
+                setTimeout(function () {
+                    piece.remove();
+                }, 1600);
 
-            const moveY =
-                (
-                    Math.random() - .5
-                ) *
-                280;
+            }
+
+            setTimeout(function () {
+                popper.remove();
+            }, 900);
+
+        }
+
+    }
 
 
-            piece.animate(
+    /* ==================================================
+       CODED FLOWER SHOWER
+    ================================================== */
+
+    function createFlowerShower() {
+
+        const flower =
+            document.createElement("div");
+
+        flower.className =
+            "coded-flower";
+
+        flower.style.left =
+            Math.random() * 100 + "%";
+
+        flower.style.top =
+            "-40px";
+
+        const size =
+            10 +
+            Math.random() * 18;
+
+        flower.style.width =
+            size + "px";
+
+        flower.style.height =
+            size + "px";
+
+        document.body.appendChild(flower);
+
+        const x =
+            (
+                Math.random() - 0.5
+            ) *
+            220;
+
+        const y =
+            window.innerHeight +
+            100;
+
+        flower.animate(
+            [
+                {
+                    transform:
+                        "translateY(0) rotate(0deg)",
+                    opacity: 0
+                },
+                {
+                    transform:
+                        "translateY(150px) rotate(180deg)",
+                    opacity: 1
+                },
+                {
+                    transform:
+                        "translate(" +
+                        x +
+                        "px," +
+                        y +
+                        "px) rotate(720deg)",
+                    opacity: 0
+                }
+            ],
+            {
+                duration:
+                    2500 +
+                    Math.random() * 1800,
+
+                easing: "ease-in"
+            }
+        );
+
+        setTimeout(function () {
+            flower.remove();
+        }, 5000);
+
+    }
+
+
+    /* ==================================================
+       SPARKLE STORM
+    ================================================== */
+
+    function createSparkleStorm() {
+
+        for (let i = 0; i < 20; i++) {
+
+            const sparkle =
+                document.createElement("div");
+
+            sparkle.className =
+                "coded-sparkle";
+
+            sparkle.style.left =
+                Math.random() * 100 + "%";
+
+            sparkle.style.top =
+                Math.random() * 100 + "%";
+
+            const size =
+                3 +
+                Math.random() * 8;
+
+            sparkle.style.width =
+                size + "px";
+
+            sparkle.style.height =
+                size + "px";
+
+            document.body.appendChild(sparkle);
+
+            sparkle.animate(
                 [
                     {
                         transform:
-                            "translate(0,0) rotate(0deg) scale(1)",
+                            "scale(0) rotate(0deg)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "scale(2) rotate(180deg)",
+                        opacity: 1
+                    },
+                    {
+                        transform:
+                            "scale(0) rotate(360deg)",
+                        opacity: 0
+                    }
+                ],
+                {
+                    duration:
+                        500 +
+                        Math.random() * 700
+                }
+            );
+
+            setTimeout(function () {
+                sparkle.remove();
+            }, 1400);
+
+        }
+
+    }
+
+
+    /* ==================================================
+       GROUND FOUNTAIN
+    ================================================== */
+
+    function createGroundFountain() {
+
+        const fountain =
+            document.createElement("div");
+
+        fountain.className =
+            "coded-fountain";
+
+        fountain.style.left =
+            (
+                10 +
+                Math.random() * 80
+            ) + "%";
+
+        fountain.style.bottom =
+            "0px";
+
+        document.body.appendChild(fountain);
+
+        for (let i = 0; i < 24; i++) {
+
+            const spark =
+                document.createElement("div");
+
+            spark.className =
+                "fountain-spark";
+
+            fountain.appendChild(spark);
+
+            const angle =
+                (
+                    -Math.PI +
+                    Math.random() *
+                    Math.PI
+                );
+
+            const distance =
+                100 +
+                Math.random() * 240;
+
+            const dx =
+                Math.cos(angle) *
+                distance;
+
+            const dy =
+                -(
+                    60 +
+                    Math.random() *
+                    240
+                );
+
+            spark.animate(
+                [
+                    {
+                        transform:
+                            "translate(0,0) scale(.4)",
+                        opacity: 0
+                    },
+                    {
+                        transform:
+                            "translate(" +
+                            dx * 0.5 +
+                            "px," +
+                            dy * 0.5 +
+                            "px) scale(1)",
                         opacity: 1
                     },
                     {
                         transform:
                             "translate(" +
-                            moveX +
+                            dx +
                             "px," +
-                            moveY +
-                            "px) rotate(" +
                             (
-                                Math.random() * 800
+                                dy +
+                                100
                             ) +
-                            "deg) scale(.2)",
+                            "px) scale(.1)",
                         opacity: 0
                     }
                 ],
@@ -1209,179 +1084,40 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             );
 
-
-            setTimeout(function () {
-
-                piece.remove();
-
-            }, 1700);
-
         }
 
-
         setTimeout(function () {
-
-            popper.animate(
-                [
-                    {
-                        transform:
-                            leftSide
-                                ? "rotate(-25deg) scale(1)"
-                                : "rotate(25deg) scale(1)"
-                    },
-                    {
-                        transform:
-                            leftSide
-                                ? "rotate(-25deg) scale(.6)"
-                                : "rotate(25deg) scale(.6)"
-                    }
-                ],
-                {
-                    duration: 250
-                }
-            );
-
-        }, 350);
-
-
-        setTimeout(function () {
-
-            popper.remove();
-
-        }, 1000);
+            fountain.remove();
+        }, 1600);
 
     }
 
 
     /* ==================================================
-       CODED FIREWORK / CRACKLE
+       FINISH
     ================================================== */
 
-    function createFirework() {
+    function finishCelebration() {
 
-        const x =
-            10 +
-            Math.random() * 80;
+        /*
+            One final elegant burst before
+            the birthday popup appears.
+        */
 
-        const y =
-            15 +
-            Math.random() * 45;
+        createGrandFlash();
 
+        for (let i = 0; i < 50; i++) {
 
-        playSound(
-            crackleSound,
-            0.35
-        );
-
-
-        /* CENTER FLASH */
-
-        const center =
-            document.createElement("div");
-
-        center.style.position =
-            "fixed";
-
-        center.style.left =
-            x + "%";
-
-        center.style.top =
-            y + "%";
-
-        center.style.width =
-            "12px";
-
-        center.style.height =
-            "12px";
-
-        center.style.borderRadius =
-            "50%";
-
-        center.style.background =
-            "#fff";
-
-        center.style.boxShadow =
-            "0 0 15px #fff, 0 0 35px #ffd85c";
-
-        center.style.zIndex =
-            "1300";
-
-
-        document.body.appendChild(center);
-
-
-        center.animate(
-            [
-                {
-                    transform:
-                        "scale(.1)",
-                    opacity: 0
-                },
-                {
-                    transform:
-                        "scale(2)",
-                    opacity: 1
-                },
-                {
-                    transform:
-                        "scale(.1)",
-                    opacity: 0
-                }
-            ],
-            {
-                duration: 500
-            }
-        );
-
-
-        /* RADIAL CRACKLE */
-
-        for (let i = 0; i < 28; i++) {
-
-            const spark =
+            const sparkle =
                 document.createElement("div");
 
-            spark.style.position =
-                "fixed";
+            sparkle.className =
+                "coded-sparkle";
 
-            spark.style.left =
-                x + "%";
+            sparkle.style.left = "50%";
+            sparkle.style.top = "50%";
 
-            spark.style.top =
-                y + "%";
-
-            spark.style.width =
-                "4px";
-
-            spark.style.height =
-                "18px";
-
-            spark.style.borderRadius =
-                "5px";
-
-            spark.style.background =
-                [
-                    "#fff",
-                    "#ffd85c",
-                    "#f08ba3"
-                ][
-                    Math.floor(
-                        Math.random() * 3
-                    )
-                ];
-
-            spark.style.boxShadow =
-                "0 0 8px rgba(255,255,255,.9)";
-
-            spark.style.transformOrigin =
-                "center bottom";
-
-            spark.style.zIndex =
-                "1300";
-
-
-            document.body.appendChild(spark);
-
+            document.body.appendChild(sparkle);
 
             const angle =
                 Math.random() *
@@ -1389,86 +1125,54 @@ document.addEventListener("DOMContentLoaded", function () {
                 2;
 
             const distance =
-                50 +
-                Math.random() * 180;
+                100 +
+                Math.random() *
+                450;
 
-
-            const moveX =
+            const x =
                 Math.cos(angle) *
                 distance;
 
-            const moveY =
+            const y =
                 Math.sin(angle) *
                 distance;
 
-
-            spark.animate(
+            sparkle.animate(
                 [
                     {
                         transform:
-                            "translate(0,0) rotate(" +
-                            angle +
-                            "rad) scale(.2)",
+                            "translate(-50%,-50%) scale(.1)",
                         opacity: 0
                     },
                     {
                         transform:
-                            "translate(" +
-                            moveX +
-                            "px," +
-                            moveY +
-                            "px) rotate(" +
-                            angle +
-                            "rad) scale(1)",
+                            "translate(-50%,-50%) scale(1.8)",
                         opacity: 1
                     },
                     {
                         transform:
-                            "translate(" +
-                            moveX * 1.2 +
-                            "px," +
-                            moveY * 1.2 +
-                            "px) rotate(" +
-                            angle +
-                            "rad) scale(.1)",
+                            "translate(calc(-50% + " +
+                            x +
+                            "px), calc(-50% + " +
+                            y +
+                            "px)) scale(0)",
                         opacity: 0
                     }
                 ],
                 {
                     duration:
-                        650 +
-                        Math.random() * 500,
+                        900 +
+                        Math.random() * 700,
 
                     easing: "ease-out"
                 }
             );
 
-
             setTimeout(function () {
-
-                spark.remove();
-
-            }, 1600);
+                sparkle.remove();
+            }, 1800);
 
         }
-
-
-        setTimeout(function () {
-
-            center.remove();
-
-        }, 800);
-
-    }
-
-
-    /* =========================
-       FINISH
-    ========================== */
-
-    function finishCelebration() {
-
-        createMegaBurst();
 
 
         setTimeout(function () {
@@ -1480,14 +1184,14 @@ document.addEventListener("DOMContentLoaded", function () {
             cakeInstruction.textContent =
                 "Happy Birthday, beautiful girl. ❤️";
 
-        }, 900);
+        }, 1000);
 
     }
 
 
-    /* =========================
+    /* ==================================================
        PAGE 3
-    ========================== */
+    ================================================== */
 
     get("page3-button").addEventListener(
         "click",
