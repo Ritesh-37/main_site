@@ -1,780 +1,892 @@
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        /* =====================================================
-           HELPERS
-        ===================================================== */
+    /* =====================================================
+       HELPERS
+    ===================================================== */
 
-        function get(id) {
-            return document.getElementById(id);
+    function get(id) {
+        return document.getElementById(id);
+    }
+
+
+    function playSound(audio, volume) {
+
+        if (!audio) {
+            return;
         }
 
+        try {
 
-        function playSound(audio, volume) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = volume || 0.5;
 
-            if (!audio) {
-                return;
+            const promise = audio.play();
+
+            if (promise) {
+                promise.catch(function () {});
             }
 
-            try {
+        } catch (error) {
+            console.log("Audio error:", error);
+        }
+    }
 
-                audio.pause();
 
-                audio.currentTime = 0;
+    /* =====================================================
+       AUDIO
+    ===================================================== */
 
-                audio.volume = volume || 0.5;
+    const music = get("birthday-music");
+    const musicButton = get("music-button");
 
-                const promise = audio.play();
+    const cameraSound = get("camera-sound");
+    const pourSound = get("pour-sound");
+    const glassSound = get("glass-sound");
 
-                if (promise) {
-                    promise.catch(function () {});
-                }
 
-            } catch (error) {
-                console.log(error);
-            }
+    function startMusic() {
+
+        if (!music) {
+            return;
         }
 
+        music.volume = 0.35;
 
-        /* =====================================================
-           AUDIO
-        ===================================================== */
+        const promise = music.play();
 
-        const music = get("page3-music");
-        const musicButton = get("music-button");
+        if (promise) {
 
-        const cameraSound = get("camera-sound");
-        const wineSound = get("wine-pour-sound");
-        const glassSound = get("glass-sound");
+            promise
+                .then(function () {
+                    musicButton.textContent = "♫";
+                })
+                .catch(function () {
+                    musicButton.textContent = "🔇";
+                });
+
+        }
+    }
 
 
-        function startMusic() {
+    musicButton.addEventListener(
+        "click",
+        function () {
 
             if (!music) {
                 return;
             }
 
-            music.volume = 0.32;
+            if (music.paused) {
 
-            const promise = music.play();
-
-            if (promise) {
-
-                promise
+                music.play()
                     .then(function () {
                         musicButton.textContent = "♫";
                     })
-                    .catch(function () {
-                        musicButton.textContent = "🔇";
-                    });
+                    .catch(function () {});
 
+            } else {
+
+                music.pause();
+
+                musicButton.textContent = "🔇";
             }
+
         }
+    );
 
 
-        musicButton.addEventListener(
-            "click",
-            function () {
+    /* =====================================================
+       SECTION SWITCH
+    ===================================================== */
 
-                if (!music) {
-                    return;
-                }
+    function showSection(id) {
 
-                if (music.paused) {
+        document
+            .querySelectorAll(".page-section")
+            .forEach(function (section) {
 
-                    music.play()
-                        .then(function () {
-                            musicButton.textContent = "♫";
-                        })
-                        .catch(function () {});
+                section.classList.remove("active");
 
-                } else {
+            });
 
-                    music.pause();
-
-                    musicButton.textContent = "🔇";
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           SECTION SWITCH
-        ===================================================== */
-
-        function showSection(id) {
-
-            document
-                .querySelectorAll(".page-section")
-                .forEach(function (section) {
-
-                    section.classList.remove("active");
-
-                });
-
+        setTimeout(function () {
 
             const target = get(id);
 
-            if (!target) {
+            if (target) {
+                target.classList.add("active");
+            }
+
+        }, 100);
+    }
+
+
+    /* =====================================================
+       START MUSIC AFTER USER INTERACTION
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function () {
+            startMusic();
+        },
+        {
+            once: true
+        }
+    );
+
+
+    /* =====================================================
+       PHOTO INTRO POPUPS
+    ===================================================== */
+
+    const introButtons =
+        document.querySelectorAll(".intro-next");
+
+
+    introButtons.forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                const next =
+                    button.getAttribute("data-next");
+
+                document
+                    .querySelectorAll(".intro-popup")
+                    .forEach(function (popup) {
+
+                        popup.classList.remove("active");
+
+                    });
+
+                setTimeout(function () {
+
+                    const nextPopup =
+                        get("photo-popup-" + next);
+
+                    if (nextPopup) {
+                        nextPopup.classList.add("active");
+                    }
+
+                }, 100);
+
+            }
+        );
+
+    });
+
+
+    /* =====================================================
+       SHOW CAMERA
+    ===================================================== */
+
+    get("show-camera")
+        .addEventListener(
+            "click",
+            function () {
+
+                document
+                    .querySelectorAll(".intro-popup")
+                    .forEach(function (popup) {
+
+                        popup.classList.remove("active");
+
+                    });
+
+                get("camera-area")
+                    .classList.add("show");
+
+                startMusic();
+
+            }
+        );
+
+
+    /* =====================================================
+       CAMERA COUNTDOWN
+    ===================================================== */
+
+    const camera =
+        get("camera");
+
+    const countdownOverlay =
+        get("countdown-overlay");
+
+    const countdownNumber =
+        get("countdown-number");
+
+    const cameraFlash =
+        get("camera-flash");
+
+    const photoResult =
+        get("photo-result");
+
+
+    let cameraBusy = false;
+
+
+    camera.addEventListener(
+        "click",
+        function () {
+
+            if (cameraBusy) {
                 return;
             }
 
+            cameraBusy = true;
 
-            setTimeout(
-                function () {
-
-                    target.classList.add("active");
-
-                },
-                80
-            );
+            runCountdown();
 
         }
+    );
 
 
-        /* =====================================================
-           START MUSIC AFTER USER ENTERS PAGE
-        ===================================================== */
+    function runCountdown() {
 
-        document.addEventListener(
-            "click",
-            function () {
+        countdownOverlay.classList.add("show");
 
-                if (
-                    music &&
-                    music.paused
-                ) {
-                    startMusic();
-                }
+        const numbers = [
+            "3",
+            "2",
+            "1"
+        ];
 
-            },
-            {
-                once: true
-            }
-        );
+        let index = 0;
 
 
-        /* =====================================================
-           CAMERA
-        ===================================================== */
+        function showNumber() {
 
-        const camera = get("camera");
-        const countdown = get("countdown");
-        const cameraFlash = get("camera-screen-flash");
+            countdownNumber.textContent =
+                numbers[index];
 
-        const photoPopup = get("photo-popup");
-        const photoContinue = get("photo-continue");
+            countdownNumber.style.animation =
+                "none";
 
-        let cameraUsed = false;
+            void countdownNumber.offsetWidth;
 
-
-        camera.addEventListener(
-            "click",
-            function () {
-
-                if (cameraUsed) {
-                    return;
-                }
-
-                cameraUsed = true;
-
-                camera.style.pointerEvents = "none";
-
-                get("camera-hint").style.opacity = "0";
-
-                runCountdown();
-
-            }
-        );
+            countdownNumber.style.animation =
+                "countdownPulse 1s ease";
 
 
-        function runCountdown() {
+            if (index < numbers.length - 1) {
 
-            const numbers = [
-                "3",
-                "2",
-                "1"
-            ];
+                setTimeout(function () {
 
-            let index = 0;
+                    index++;
 
+                    showNumber();
 
-            function showNumber() {
+                }, 1000);
 
-                countdown.textContent =
-                    numbers[index];
+            } else {
 
-                countdown.classList.remove("show");
+                setTimeout(function () {
 
-                void countdown.offsetWidth;
-
-                countdown.classList.add("show");
-
-
-                setTimeout(
-                    function () {
-
-                        index++;
-
-                        if (
-                            index <
-                            numbers.length
-                        ) {
-
-                            showNumber();
-
-                        } else {
-
-                            takePicture();
-
-                        }
-
-                    },
-                    1000
-                );
-
-            }
-
-
-            showNumber();
-
-        }
-
-
-        function takePicture() {
-
-            playSound(
-                cameraSound,
-                0.65
-            );
-
-
-            cameraFlash.classList.remove(
-                "flash"
-            );
-
-            void cameraFlash.offsetWidth;
-
-            cameraFlash.classList.add(
-                "flash"
-            );
-
-
-            setTimeout(
-                function () {
-
-                    photoPopup.classList.add(
+                    countdownOverlay.classList.remove(
                         "show"
                     );
 
-                },
-                400
-            );
+                    takePhotograph();
+
+                }, 1000);
+
+            }
 
         }
 
 
-        photoContinue.addEventListener(
+        showNumber();
+
+    }
+
+
+    /* =====================================================
+       TAKE PHOTOGRAPH
+    ===================================================== */
+
+    function takePhotograph() {
+
+        playSound(
+            cameraSound,
+            0.65
+        );
+
+
+        /* BIG FLASH */
+
+        cameraFlash.classList.remove("flash");
+
+        void cameraFlash.offsetWidth;
+
+        cameraFlash.classList.add("flash");
+
+
+        /* PHOTO */
+
+        setTimeout(function () {
+
+            photoResult.classList.add("show");
+
+        }, 500);
+
+
+        /* CAMERA SHUTTER EFFECT */
+
+        camera.style.transform =
+            "scale(0.94)";
+
+        setTimeout(function () {
+
+            camera.style.transform =
+                "";
+
+        }, 180);
+
+    }
+
+
+    /* =====================================================
+       CONTINUE FROM PHOTO
+    ===================================================== */
+
+    get("photo-continue")
+        .addEventListener(
             "click",
             function () {
 
-                photoPopup.classList.remove(
+                photoResult.classList.remove(
                     "show"
                 );
 
-                setTimeout(
-                    function () {
+                setTimeout(function () {
 
-                        showSection(
-                            "bouquet-section"
-                        );
+                    showSection(
+                        "bouquet-section"
+                    );
 
-                    },
-                    500
-                );
+                }, 300);
 
             }
         );
 
 
-        /* =====================================================
-           BOUQUET
-        ===================================================== */
+    /* =====================================================
+       BOUQUET
+    ===================================================== */
 
-        const bouquet = get("bouquet");
-        const envelope = get("letter-envelope");
-        const letterHint = get("letter-hint");
+    const bouquet =
+        get("bouquet");
 
-        let bouquetOpened = false;
+    const bouquetButton =
+        get("bouquet-button");
 
+    const bouquetMessage =
+        get("bouquet-message");
 
-        bouquet.addEventListener(
-            "click",
-            function () {
-
-                if (bouquetOpened) {
-                    return;
-                }
-
-                bouquetOpened = true;
-
-                bouquet.classList.add(
-                    "open"
-                );
-
-                get("bouquet-hint").style.opacity =
-                    "0";
+    const letterButton =
+        get("letter-button");
 
 
-                setTimeout(
-                    function () {
+    bouquetButton.addEventListener(
+        "click",
+        function () {
 
-                        envelope.classList.add(
-                            "show"
-                        );
+            bouquet.classList.remove("active");
 
-                        letterHint.classList.add(
-                            "show"
-                        );
+            void bouquet.offsetWidth;
 
-                    },
-                    1000
-                );
+            bouquet.classList.add("active");
 
-            }
-        );
+            bouquetMessage.classList.add("show");
 
-
-        /* =====================================================
-           ENVELOPE
-        ===================================================== */
-
-        let envelopeOpened = false;
+            createHeartParticles(
+                window.innerWidth / 2,
+                window.innerHeight / 2,
+                16
+            );
 
 
-        envelope.addEventListener(
-            "click",
-            function () {
+            setTimeout(function () {
 
-                if (envelopeOpened) {
-                    return;
-                }
-
-                envelopeOpened = true;
-
-                envelope.classList.add(
-                    "open"
-                );
-
-                letterHint.classList.remove(
+                letterButton.classList.add(
                     "show"
                 );
 
+            }, 800);
 
-                setTimeout(
-                    function () {
+        }
+    );
 
-                        showSection(
-                            "letter-section"
-                        );
 
-                        setTimeout(
-                            function () {
+    /* =====================================================
+       LETTER SECTION
+    ===================================================== */
 
-                                startLetter();
+    letterButton.addEventListener(
+        "click",
+        function () {
 
-                            },
-                            800
-                        );
+            showSection(
+                "letter-section"
+            );
 
-                    },
-                    1200
+        }
+    );
+
+
+    /* =====================================================
+       ENVELOPE
+    ===================================================== */
+
+    const envelope =
+        get("envelope");
+
+    const envelopeInstruction =
+        get("envelope-instruction");
+
+    const letter =
+        get("letter");
+
+    const letterHeartArea =
+        get("letter-heart-area");
+
+
+    envelope.addEventListener(
+        "click",
+        function () {
+
+            if (
+                envelope.classList.contains(
+                    "open"
+                )
+            ) {
+                return;
+            }
+
+            envelope.classList.add("open");
+
+            envelopeInstruction.textContent =
+                "Opening something special for you... ❤️";
+
+
+            setTimeout(function () {
+
+                letter.classList.add("show");
+
+            }, 600);
+
+
+            setTimeout(function () {
+
+                letterHeartArea.classList.add(
+                    "show"
                 );
 
-            }
-        );
+            }, 1800);
+
+        }
+    );
 
 
-        /* =====================================================
-           LETTER
-        ===================================================== */
+    /* =====================================================
+       HEART
+    ===================================================== */
 
-        const letterText = get("letter-text");
-        const letterSignature =
-            get("letter-signature");
+    const heartButton =
+        get("heart-button");
 
-        const letterContinue =
-            get("letter-continue");
+    const heartMessage =
+        get("heart-message");
+
+    const wineButton =
+        get("wine-button");
 
 
-        const letterLines = [
+    heartButton.addEventListener(
+        "click",
+        function () {
 
-            "There are some things I don't say often enough...",
+            heartButton.classList.remove("beat");
 
-            "You make ordinary days feel a little more beautiful.",
+            void heartButton.offsetWidth;
 
-            "Somehow, somewhere along the way, you became such a special part of my life.",
+            heartButton.classList.add("beat");
 
-            "And today, more than anything, I just want you to know how loved you are.",
+            heartMessage.classList.add(
+                "show"
+            );
 
-            "I hope this new year of your life brings you everything your beautiful heart deserves.",
 
-            "And if I get to be there beside you through it all...",
+            createHeartParticles(
+                window.innerWidth / 2,
+                window.innerHeight / 2,
+                25
+            );
 
-            "well, I think I'd call myself pretty lucky. ❤️"
 
+            setTimeout(function () {
+
+                wineButton.style.opacity =
+                    "1";
+
+            }, 500);
+
+        }
+    );
+
+
+    /* =====================================================
+       HEART PARTICLES
+    ===================================================== */
+
+    function createHeartParticles(
+        x,
+        y,
+        amount
+    ) {
+
+        const symbols = [
+            "♥",
+            "✦",
+            "✧",
+            "✨"
         ];
 
 
-        let letterStarted = false;
+        for (
+            let i = 0;
+            i < amount;
+            i++
+        ) {
 
-
-        function startLetter() {
-
-            if (letterStarted) {
-                return;
-            }
-
-            letterStarted = true;
-
-            letterText.innerHTML = "";
-
-            typeLetterLine(
-                0
-            );
-
-        }
-
-
-        function typeLetterLine(index) {
-
-            if (
-                index >=
-                letterLines.length
-            ) {
-
-                setTimeout(
-                    function () {
-
-                        letterSignature.classList.add(
-                            "show"
-                        );
-
-                        setTimeout(
-                            function () {
-
-                                letterContinue.classList.add(
-                                    "show"
-                                );
-
-                            },
-                            1000
-                        );
-
-                    },
-                    700
-                );
-
-                return;
-            }
-
-
-            const paragraph =
+            const particle =
                 document.createElement(
-                    "p"
+                    "div"
                 );
 
-            paragraph.style.marginBottom =
-                "16px";
+            particle.className =
+                "love-particle";
 
-            letterText.appendChild(
-                paragraph
+            particle.textContent =
+                symbols[
+                    Math.floor(
+                        Math.random() *
+                        symbols.length
+                    )
+                ];
+
+
+            particle.style.left =
+                x + "px";
+
+            particle.style.top =
+                y + "px";
+
+
+            particle.style.setProperty(
+                "--x",
+                (
+                    Math.random() - 0.5
+                ) * 250 + "px"
+            );
+
+            particle.style.setProperty(
+                "--y",
+                -(
+                    50 +
+                    Math.random() * 220
+                ) + "px"
             );
 
 
-            const text =
-                letterLines[index];
-
-            let character = 0;
-
-
-            function typeCharacter() {
-
-                if (
-                    character <
-                    text.length
-                ) {
-
-                    paragraph.textContent +=
-                        text.charAt(
-                            character
-                        );
-
-                    character++;
-
-                    setTimeout(
-                        typeCharacter,
-                        25
-                    );
-
-                } else {
-
-                    setTimeout(
-                        function () {
-
-                            typeLetterLine(
-                                index + 1
-                            );
-
-                        },
-                        350
-                    );
-
-                }
-
-            }
+            document.body.appendChild(
+                particle
+            );
 
 
-            typeCharacter();
+            setTimeout(function () {
+
+                particle.remove();
+
+            }, 1400);
 
         }
 
+    }
 
-        /* =====================================================
-           LETTER → WINE
-        ===================================================== */
 
-        letterContinue.addEventListener(
-            "click",
-            function () {
+    /* =====================================================
+       ENTER WINE
+    ===================================================== */
+
+    wineButton.addEventListener(
+        "click",
+        function () {
+
+            letter.classList.remove(
+                "show"
+            );
+
+            letterHeartArea.classList.remove(
+                "show"
+            );
+
+            setTimeout(function () {
 
                 showSection(
                     "wine-section"
                 );
 
-            }
+            }, 300);
+
+        }
+    );
+
+
+    /* =====================================================
+       WINE SYSTEM
+    ===================================================== */
+
+    const wineBottle =
+        get("wine-bottle");
+
+    const wineInstruction =
+        get("wine-instruction");
+
+    const wineCounter =
+        get("wine-counter");
+
+    const leftLiquid =
+        get("left-liquid");
+
+    const rightLiquid =
+        get("right-liquid");
+
+    const glasses =
+        document.querySelectorAll(
+            ".wine-glass"
         );
 
 
-        /* =====================================================
-           WINE
-        ===================================================== */
+    let bottleClicks = 0;
 
-        const bottle =
-            get("wine-bottle");
+    let bottleEmpty = false;
 
-        const wineLevel =
-            get("wine-level");
-
-        const glassWine =
-            get("glass-wine");
-
-        const wineCount =
-            get("wine-count");
-
-        const dizzyOverlay =
-            get("dizzy-overlay");
-
-        const drunkPopup =
-            get("drunk-popup");
-
-        const nextPage =
-            get("next-page");
+    let glassesEmpty = false;
 
 
-        let wineClicks = 0;
+    /* =====================================================
+       BOTTLE CLICK
+    ===================================================== */
 
-        const totalClicks = 5;
+    wineBottle.addEventListener(
+        "click",
+        function () {
+
+            if (bottleEmpty) {
+                return;
+            }
+
+            bottleClicks++;
 
 
-        bottle.addEventListener(
+            /* BOTTLE ANIMATION */
+
+            wineBottle.classList.remove(
+                "pour"
+            );
+
+            void wineBottle.offsetWidth;
+
+            wineBottle.classList.add(
+                "pour"
+            );
+
+
+            /* SOUND */
+
+            playSound(
+                pourSound,
+                0.45
+            );
+
+
+            /* BOTTLE LIQUID */
+
+            const remainingPercent =
+                Math.max(
+                    0,
+                    100 -
+                    bottleClicks * 20
+                );
+
+
+            document
+                .querySelector(
+                    ".wine-liquid"
+                )
+                .style.height =
+                    remainingPercent + "%";
+
+
+            /* GLASSES FILL */
+
+            const glassPercent =
+                Math.min(
+                    100,
+                    bottleClicks * 20
+                );
+
+
+            leftLiquid.style.height =
+                glassPercent + "%";
+
+            rightLiquid.style.height =
+                glassPercent + "%";
+
+
+            /* COUNTER */
+
+            wineCounter.textContent =
+                bottleClicks +
+                " / 5";
+
+
+            if (
+                bottleClicks < 5
+            ) {
+
+                wineInstruction.textContent =
+                    "Another little pour... 🍷";
+
+            } else {
+
+                bottleEmpty = true;
+
+                wineInstruction.textContent =
+                    "Both glasses are ready... 🥂";
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       GLASS CLICK
+    ===================================================== */
+
+    glasses.forEach(function (glass) {
+
+        glass.addEventListener(
             "click",
             function () {
 
                 if (
-                    wineClicks >=
-                    totalClicks
+                    !bottleEmpty ||
+                    glassesEmpty
                 ) {
                     return;
                 }
 
 
-                wineClicks++;
+                glassesEmpty = true;
 
 
-                playSound(
-                    wineSound,
-                    0.5
-                );
+                /* GLASS ANIMATION */
 
+                glasses.forEach(
+                    function (item) {
 
-                /* =============================================
-                   BOTTLE LEVEL
-                ============================================== */
+                        item.classList.remove(
+                            "clink"
+                        );
 
-                const remaining =
-                    100 -
-                    (
-                        wineClicks *
-                        20
-                    );
+                        void item.offsetWidth;
 
+                        item.classList.add(
+                            "clink"
+                        );
 
-                wineLevel.style.height =
-                    remaining + "%";
-
-
-                /* =============================================
-                   GLASS LEVEL
-                ============================================== */
-
-                const glassHeight =
-                    wineClicks *
-                    15;
-
-                glassWine.style.height =
-                    glassHeight + "px";
-
-
-                /* =============================================
-                   BOTTLE ANIMATION
-                ============================================== */
-
-                bottle.animate(
-                    [
-                        {
-                            transform:
-                                "rotate(0deg)"
-                        },
-                        {
-                            transform:
-                                "rotate(-12deg)"
-                        },
-                        {
-                            transform:
-                                "rotate(0deg)"
-                        }
-                    ],
-                    {
-                        duration: 650,
-                        easing: "ease-in-out"
                     }
                 );
 
 
-                /* =============================================
-                   TEXT
-                ============================================== */
+                /* SOUND */
 
-                if (
-                    wineClicks <
-                    totalClicks
-                ) {
+                playSound(
+                    glassSound,
+                    0.6
+                );
 
-                    const remainingClicks =
-                        totalClicks -
-                        wineClicks;
 
-                    wineCount.textContent =
-                        remainingClicks +
-                        (
-                            remainingClicks === 1
-                                ? " pour left..."
-                                : " pours left..."
-                        );
+                /* EMPTY BOTH */
 
-                } else {
+                leftLiquid.style.height =
+                    "0%";
 
-                    wineCount.textContent =
-                        "BOTTOMS UP... 🍷❤️";
+                rightLiquid.style.height =
+                    "0%";
 
-                    finishWine();
 
-                }
+                wineInstruction.textContent =
+                    "Ummm... sweetheart? 👀";
+
+
+                createHeartParticles(
+                    window.innerWidth / 2,
+                    window.innerHeight / 2,
+                    12
+                );
+
+
+                /* START ENDING */
+
+                setTimeout(function () {
+
+                    startDizzyEnding();
+
+                }, 900);
 
             }
         );
 
-
-        /* =====================================================
-           FINAL WINE
-        ===================================================== */
-
-        function finishWine() {
-
-            bottle.style.pointerEvents =
-                "none";
+    });
 
 
-            setTimeout(
-                function () {
+    /* =====================================================
+       DIZZY ENDING
+    ===================================================== */
 
-                    playSound(
-                        glassSound,
-                        0.7
-                    );
-
-                    glassWine.animate(
-                        [
-                            {
-                                transform:
-                                    "scale(1)"
-                            },
-                            {
-                                transform:
-                                    "scale(1.12)"
-                            },
-                            {
-                                transform:
-                                    "scale(1)"
-                            }
-                        ],
-                        {
-                            duration: 500
-                        }
-                    );
-
-                },
-                500
-            );
+    const dizzyOverlay =
+        get("dizzy-overlay");
 
 
-            setTimeout(
-                function () {
+    function startDizzyEnding() {
 
-                    dizzyOverlay.classList.add(
-                        "active"
-                    );
+        dizzyOverlay.classList.add(
+            "show"
+        );
 
-                },
-                1100
-            );
+    }
 
 
-            setTimeout(
-                function () {
+    /* =====================================================
+       NEXT PAGE
+    ===================================================== */
 
-                    drunkPopup.classList.add(
-                        "show"
-                    );
-
-                },
-                2600
-            );
-
-        }
-
-
-        /* =====================================================
-           NEXT PAGE
-        ===================================================== */
-
-        nextPage.addEventListener(
+    get("next-page")
+        .addEventListener(
             "click",
             function () {
+
+                /*
+                    CHANGE THIS TO YOUR NEXT
+                    PAGE FILE NAME.
+                */
 
                 window.location.href =
                     "page4.html";
@@ -782,5 +894,4 @@ document.addEventListener(
             }
         );
 
-    }
-);
+});
