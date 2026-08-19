@@ -1,1122 +1,834 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    /* =====================================================
-       HELPERS
-    ====================================================== */
+        /* =====================================================
+           HELPERS
+        ====================================================== */
 
-    function get(id) {
-        return document.getElementById(id);
-    }
+        function get(id) {
+            return document.getElementById(id);
+        }
 
-    function showSection(id) {
-        document
-            .querySelectorAll(".page-section")
-            .forEach(function (section) {
-                section.classList.remove("active");
-            });
 
-        setTimeout(function () {
-            const section = get(id);
+        function showSection(id) {
 
-            if (section) {
-                section.classList.add("active");
+            document
+                .querySelectorAll(".page-section")
+                .forEach(function (section) {
+
+                    section.classList.remove("active");
+
+                });
+
+            setTimeout(function () {
+
+                const section = get(id);
+
+                if (section) {
+                    section.classList.add("active");
+                }
+
+            }, 80);
+        }
+
+
+        /* =====================================================
+           ORIGINAL AUDIO ELEMENTS
+           KEEPING WINE SOUNDS
+        ====================================================== */
+
+        const cameraSound =
+            get("camera-sound");
+
+        const wineSound =
+            get("wine-sound");
+
+        const glassSound =
+            get("glass-sound");
+
+
+        function playSound(audio, volume) {
+
+            if (!audio) {
+                return;
             }
-        }, 80);
-    }
-
-
-    /* =====================================================
-       AUDIO ENGINE
-       Android-friendly Web Audio
-    ====================================================== */
-
-    let audioContext = null;
-
-    let masterGain = null;
-    let musicGain = null;
-    let effectGain = null;
-
-    let audioUnlocked = false;
-    let musicPlaying = false;
-    let musicMuted = false;
-
-    let musicTimer = null;
-    let musicStep = 0;
-
-    const musicButton = get("music-button");
-
-
-    function initAudio() {
-
-        if (!audioContext) {
 
             try {
 
-                audioContext = new (
-                    window.AudioContext ||
-                    window.webkitAudioContext
-                )();
+                audio.pause();
+
+                audio.currentTime = 0;
+
+                audio.volume =
+                    volume !== undefined
+                        ? volume
+                        : 0.5;
+
+                const promise =
+                    audio.play();
+
+                if (promise) {
+                    promise.catch(function () {});
+                }
 
             } catch (error) {
 
                 console.log(
-                    "Web Audio is not supported."
+                    "Audio error:",
+                    error
                 );
 
-                return false;
             }
         }
 
 
-        if (
-            audioContext.state === "suspended"
-        ) {
+        /* =====================================================
+           PROCEDURAL AUDIO ENGINE
+        ====================================================== */
 
-            audioContext.resume()
-                .catch(function () {});
+        let audioContext = null;
 
+        let masterGain = null;
+
+        let jazzGain = null;
+
+        let effectGain = null;
+
+        let jazzPlaying = false;
+
+        let jazzTimer = null;
+
+        let jazzStep = 0;
+
+
+        function initAudio() {
+
+            if (!audioContext) {
+
+                try {
+
+                    audioContext =
+                        new (
+                            window.AudioContext ||
+                            window.webkitAudioContext
+                        )();
+
+                } catch (error) {
+
+                    return false;
+
+                }
+
+                masterGain =
+                    audioContext.createGain();
+
+                jazzGain =
+                    audioContext.createGain();
+
+                effectGain =
+                    audioContext.createGain();
+
+
+                masterGain.gain.value =
+                    0.72;
+
+                jazzGain.gain.value =
+                    0.16;
+
+                effectGain.gain.value =
+                    0.35;
+
+
+                jazzGain.connect(
+                    masterGain
+                );
+
+                effectGain.connect(
+                    masterGain
+                );
+
+                masterGain.connect(
+                    audioContext.destination
+                );
+
+            }
+
+
+            if (
+                audioContext.state ===
+                "suspended"
+            ) {
+
+                audioContext.resume()
+                    .catch(function () {});
+
+            }
+
+
+            return true;
         }
 
 
-        if (!masterGain) {
-
-            masterGain =
-                audioContext.createGain();
-
-            musicGain =
-                audioContext.createGain();
-
-            effectGain =
-                audioContext.createGain();
-
-
-            masterGain.gain.value = 0.82;
-
-            musicGain.gain.value = 0.18;
-
-            effectGain.gain.value = 0.45;
-
-
-            musicGain.connect(masterGain);
-
-            effectGain.connect(masterGain);
-
-            masterGain.connect(
-                audioContext.destination
-            );
-        }
-
-
-        audioUnlocked = true;
-
-        return true;
-    }
-
-
-    function unlockAudio() {
-
-        if (!initAudio()) {
-            return;
-        }
-
-        if (
-            audioContext.state === "suspended"
-        ) {
-
-            audioContext.resume()
-                .catch(function () {});
-
-        }
-
-
-        audioUnlocked = true;
-
-
-        if (!musicMuted) {
-            startJazz();
-        }
-    }
-
-
-    document.addEventListener(
-        "click",
-        unlockAudio,
-        { once: true }
-    );
-
-
-    document.addEventListener(
-        "touchstart",
-        unlockAudio,
-        {
-            once: true,
-            passive: true
-        }
-    );
-
-
-    /* =====================================================
-       GENERIC TONE
-    ====================================================== */
-
-    function tone(
-        frequency,
-        duration,
-        volume,
-        type,
-        destination,
-        delay
-    ) {
-
-        if (!initAudio()) {
-            return;
-        }
-
-
-        const start =
-            audioContext.currentTime +
-            (delay || 0);
-
-
-        const oscillator =
-            audioContext.createOscillator();
-
-        const gain =
-            audioContext.createGain();
-
-
-        oscillator.type =
-            type || "sine";
-
-
-        oscillator.frequency.setValueAtTime(
+        function tone(
             frequency,
-            start
-        );
-
-
-        gain.gain.setValueAtTime(
-            0.0001,
-            start
-        );
-
-
-        gain.gain.exponentialRampToValueAtTime(
+            duration,
             volume,
-            start + 0.025
-        );
+            type,
+            destination,
+            delay
+        ) {
 
-
-        gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            start + duration
-        );
-
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            destination || effectGain
-        );
-
-
-        oscillator.start(start);
-
-        oscillator.stop(
-            start + duration + 0.05
-        );
-    }
-
-
-    /* =====================================================
-       AUDIO DUCKING
-    ====================================================== */
-
-    function duckMusic(amount, duration) {
-
-        if (!musicGain || !audioContext) {
-            return;
-        }
-
-
-        const now =
-            audioContext.currentTime;
-
-
-        musicGain.gain.cancelScheduledValues(
-            now
-        );
-
-
-        musicGain.gain.setValueAtTime(
-            musicGain.gain.value,
-            now
-        );
-
-
-        musicGain.gain.linearRampToValueAtTime(
-            amount,
-            now + 0.08
-        );
-
-
-        setTimeout(function () {
-
-            if (!musicGain) {
+            if (!initAudio()) {
                 return;
             }
 
 
-            const current =
-                audioContext.currentTime;
+            const start =
+                audioContext.currentTime +
+                (delay || 0);
 
 
-            musicGain.gain.cancelScheduledValues(
-                current
-            );
-
-
-            musicGain.gain.linearRampToValueAtTime(
-                musicMuted ? 0 : 0.18,
-                current + 0.35
-            );
-
-        }, duration);
-    }
-
-
-    /* =====================================================
-       SOFT BUTTON SOUND
-    ====================================================== */
-
-    function buttonSound() {
-
-        tone(
-            520,
-            0.07,
-            0.025,
-            "sine"
-        );
-
-        tone(
-            760,
-            0.08,
-            0.018,
-            "sine",
-            effectGain,
-            0.04
-        );
-    }
-
-
-    /* =====================================================
-       ROMANTIC JAZZ BGM
-    ====================================================== */
-
-    function startJazz() {
-
-        if (
-            musicPlaying ||
-            musicMuted
-        ) {
-            return;
-        }
-
-
-        if (!initAudio()) {
-            return;
-        }
-
-
-        musicPlaying = true;
-
-        musicStep = 0;
-
-
-        if (musicButton) {
-            musicButton.textContent = "♫";
-        }
-
-
-        playJazzLoop();
-    }
-
-
-    function playJazzLoop() {
-
-        if (
-            !musicPlaying ||
-            musicMuted
-        ) {
-            return;
-        }
-
-
-        /*
-           Soft romantic jazz progression.
-
-           Cmaj7 → Am7 → Dm7 → G7
-        */
-
-        const melody = [
-
-            261.63,
-            329.63,
-            392.00,
-            493.88,
-
-            440.00,
-            523.25,
-            659.25,
-            523.25,
-
-            293.66,
-            349.23,
-            440.00,
-            523.25,
-
-            392.00,
-            493.88,
-            587.33,
-            493.88
-
-        ];
-
-
-        const note =
-            melody[musicStep];
-
-
-        /*
-           Main piano-like melody.
-        */
-
-        tone(
-            note,
-            0.65,
-            0.018,
-            "triangle",
-            musicGain
-        );
-
-
-        /*
-           Warm bass.
-        */
-
-        if (
-            musicStep % 4 === 0
-        ) {
-
-            tone(
-                note / 2,
-                0.85,
-                0.010,
-                "sine",
-                musicGain
-            );
-        }
-
-
-        /*
-           Soft jazz chord shimmer.
-        */
-
-        if (
-            musicStep % 4 === 2
-        ) {
-
-            tone(
-                note * 1.5,
-                0.45,
-                0.007,
-                "sine",
-                musicGain
-            );
-        }
-
-
-        musicStep++;
-
-
-        if (
-            musicStep >= melody.length
-        ) {
-
-            musicStep = 0;
-        }
-
-
-        musicTimer =
-            setTimeout(
-                playJazzLoop,
-                560
-            );
-    }
-
-
-    function stopJazz() {
-
-        musicPlaying = false;
-
-
-        if (musicTimer) {
-
-            clearTimeout(
-                musicTimer
-            );
-
-            musicTimer = null;
-        }
-
-
-        if (musicGain && audioContext) {
-
-            musicGain.gain.cancelScheduledValues(
-                audioContext.currentTime
-            );
-
-            musicGain.gain.linearRampToValueAtTime(
-                0,
-                audioContext.currentTime + 0.25
-            );
-        }
-
-
-        if (musicButton) {
-            musicButton.textContent = "🔇";
-        }
-    }
-
-
-    /* =====================================================
-       MUSIC BUTTON
-    ====================================================== */
-
-    if (musicButton) {
-
-        musicButton.addEventListener(
-            "click",
-            function (event) {
-
-                event.stopPropagation();
-
-                initAudio();
-
-
-                if (musicMuted) {
-
-                    musicMuted = false;
-
-                    if (musicGain) {
-                        musicGain.gain.value = 0.18;
-                    }
-
-                    startJazz();
-
-                } else {
-
-                    musicMuted = true;
-
-                    stopJazz();
-                }
-            }
-        );
-    }
-
-
-    /* =====================================================
-       COUNTDOWN TICK
-    ====================================================== */
-
-    function countdownTick(number) {
-
-        duckMusic(
-            0.07,
-            600
-        );
-
-
-        const frequencies = {
-            3: 440,
-            2: 523.25,
-            1: 659.25
-        };
-
-
-        tone(
-            frequencies[number] || 440,
-            0.16,
-            0.055,
-            "triangle"
-        );
-
-
-        tone(
-            frequencies[number] * 2,
-            0.12,
-            0.018,
-            "sine",
-            effectGain,
-            0.04
-        );
-    }
-
-
-    /* =====================================================
-       FINAL COUNTDOWN CHIME
-    ====================================================== */
-
-    function finalCountdownChime() {
-
-        duckMusic(
-            0.05,
-            700
-        );
-
-
-        tone(
-            523.25,
-            0.28,
-            0.055,
-            "sine"
-        );
-
-
-        tone(
-            659.25,
-            0.34,
-            0.050,
-            "sine",
-            effectGain,
-            0.08
-        );
-
-
-        tone(
-            783.99,
-            0.50,
-            0.045,
-            "triangle",
-            effectGain,
-            0.16
-        );
-    }
-
-
-    /* =====================================================
-       CAMERA SHUTTER
-       ====================================================== */
-
-    function cameraShutter() {
-
-        duckMusic(
-            0.035,
-            900
-        );
-
-
-        if (!audioContext) {
-            return;
-        }
-
-
-        const now =
-            audioContext.currentTime;
-
-
-        /*
-           First mechanical click.
-        */
-
-        tone(
-            900,
-            0.045,
-            0.075,
-            "square",
-            effectGain
-        );
-
-
-        tone(
-            1450,
-            0.055,
-            0.055,
-            "square",
-            effectGain,
-            0.055
-        );
-
-
-        /*
-           Camera body snap.
-        */
-
-        tone(
-            220,
-            0.12,
-            0.065,
-            "triangle",
-            effectGain,
-            0.10
-        );
-
-
-        /*
-           Tiny flash sparkle.
-        */
-
-        tone(
-            1800,
-            0.10,
-            0.025,
-            "sine",
-            effectGain,
-            0.04
-        );
-    }
-
-
-    /* =====================================================
-       BOUQUET SHIMMER
-    ====================================================== */
-
-    function bouquetShimmer() {
-
-        duckMusic(
-            0.08,
-            1200
-        );
-
-
-        const notes = [
-            783.99,
-            987.77,
-            1174.66,
-            1567.98
-        ];
-
-
-        notes.forEach(
-            function (note, index) {
-
-                tone(
-                    note,
-                    0.65,
-                    0.035,
-                    "sine",
-                    effectGain,
-                    index * 0.10
-                );
-            }
-        );
-
-
-        tone(
-            1318.51,
-            0.90,
-            0.018,
-            "triangle",
-            effectGain,
-            0.30
-        );
-    }
-
-
-    /* =====================================================
-       ENVELOPE PAPER SOUND
-    ====================================================== */
-
-    function envelopeOpenSound() {
-
-        duckMusic(
-            0.07,
-            1400
-        );
-
-
-        /*
-           Soft paper-like noise.
-        */
-
-        if (audioContext) {
-
-            const buffer =
-                audioContext.createBuffer(
-                    1,
-                    audioContext.sampleRate * 0.32,
-                    audioContext.sampleRate
-                );
-
-
-            const data =
-                buffer.getChannelData(0);
-
-
-            for (
-                let i = 0;
-                i < data.length;
-                i++
-            ) {
-
-                data[i] =
-                    (
-                        Math.random() * 2 - 1
-                    ) *
-                    (
-                        1 - i / data.length
-                    ) *
-                    0.16;
-            }
-
-
-            const source =
-                audioContext.createBufferSource();
-
-
-            const filter =
-                audioContext.createBiquadFilter();
-
+            const oscillator =
+                audioContext.createOscillator();
 
             const gain =
                 audioContext.createGain();
 
 
-            source.buffer = buffer;
-
-            filter.type = "bandpass";
-
-            filter.frequency.value = 2200;
-
-            filter.Q.value = 0.7;
-
-            gain.gain.value = 0.18;
+            oscillator.type =
+                type || "sine";
 
 
-            source.connect(filter);
+            oscillator.frequency.setValueAtTime(
+                frequency,
+                start
+            );
 
-            filter.connect(gain);
 
-            gain.connect(effectGain);
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
 
 
-            source.start();
+            gain.gain.exponentialRampToValueAtTime(
+                volume,
+                start + 0.025
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + duration
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(
+                destination || effectGain
+            );
+
+
+            oscillator.start(start);
+
+            oscillator.stop(
+                start +
+                duration +
+                0.04
+            );
+
         }
 
 
-        /*
-           Soft opening chime.
-        */
+        /* =====================================================
+           AUDIO UNLOCK
+        ====================================================== */
 
-        tone(
-            659.25,
-            0.40,
-            0.035,
-            "sine",
-            effectGain,
-            0.25
-        );
+        function unlockAudio() {
 
+            initAudio();
 
-        tone(
-            987.77,
-            0.55,
-            0.028,
-            "sine",
-            effectGain,
-            0.35
-        );
-    }
+            startJazz();
 
-
-    /* =====================================================
-       POSTCARD REVEAL
-    ====================================================== */
-
-    function postcardRevealSound() {
-
-        tone(
-            783.99,
-            0.30,
-            0.035,
-            "sine"
-        );
-
-
-        tone(
-            1046.50,
-            0.55,
-            0.025,
-            "triangle",
-            effectGain,
-            0.12
-        );
-    }
-
-
-    /* =====================================================
-       WINE SOUND
-    ====================================================== */
-
-    const wineSound =
-        get("wine-sound");
-
-    const glassSound =
-        get("glass-sound");
-
-
-    function playAudioElement(
-        audio,
-        volume
-    ) {
-
-        if (!audio) {
-            return;
         }
 
 
-        try {
-
-            audio.pause();
-
-            audio.currentTime = 0;
-
-            audio.volume =
-                volume || 0.5;
-
-
-            const promise =
-                audio.play();
+        document.addEventListener(
+            "click",
+            unlockAudio,
+            {
+                once: true
+            }
+        );
 
 
-            if (promise) {
-                promise.catch(
-                    function () {}
-                );
+        document.addEventListener(
+            "touchstart",
+            unlockAudio,
+            {
+                once: true,
+                passive: true
+            }
+        );
+
+
+        /* =====================================================
+           CAMERA COUNTDOWN SOUND
+        ====================================================== */
+
+        function countdownTick() {
+
+            tone(
+                880,
+                0.11,
+                0.045,
+                "sine"
+            );
+
+            tone(
+                1320,
+                0.07,
+                0.018,
+                "triangle",
+                effectGain,
+                0.025
+            );
+
+        }
+
+
+        function finalCameraBeep() {
+
+            tone(
+                1046.5,
+                0.16,
+                0.055,
+                "sine"
+            );
+
+            tone(
+                1568,
+                0.20,
+                0.035,
+                "triangle",
+                effectGain,
+                0.07
+            );
+
+        }
+
+
+        /* =====================================================
+           BOUQUET SHIMMER
+        ====================================================== */
+
+        function bouquetShimmerSound() {
+
+            tone(
+                659.25,
+                0.28,
+                0.045,
+                "sine"
+            );
+
+            tone(
+                783.99,
+                0.35,
+                0.04,
+                "sine",
+                effectGain,
+                0.07
+            );
+
+            tone(
+                1046.50,
+                0.50,
+                0.035,
+                "triangle",
+                effectGain,
+                0.14
+            );
+
+            tone(
+                1318.51,
+                0.60,
+                0.022,
+                "sine",
+                effectGain,
+                0.23
+            );
+
+        }
+
+
+        /* =====================================================
+           ENVELOPE OPENING SOUND
+        ====================================================== */
+
+        function envelopeOpenSound() {
+
+            tone(
+                392,
+                0.20,
+                0.025,
+                "triangle"
+            );
+
+            tone(
+                523.25,
+                0.25,
+                0.035,
+                "sine",
+                effectGain,
+                0.08
+            );
+
+            tone(
+                659.25,
+                0.35,
+                0.04,
+                "sine",
+                effectGain,
+                0.16
+            );
+
+            tone(
+                783.99,
+                0.50,
+                0.03,
+                "triangle",
+                effectGain,
+                0.24
+            );
+
+        }
+
+
+        /* =====================================================
+           WINE POUR ENHANCEMENT
+           
+           IMPORTANT:
+           YOUR ORIGINAL wine-pour.mp3
+           IS STILL USED.
+        ====================================================== */
+
+        function winePourEnhancement() {
+
+            tone(
+                185,
+                0.22,
+                0.018,
+                "sine",
+                effectGain
+            );
+
+            tone(
+                246.94,
+                0.30,
+                0.012,
+                "triangle",
+                effectGain,
+                0.05
+            );
+
+        }
+
+
+        /* =====================================================
+           GLASS CLINK ENHANCEMENT
+           
+           ORIGINAL glass-clink.mp3
+           IS STILL USED.
+        ====================================================== */
+
+        function glassClinkEnhancement() {
+
+            tone(
+                1318.51,
+                0.25,
+                0.035,
+                "sine",
+                effectGain
+            );
+
+            tone(
+                1760,
+                0.35,
+                0.025,
+                "triangle",
+                effectGain,
+                0.035
+            );
+
+        }
+
+
+        /* =====================================================
+           DIZZY / DRUNK SOUND
+        ====================================================== */
+
+        function startDizzySound() {
+
+            if (!initAudio()) {
+                return;
             }
 
-        } catch (error) {
 
-            console.log(
-                "Audio error:",
-                error
+            const start =
+                audioContext.currentTime;
+
+
+            const oscillator =
+                audioContext.createOscillator();
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type =
+                "sine";
+
+
+            oscillator.frequency.setValueAtTime(
+                180,
+                start
             );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                75,
+                start + 2.5
+            );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                145,
+                start + 5
+            );
+
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.045,
+                start + 0.5
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + 5.3
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(
+                effectGain
+            );
+
+
+            oscillator.start(start);
+
+            oscillator.stop(
+                start + 5.5
+            );
+
+
+            /*
+               Little spinning sparkle
+               tones inside the dizzy effect.
+            */
+
+            for (
+                let i = 0;
+                i < 8;
+                i++
+            ) {
+
+                const frequency =
+                    420 +
+                    (
+                        i * 90
+                    );
+
+
+                tone(
+                    frequency,
+                    0.35,
+                    0.012,
+                    "sine",
+                    effectGain,
+                    i * 0.55
+                );
+
+            }
+
         }
-    }
 
 
-    function playWineSound() {
+        /* =====================================================
+           CUTE JAZZ BGM
+        ====================================================== */
 
-        duckMusic(
-            0.12,
-            900
-        );
+        function startJazz() {
 
-
-        playAudioElement(
-            wineSound,
-            0.55
-        );
-    }
+            if (
+                jazzPlaying
+            ) {
+                return;
+            }
 
 
-    function playGlassSound() {
-
-        duckMusic(
-            0.06,
-            900
-        );
+            if (!initAudio()) {
+                return;
+            }
 
 
-        playAudioElement(
-            glassSound,
-            0.65
-        );
+            jazzPlaying = true;
+
+            jazzStep = 0;
 
 
-        tone(
-            1046.50,
-            0.25,
-            0.025,
-            "sine",
-            effectGain,
-            0.05
-        );
-    }
+            playJazzLoop();
+
+        }
 
 
-    /* =====================================================
-       DRUNK ENDING AUDIO
-    ====================================================== */
+        function playJazzLoop() {
 
-    function drunkSound() {
-
-        duckMusic(
-            0.025,
-            4500
-        );
+            if (!jazzPlaying) {
+                return;
+            }
 
 
-        tone(
-            392,
-            0.55,
-            0.045,
-            "sine"
-        );
+            const melody = [
+
+                261.63,
+                329.63,
+                392.00,
+                493.88,
+
+                392.00,
+                329.63,
+                293.66,
+                349.23,
+
+                440.00,
+                523.25,
+                440.00,
+                392.00,
+
+                329.63,
+                293.66,
+                261.63,
+                329.63
+
+            ];
 
 
-        tone(
-            349.23,
-            0.65,
-            0.040,
-            "sine",
-            effectGain,
-            0.12
-        );
+            const note =
+                melody[jazzStep];
 
 
-        tone(
-            293.66,
-            0.80,
-            0.035,
-            "triangle",
-            effectGain,
-            0.24
-        );
+            /*
+               Main jazz melody.
+            */
+
+            tone(
+                note,
+                0.62,
+                0.018,
+                "sine",
+                jazzGain
+            );
 
 
-        tone(
-            261.63,
-            1.00,
-            0.025,
-            "sine",
-            effectGain,
-            0.38
-        );
-    }
+            /*
+               Soft jazz chord underneath.
+            */
+
+            if (
+                jazzStep % 4 === 0
+            ) {
+
+                tone(
+                    note / 2,
+                    0.95,
+                    0.009,
+                    "triangle",
+                    jazzGain
+                );
+
+                tone(
+                    note * 1.25,
+                    0.65,
+                    0.006,
+                    "sine",
+                    jazzGain,
+                    0.02
+                );
+
+            }
 
 
-    /* =====================================================
-       INTRO
-    ====================================================== */
+            jazzStep++;
 
-    const introCards =
-        document.querySelectorAll(
-            ".intro-card"
-        );
+            if (
+                jazzStep >=
+                melody.length
+            ) {
+
+                jazzStep = 0;
+
+            }
 
 
-    let introIndex = 0;
+            jazzTimer =
+                setTimeout(
+                    playJazzLoop,
+                    570
+                );
+
+        }
 
 
-    document
-        .querySelectorAll(".intro-next")
-        .forEach(function (button) {
+        function stopJazz() {
 
-            button.addEventListener(
+            jazzPlaying = false;
+
+
+            if (jazzTimer) {
+
+                clearTimeout(
+                    jazzTimer
+                );
+
+                jazzTimer = null;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           INTRO POPUPS
+        ====================================================== */
+
+        const introCards =
+            document.querySelectorAll(
+                ".intro-card"
+            );
+
+        let introIndex = 0;
+
+
+        document
+            .querySelectorAll(".intro-next")
+            .forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        unlockAudio();
+
+
+                        if (
+                            introCards[
+                                introIndex
+                            ]
+                        ) {
+
+                            introCards[
+                                introIndex
+                            ].classList.remove(
+                                "active"
+                            );
+
+                        }
+
+
+                        introIndex++;
+
+
+                        setTimeout(
+                            function () {
+
+                                if (
+                                    introCards[
+                                        introIndex
+                                    ]
+                                ) {
+
+                                    introCards[
+                                        introIndex
+                                    ].classList.add(
+                                        "active"
+                                    );
+
+                                }
+
+                            },
+                            120
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /* =====================================================
+           CAMERA START
+        ====================================================== */
+
+        get("start-camera")
+            .addEventListener(
                 "click",
                 function () {
 
                     unlockAudio();
 
-                    buttonSound();
-
-
-                    if (
-                        introCards[introIndex]
-                    ) {
-
-                        introCards[
-                            introIndex
-                        ].classList.remove(
-                            "active"
-                        );
-                    }
-
-
-                    introIndex++;
-
-
-                    setTimeout(
-                        function () {
-
-                            if (
-                                introCards[
-                                    introIndex
-                                ]
-                            ) {
-
-                                introCards[
-                                    introIndex
-                                ].classList.add(
-                                    "active"
-                                );
-                            }
-
-                        },
-                        120
+                    showSection(
+                        "camera-section"
                     );
+
                 }
             );
-        });
 
 
-    /* =====================================================
-       CAMERA START
-    ====================================================== */
+        /* =====================================================
+           CAMERA COUNTDOWN
+        ====================================================== */
 
-    const startCamera =
-        get("start-camera");
+        const camera =
+            get("camera");
 
+        const countdown =
+            get("countdown");
 
-    if (startCamera) {
+        const countdownNumber =
+            get("countdown-number");
 
-        startCamera.addEventListener(
-            "click",
-            function () {
+        const flash =
+            get("flash");
 
-                unlockAudio();
+        const photoResult =
+            get("photo-result");
 
-                buttonSound();
+        let cameraUsed = false;
 
-                showSection(
-                    "camera-section"
-                );
-            }
-        );
-    }
-
-
-    /* =====================================================
-       CAMERA
-    ====================================================== */
-
-    const camera =
-        get("camera");
-
-    const countdown =
-        get("countdown");
-
-    const countdownNumber =
-        get("countdown-number");
-
-    const flash =
-        get("flash");
-
-    const photoResult =
-        get("photo-result");
-
-    let cameraUsed = false;
-
-
-    if (camera) {
 
         camera.addEventListener(
             "click",
             function () {
-
-                unlockAudio();
-
 
                 if (cameraUsed) {
                     return;
@@ -1125,191 +837,193 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 cameraUsed = true;
 
+                unlockAudio();
 
                 startCountdown();
+
             }
         );
-    }
 
 
-    function startCountdown() {
+        function startCountdown() {
 
-        countdown.classList.add(
-            "active"
-        );
-
-
-        const numbers = [
-            "3",
-            "2",
-            "1"
-        ];
-
-
-        let index = 0;
-
-
-        function showNumber() {
-
-            countdownNumber.textContent =
-                numbers[index];
-
-
-            countdownNumber.style.animation =
-                "none";
-
-
-            void countdownNumber.offsetWidth;
-
-
-            countdownNumber.style.animation =
-                "countdownPop .9s ease";
-
-
-            countdownTick(
-                Number(numbers[index])
+            countdown.classList.add(
+                "active"
             );
 
 
-            if (
-                index <
-                numbers.length - 1
-            ) {
-
-                index++;
-
-
-                setTimeout(
-                    showNumber,
-                    900
-                );
-
-            } else {
-
-                finalCountdownChime();
+            const numbers = [
+                "3",
+                "2",
+                "1"
+            ];
 
 
-                setTimeout(
-                    takePhoto,
-                    900
-                );
+            let index = 0;
+
+
+            function showNumber() {
+
+                countdownNumber.textContent =
+                    numbers[index];
+
+
+                countdownNumber.style.animation =
+                    "none";
+
+
+                void countdownNumber.offsetWidth;
+
+
+                countdownNumber.style.animation =
+                    "countdownPop .9s ease";
+
+
+                /*
+                   NEW COUNTDOWN SOUND
+                */
+
+                countdownTick();
+
+
+                if (
+                    index <
+                    numbers.length - 1
+                ) {
+
+                    index++;
+
+
+                    setTimeout(
+                        showNumber,
+                        900
+                    );
+
+                } else {
+
+                    setTimeout(
+                        function () {
+
+                            finalCameraBeep();
+
+                            takePhoto();
+
+                        },
+                        900
+                    );
+
+                }
+
             }
+
+
+            showNumber();
+
         }
 
 
-        showNumber();
-    }
+        /* =====================================================
+           TAKE PHOTO
+        ====================================================== */
+
+        function takePhoto() {
+
+            countdown.classList.remove(
+                "active"
+            );
 
 
-    /* =====================================================
-       TAKE PHOTO
-    ====================================================== */
+            /*
+               KEEP ORIGINAL CAMERA SOUND
+            */
 
-    function takePhoto() {
-
-        countdown.classList.remove(
-            "active"
-        );
-
-
-        cameraShutter();
+            playSound(
+                cameraSound,
+                0.7
+            );
 
 
-        flash.classList.add(
-            "active"
-        );
+            /* BIG FLASH */
+
+            flash.classList.add(
+                "active"
+            );
 
 
-        /*
-           Show photo slightly after
-           flash begins.
-        */
+            setTimeout(
+                function () {
 
-        setTimeout(
-            function () {
+                    photoResult.classList.add(
+                        "show"
+                    );
 
-                photoResult.classList.add(
-                    "show"
-                );
-
-            },
-            400
-        );
+                },
+                400
+            );
 
 
-        setTimeout(
-            function () {
+            setTimeout(
+                function () {
 
-                flash.classList.remove(
-                    "active"
-                );
+                    flash.classList.remove(
+                        "active"
+                    );
 
-            },
-            900
-        );
-    }
+                },
+                900
+            );
 
-
-    /* =====================================================
-       PHOTO → BOUQUET
-    ====================================================== */
-
-    const photoContinue =
-        get("photo-continue");
+        }
 
 
-    if (photoContinue) {
+        /* =====================================================
+           PHOTO → BOUQUET
+        ====================================================== */
 
-        photoContinue.addEventListener(
-            "click",
-            function () {
+        get("photo-continue")
+            .addEventListener(
+                "click",
+                function () {
 
-                unlockAudio();
-
-                buttonSound();
-
-
-                photoResult.classList.remove(
-                    "show"
-                );
+                    unlockAudio();
 
 
-                setTimeout(
-                    function () {
-
-                        showSection(
-                            "bouquet-section"
-                        );
-
-                    },
-                    300
-                );
-            }
-        );
-    }
+                    photoResult.classList.remove(
+                        "show"
+                    );
 
 
-    /* =====================================================
-       BOUQUET
-    ====================================================== */
+                    setTimeout(
+                        function () {
 
-    const bouquet =
-        get("bouquet");
+                            showSection(
+                                "bouquet-section"
+                            );
 
-    const bouquetText =
-        get("bouquet-text");
+                        },
+                        300
+                    );
 
-    let bouquetClicked = false;
+                }
+            );
 
 
-    if (bouquet) {
+        /* =====================================================
+           BOUQUET
+        ====================================================== */
+
+        const bouquet =
+            get("bouquet");
+
+        const bouquetText =
+            get("bouquet-text");
+
+        let bouquetClicked = false;
+
 
         bouquet.addEventListener(
             "click",
             function () {
-
-                unlockAudio();
-
 
                 if (bouquetClicked) {
                     return;
@@ -1318,13 +1032,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 bouquetClicked = true;
 
+                unlockAudio();
+
 
                 bouquet.classList.add(
                     "glowing"
                 );
 
 
-                bouquetShimmer();
+                /*
+                   NEW MAGICAL SHIMMER SOUND
+                */
+
+                bouquetShimmerSound();
 
 
                 bouquetText.textContent =
@@ -1355,171 +1075,167 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     3000
                 );
+
             }
         );
-    }
 
 
-    function createBouquetSparkles() {
+        function createBouquetSparkles() {
 
-        const symbols = [
-            "✦",
-            "✧",
-            "✨",
-            "♥",
-            "💫"
-        ];
+            const symbols = [
+                "✦",
+                "✧",
+                "✨",
+                "♥"
+            ];
 
 
-        for (
-            let i = 0;
-            i < 30;
-            i++
-        ) {
+            for (
+                let i = 0;
+                i < 22;
+                i++
+            ) {
 
-            const sparkle =
-                document.createElement(
-                    "span"
+                const sparkle =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                sparkle.textContent =
+                    symbols[
+                        Math.floor(
+                            Math.random() *
+                            symbols.length
+                        )
+                    ];
+
+
+                sparkle.style.position =
+                    "fixed";
+
+
+                sparkle.style.left =
+                    (
+                        25 +
+                        Math.random() * 50
+                    ) +
+                    "%";
+
+
+                sparkle.style.top =
+                    (
+                        25 +
+                        Math.random() * 40
+                    ) +
+                    "%";
+
+
+                sparkle.style.fontSize =
+                    (
+                        12 +
+                        Math.random() * 15
+                    ) +
+                    "px";
+
+
+                sparkle.style.color =
+                    "#b52d51";
+
+
+                sparkle.style.pointerEvents =
+                    "none";
+
+
+                sparkle.style.zIndex =
+                    "300";
+
+
+                document.body.appendChild(
+                    sparkle
                 );
 
 
-            sparkle.textContent =
-                symbols[
-                    Math.floor(
-                        Math.random() *
-                        symbols.length
-                    )
-                ];
+                const x =
+                    (
+                        Math.random() - .5
+                    ) *
+                    180;
 
 
-            sparkle.style.position =
-                "fixed";
+                const y =
+                    -(
+                        40 +
+                        Math.random() * 140
+                    );
 
 
-            sparkle.style.left =
-                (
-                    25 +
-                    Math.random() * 50
-                ) +
-                "%";
-
-
-            sparkle.style.top =
-                (
-                    25 +
-                    Math.random() * 40
-                ) +
-                "%";
-
-
-            sparkle.style.fontSize =
-                (
-                    12 +
-                    Math.random() * 18
-                ) +
-                "px";
-
-
-            sparkle.style.color =
-                "#b52d51";
-
-
-            sparkle.style.pointerEvents =
-                "none";
-
-
-            sparkle.style.zIndex =
-                "300";
-
-
-            document.body.appendChild(
-                sparkle
-            );
-
-
-            const x =
-                (
-                    Math.random() - 0.5
-                ) *
-                220;
-
-
-            const y =
-                -(
-                    40 +
-                    Math.random() * 160
-                );
-
-
-            sparkle.animate(
-                [
+                sparkle.animate(
+                    [
+                        {
+                            transform:
+                                "translate(0,0) scale(.3)",
+                            opacity: 0
+                        },
+                        {
+                            transform:
+                                "translate(0,0) scale(1)",
+                            opacity: 1
+                        },
+                        {
+                            transform:
+                                "translate(" +
+                                x +
+                                "px," +
+                                y +
+                                "px) scale(.2)",
+                            opacity: 0
+                        }
+                    ],
                     {
-                        transform:
-                            "translate(0,0) scale(.2)",
-                        opacity: 0
-                    },
-                    {
-                        transform:
-                            "translate(0,0) scale(1.15)",
-                        opacity: 1
-                    },
-                    {
-                        transform:
-                            "translate(" +
-                            x +
-                            "px," +
-                            y +
-                            "px) scale(.1)",
-                        opacity: 0
+                        duration:
+                            1000 +
+                            Math.random() * 700,
+
+                        easing:
+                            "ease-out"
                     }
-                ],
-                {
-                    duration:
-                        1100 +
-                        Math.random() * 800,
-
-                    easing:
-                        "ease-out"
-                }
-            );
+                );
 
 
-            setTimeout(
-                function () {
+                setTimeout(
+                    function () {
 
-                    sparkle.remove();
+                        sparkle.remove();
 
-                },
-                2100
-            );
+                    },
+                    1900
+                );
+
+            }
+
         }
-    }
 
 
-    /* =====================================================
-       ENVELOPE
-    ====================================================== */
+        /* =====================================================
+           ENVELOPE
+        ====================================================== */
 
-    const envelope =
-        get("envelope");
+        const envelope =
+            get("envelope");
 
-    const postcard =
-        get("postcard");
+        const postcard =
+            get("postcard");
 
-    const envelopeText =
-        get("envelope-text");
+        const envelopeText =
+            get("envelope-text");
 
-    let envelopeOpened = false;
+        let envelopeOpened = false;
 
-
-    if (envelope) {
 
         envelope.addEventListener(
             "click",
             function () {
-
-                unlockAudio();
-
 
                 if (envelopeOpened) {
                     return;
@@ -1528,11 +1244,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 envelopeOpened = true;
 
+                unlockAudio();
+
 
                 envelope.classList.add(
                     "open"
                 );
 
+
+                /*
+                   NEW ENVELOPE OPEN SOUND
+                */
 
                 envelopeOpenSound();
 
@@ -1548,111 +1270,103 @@ document.addEventListener("DOMContentLoaded", function () {
                             "show"
                         );
 
-
-                        postcardRevealSound();
-
                     },
                     900
                 );
+
             }
         );
-    }
 
 
-    /* =====================================================
-       POSTCARD → WINE
-    ====================================================== */
+        /* =====================================================
+           POSTCARD → WINE
+        ====================================================== */
 
-    const wineContinue =
-        get("wine-continue");
+        get("wine-continue")
+            .addEventListener(
+                "click",
+                function () {
 
-
-    if (wineContinue) {
-
-        wineContinue.addEventListener(
-            "click",
-            function () {
-
-                unlockAudio();
-
-                buttonSound();
+                    unlockAudio();
 
 
-                postcard.classList.remove(
-                    "show"
-                );
+                    postcard.classList.remove(
+                        "show"
+                    );
 
 
-                envelope.classList.remove(
-                    "open"
-                );
+                    envelope.classList.remove(
+                        "open"
+                    );
 
 
-                setTimeout(
-                    function () {
+                    setTimeout(
+                        function () {
 
-                        showSection(
-                            "wine-section"
-                        );
+                            showSection(
+                                "wine-section"
+                            );
 
-                    },
-                    400
-                );
-            }
-        );
-    }
+                        },
+                        400
+                    );
 
-
-    /* =====================================================
-       WINE
-    ====================================================== */
-
-    const bottle =
-        get("wine-bottle");
-
-    const glasses =
-        document.querySelectorAll(
-            ".wine-glass"
-        );
-
-    const bottleLiquid =
-        document.querySelector(
-            ".bottle-liquid"
-        );
-
-    const glassWine =
-        document.querySelectorAll(
-            ".glass-wine"
-        );
-
-    const wineCounter =
-        get("wine-counter");
-
-    const wineInstruction =
-        get("wine-instruction");
+                }
+            );
 
 
-    let pourCount = 0;
+        /* =====================================================
+           WINE
+        ====================================================== */
 
-    const maximumPours = 5;
+        const bottle =
+            get("wine-bottle");
 
-    let glassesFilled = false;
+        const glasses =
+            document.querySelectorAll(
+                ".wine-glass"
+            );
 
-    let wineFinished = false;
+        const bottleLiquid =
+            document.querySelector(
+                ".bottle-liquid"
+            );
+
+        const glassWine =
+            document.querySelectorAll(
+                ".glass-wine"
+            );
+
+        const wineCounter =
+            get("wine-counter");
+
+        const wineInstruction =
+            get("wine-instruction");
 
 
-    if (bottle) {
+        let pourCount = 0;
+
+        const maximumPours = 5;
+
+        let glassesFilled = false;
+
+        let wineFinished = false;
+
+
+        /* =====================================================
+           BOTTLE CLICK
+        ====================================================== */
 
         bottle.addEventListener(
             "click",
             function () {
 
-                unlockAudio();
-
-
                 if (wineFinished) {
                     return;
                 }
+
+
+                unlockAudio();
 
 
                 if (glassesFilled) {
@@ -1661,6 +1375,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         "Now click either glass... 🍷";
 
                     return;
+
                 }
 
 
@@ -1675,38 +1390,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 pourCount++;
 
 
-                playWineSound();
-
-
                 /*
-                   Gradual bottle movement.
+                   KEEP ORIGINAL WINE POUR SOUND
                 */
 
-                bottle.animate(
-                    [
-                        {
-                            transform:
-                                "rotate(0deg)"
-                        },
-                        {
-                            transform:
-                                "rotate(-10deg) translateY(-3px)"
-                        },
-                        {
-                            transform:
-                                "rotate(0deg)"
-                        }
-                    ],
-                    {
-                        duration: 700,
-                        easing: "ease-in-out"
-                    }
+                playSound(
+                    wineSound,
+                    0.55
                 );
 
 
                 /*
-                   Bottle level.
+                   ADD VERY SOFT DEPTH
+                   WITHOUT REPLACING ORIGINAL.
                 */
+
+                winePourEnhancement();
+
+
+                /* BOTTLE LEVEL */
 
                 const bottleLevel =
                     100 -
@@ -1717,48 +1419,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 bottleLiquid.style.height =
-                    bottleLevel + "%";
+                    bottleLevel +
+                    "%";
 
 
-                /*
-                   Gradual glass filling.
-                */
+                /* GLASSES FILL */
 
                 const glassLevel =
-                    pourCount * 20;
+                    pourCount *
+                    20;
 
 
                 glassWine.forEach(
                     function (wine) {
 
-                        const currentHeight =
-                            parseFloat(
-                                wine.style.height
-                            ) || 0;
-
-
-                        wine.animate(
-                            [
-                                {
-                                    height:
-                                        currentHeight +
-                                        "%"
-                                },
-                                {
-                                    height:
-                                        glassLevel +
-                                        "%"
-                                }
-                            ],
-                            {
-                                duration: 650,
-                                fill: "forwards",
-                                easing: "ease-out"
-                            }
-                        );
-
                         wine.style.height =
-                            glassLevel + "%";
+                            glassLevel +
+                            "%";
+
                     }
                 );
 
@@ -1781,277 +1459,208 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     glassesFilled = true;
 
+
                     wineInstruction.textContent =
                         "Cheers, sweetheart... now drink. 🍷";
 
+
                     wineCounter.textContent =
                         "CHEERS ❤️";
+
                 }
+
             }
         );
-    }
 
 
-    /* =====================================================
-       GLASS CLICK
-    ====================================================== */
+        /* =====================================================
+           GLASS CLICK
+        ====================================================== */
 
-    glasses.forEach(
-        function (glass) {
+        glasses.forEach(
+            function (glass) {
 
-            glass.addEventListener(
+                glass.addEventListener(
+                    "click",
+                    function () {
+
+                        if (wineFinished) {
+                            return;
+                        }
+
+
+                        unlockAudio();
+
+
+                        if (!glassesFilled) {
+
+                            wineInstruction.textContent =
+                                "Pour the wine first, sweetheart. ❤️";
+
+                            return;
+
+                        }
+
+
+                        /*
+                           KEEP ORIGINAL GLASS CLINK
+                        */
+
+                        playSound(
+                            glassSound,
+                            0.65
+                        );
+
+
+                        /*
+                           ADD TINY REALISTIC
+                           GLASS RESONANCE
+                        */
+
+                        glassClinkEnhancement();
+
+
+                        /* EMPTY BOTH GLASSES */
+
+                        glassWine.forEach(
+                            function (wine) {
+
+                                wine.style.height =
+                                    "0%";
+
+                            }
+                        );
+
+
+                        glassesFilled = false;
+
+
+                        if (
+                            pourCount >=
+                            maximumPours
+                        ) {
+
+                            wineFinished = true;
+
+
+                            wineInstruction.textContent =
+                                "Well... that was quick. 😂";
+
+
+                            wineCounter.textContent =
+                                "EMPTY";
+
+
+                            setTimeout(
+                                startDrunkEnding,
+                                1000
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           DRUNK ENDING
+        ====================================================== */
+
+        function startDrunkEnding() {
+
+            const overlay =
+                get("drunk-overlay");
+
+
+            /*
+               START DIZZY SOUND
+            */
+
+            unlockAudio();
+
+            startDizzySound();
+
+
+            overlay.classList.add(
+                "active"
+            );
+
+
+            /*
+                Make the entire page
+                slowly sway.
+            */
+
+            document.body.animate(
+                [
+                    {
+                        transform:
+                            "rotate(0deg) scale(1)"
+                    },
+                    {
+                        transform:
+                            "rotate(-1deg) scale(1.02)"
+                    },
+                    {
+                        transform:
+                            "rotate(1deg) scale(1.04)"
+                    },
+                    {
+                        transform:
+                            "rotate(-1deg) scale(1.06)"
+                    },
+                    {
+                        transform:
+                            "rotate(1deg) scale(1.08)"
+                    },
+                    {
+                        transform:
+                            "rotate(0deg) scale(1.1)"
+                    }
+                ],
+                {
+                    duration: 5000,
+                    easing: "ease-in-out",
+                    fill: "forwards"
+                }
+            );
+
+
+            setTimeout(
+                function () {
+
+                    get("drunk-popup")
+                        .classList.add(
+                            "show"
+                        );
+
+                },
+                4200
+            );
+
+        }
+
+
+        /* =====================================================
+           NEXT PAGE
+        ====================================================== */
+
+        get("next-page")
+            .addEventListener(
                 "click",
                 function () {
 
                     unlockAudio();
 
 
-                    if (wineFinished) {
-                        return;
-                    }
+                    window.location.href =
+                        "page4.html";
 
-
-                    if (!glassesFilled) {
-
-                        wineInstruction.textContent =
-                            "Pour the wine first, sweetheart. ❤️";
-
-                        buttonSound();
-
-                        return;
-                    }
-
-
-                    playGlassSound();
-
-
-                    /*
-                       Tiny toast animation.
-                    */
-
-                    glasses.forEach(
-                        function (item) {
-
-                            item.animate(
-                                [
-                                    {
-                                        transform:
-                                            "translateY(0) rotate(0deg)"
-                                    },
-                                    {
-                                        transform:
-                                            "translateY(-8px) rotate(-4deg)"
-                                    },
-                                    {
-                                        transform:
-                                            "translateY(0) rotate(0deg)"
-                                    }
-                                ],
-                                {
-                                    duration: 450,
-                                    easing: "ease-out"
-                                }
-                            );
-                        }
-                    );
-
-
-                    /*
-                       Empty both glasses.
-                    */
-
-                    glassWine.forEach(
-                        function (wine) {
-
-                            wine.animate(
-                                [
-                                    {
-                                        height:
-                                            wine.style.height
-                                    },
-                                    {
-                                        height:
-                                            "0%"
-                                    }
-                                ],
-                                {
-                                    duration: 450,
-                                    fill: "forwards",
-                                    easing: "ease-in"
-                                }
-                            );
-
-
-                            wine.style.height =
-                                "0%";
-                        }
-                    );
-
-
-                    glassesFilled = false;
-
-
-                    if (
-                        pourCount >=
-                        maximumPours
-                    ) {
-
-                        wineFinished = true;
-
-
-                        wineInstruction.textContent =
-                            "Well... that was quick. 😂";
-
-
-                        wineCounter.textContent =
-                            "EMPTY";
-
-
-                        setTimeout(
-                            startDrunkEnding,
-                            1000
-                        );
-                    }
                 }
             );
-        }
-    );
 
-
-    /* =====================================================
-       DRUNK ENDING
-    ====================================================== */
-
-    function startDrunkEnding() {
-
-        unlockAudio();
-
-        drunkSound();
-
-
-        const overlay =
-            get("drunk-overlay");
-
-
-        if (overlay) {
-
-            overlay.classList.add(
-                "active"
-            );
-        }
-
-
-        /*
-           Progressive sway.
-        */
-
-        document.body.animate(
-            [
-                {
-                    transform:
-                        "rotate(0deg) scale(1)"
-                },
-                {
-                    transform:
-                        "rotate(-0.5deg) scale(1.01)"
-                },
-                {
-                    transform:
-                        "rotate(0.7deg) scale(1.025)"
-                },
-                {
-                    transform:
-                        "rotate(-1deg) scale(1.045)"
-                },
-                {
-                    transform:
-                        "rotate(1.2deg) scale(1.07)"
-                },
-                {
-                    transform:
-                        "rotate(-1.4deg) scale(1.09)"
-                },
-                {
-                    transform:
-                        "rotate(1deg) scale(1.10)"
-                },
-                {
-                    transform:
-                        "rotate(0deg) scale(1.10)"
-                }
-            ],
-            {
-                duration: 5000,
-                easing: "ease-in-out",
-                fill: "forwards"
-            }
-        );
-
-
-        /*
-           Show popup after dizziness
-           builds.
-        */
-
-        setTimeout(
-            function () {
-
-                const popup =
-                    get("drunk-popup");
-
-
-                if (popup) {
-
-                    popup.classList.add(
-                        "show"
-                    );
-                }
-
-            },
-            4200
-        );
     }
-
-
-    /* =====================================================
-       NEXT PAGE
-    ====================================================== */
-
-    const nextPage =
-        get("next-page");
-
-
-    if (nextPage) {
-
-        nextPage.addEventListener(
-            "click",
-            function () {
-
-                unlockAudio();
-
-                buttonSound();
-
-
-                setTimeout(
-                    function () {
-
-                        window.location.href =
-                            "page4.html";
-
-                    },
-                    120
-                );
-            }
-        );
-    }
-
-
-    /* =====================================================
-       INITIAL STATE
-    ====================================================== */
-
-    if (musicButton) {
-        musicButton.textContent = "♫";
-    }
-
-});
+);
