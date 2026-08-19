@@ -1,107 +1,641 @@
-/* =========================================
-   PAGE 2 - JAVASCRIPT
-========================================= */
+/* =====================================================
+   PAGE 2 — ANDROID FRIENDLY JAVASCRIPT
+===================================================== */
+
+"use strict";
 
 
-/* =========================================
-   SECTION 01 - WELCOME
-========================================= */
+/* =====================================================
+   HELPER
+===================================================== */
 
-const startButton = document.getElementById("startButton");
+function showScene(scene) {
 
-const welcomeScreen = document.getElementById("welcomeScreen");
-const partyScene = document.getElementById("partyScene");
+    document
+        .querySelectorAll(".scene")
+        .forEach(function (item) {
 
-startButton.addEventListener("click", function () {
+            item.classList.remove("active");
 
-    welcomeScreen.classList.remove("active");
+        });
 
-    setTimeout(function () {
-        partyScene.classList.add("active");
-    }, 700);
-
-});
+    scene.classList.add("active");
+}
 
 
-/* =========================================
-   SECTION 02 - CANDLES
-========================================= */
+/* =====================================================
+   SECTION 1 — WELCOME
+===================================================== */
 
-const candles = document.querySelectorAll(".candle");
+const startButton =
+    document.getElementById("startButton");
+
+const welcomeScene =
+    document.getElementById("welcomeScene");
+
+const partyScene =
+    document.getElementById("partyScene");
+
+
+startButton.addEventListener(
+    "pointerup",
+    function () {
+
+        showScene(partyScene);
+
+    }
+);
+
+
+/* =====================================================
+   SECTION 2 — CANDLES
+===================================================== */
+
+const candles =
+    document.querySelectorAll(".candle");
 
 const candleInstruction =
     document.getElementById("candleInstruction");
 
-const wishMessage =
-    document.getElementById("wishMessage");
+const wishOverlay =
+    document.getElementById("wishOverlay");
 
-let candlesOut = 0;
-let celebrationStarted = false;
+const cake =
+    document.getElementById("cake");
+
+
+let extinguishedCandles = 0;
+let celebrationFinished = false;
 
 
 candles.forEach(function (candle) {
 
-    candle.addEventListener("click", function () {
+    candle.addEventListener(
+        "pointerup",
+        function (event) {
 
-        if (candle.classList.contains("extinguished")) {
-            return;
+            event.stopPropagation();
+
+            if (
+                candle.classList.contains(
+                    "extinguished"
+                )
+            ) {
+                return;
+            }
+
+            candle.classList.add(
+                "extinguished"
+            );
+
+            extinguishedCandles++;
+
+            if (
+                extinguishedCandles ===
+                candles.length
+            ) {
+
+                triggerBirthdayCelebration();
+
+            }
+
         }
-
-        candle.classList.add("extinguished");
-
-        candlesOut++;
-
-        if (candlesOut === candles.length) {
-
-            startCelebration();
-
-        }
-
-    });
+    );
 
 });
 
 
-/* =========================================
-   SECTION 03 - CELEBRATION
-========================================= */
+/* =====================================================
+   CELEBRATION
+===================================================== */
 
-function startCelebration() {
+function triggerBirthdayCelebration() {
 
-    if (celebrationStarted) {
+    if (celebrationFinished) {
         return;
     }
 
-    celebrationStarted = true;
+    celebrationFinished = true;
 
     candleInstruction.style.opacity = "0";
 
-    popBalloons();
+    cake.classList.add("ready");
 
-    firePoppers();
+    popAllBalloons();
+
+    firePartyPoppers();
 
     createConfetti();
 
-    setTimeout(function () {
+    setTimeout(
+        function () {
 
-        wishMessage.classList.add("show");
+            wishOverlay.classList.remove(
+                "hidden"
+            );
 
-    }, 700);
+        },
+        700
+    );
 
 }
 
 
-/* =========================================
-   SECTION 04 - BALLOONS
-========================================= */
+/* =====================================================
+   BALLOONS
+===================================================== */
 
-const balloons =
-    document.querySelectorAll(".balloon");
+function popAllBalloons() {
+
+    const balloons =
+        document.querySelectorAll(
+            ".balloon"
+        );
+
+    balloons.forEach(
+        function (balloon, index) {
+
+            setTimeout(
+                function () {
+
+                    balloon.classList.add(
+                        "popped"
+                    );
+
+                },
+                index * 120
+            );
+
+        }
+    );
+
+}
 
 
-function popBalloons() {
+/* =====================================================
+   PARTY POPPERS
+===================================================== */
 
-    balloons.forEach(function (balloon, index) {
+const leftPopper =
+    document.getElementById("leftPopper");
+
+const rightPopper =
+    document.getElementById("rightPopper");
+
+
+function firePartyPoppers() {
+
+    leftPopper.classList.add("blast");
+
+    setTimeout(
+        function () {
+
+            rightPopper.classList.add("blast");
+
+        },
+        180
+    );
+
+}
+
+
+/* =====================================================
+   CONFETTI
+===================================================== */
+
+function createConfetti() {
+
+    const pieces = 90;
+
+    for (
+        let i = 0;
+        i < pieces;
+        i++
+    ) {
+
+        const confetti =
+            document.createElement("div");
+
+        confetti.style.position = "fixed";
+
+        confetti.style.left =
+            Math.random() * 100 + "vw";
+
+        confetti.style.top = "-20px";
+
+        confetti.style.width = "7px";
+        confetti.style.height = "13px";
+
+        const colors = [
+            "#ffffff",
+            "#ffd166",
+            "#ff8fab",
+            "#a8e6cf"
+        ];
+
+        confetti.style.background =
+            colors[
+                Math.floor(
+                    Math.random() *
+                    colors.length
+                )
+            ];
+
+        confetti.style.zIndex = "900";
+
+        confetti.style.pointerEvents =
+            "none";
+
+        confetti.style.transform =
+            "rotate(" +
+            Math.random() * 360 +
+            "deg)";
+
+        confetti.style.transition =
+            "top 2.5s ease-out, " +
+            "transform 2.5s ease-out, " +
+            "opacity 2.5s ease";
+
+        document.body.appendChild(
+            confetti
+        );
+
+        requestAnimationFrame(
+            function () {
+
+                confetti.style.top =
+                    80 +
+                    Math.random() * 30 +
+                    "vh";
+
+                confetti.style.transform =
+                    "rotate(" +
+                    Math.random() * 1000 +
+                    "deg)";
+
+                confetti.style.opacity = "0";
+
+            }
+        );
+
+        setTimeout(
+            function () {
+
+                confetti.remove();
+
+            },
+            3000
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CAKE
+===================================================== */
+
+cake.addEventListener(
+    "pointerup",
+    function () {
+
+        if (!celebrationFinished) {
+            return;
+        }
+
+        cake.style.transform =
+            "translate(-50%, -50%) scale(1.12)";
+
+        createConfetti();
+
+        setTimeout(
+            function () {
+
+                showScene(
+                    document.getElementById(
+                        "letterScene"
+                    )
+                );
+
+                cake.style.transform =
+                    "translate(-50%, -50%)";
+
+            },
+            900
+        );
+
+    }
+);
+
+
+/* =====================================================
+   SECTION 3 — LETTER
+===================================================== */
+
+const letterButton =
+    document.getElementById(
+        "letterButton"
+    );
+
+const letterOverlay =
+    document.getElementById(
+        "letterOverlay"
+    );
+
+const closeLetter =
+    document.getElementById(
+        "closeLetter"
+    );
+
+const continueToWine =
+    document.getElementById(
+        "continueToWine"
+    );
+
+
+letterButton.addEventListener(
+    "pointerup",
+    function () {
+
+        letterOverlay.classList.remove(
+            "hidden"
+        );
+
+    }
+);
+
+
+closeLetter.addEventListener(
+    "pointerup",
+    function (event) {
+
+        event.stopPropagation();
+
+        letterOverlay.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   LETTER → WINE
+===================================================== */
+
+continueToWine.addEventListener(
+    "pointerup",
+    function () {
+
+        letterOverlay.classList.add(
+            "hidden"
+        );
+
+        setTimeout(
+            function () {
+
+                showScene(
+                    document.getElementById(
+                        "wineScene"
+                    )
+                );
+
+            },
+            500
+        );
+
+    }
+);
+
+
+/* =====================================================
+   SECTION 4 — WINE
+===================================================== */
+
+const wineBottle =
+    document.getElementById(
+        "wineBottle"
+    );
+
+const wineLiquid =
+    document.getElementById(
+        "wineLiquid"
+    );
+
+const glassLiquid =
+    document.getElementById(
+        "glassLiquid"
+    );
+
+const wineText =
+    document.getElementById(
+        "wineText"
+    );
+
+const wineFog =
+    document.getElementById(
+        "wineFog"
+    );
+
+const wineWorld =
+    document.getElementById(
+        "wineWorld"
+    );
+
+const finalWineMessage =
+    document.getElementById(
+        "finalWineMessage"
+    );
+
+const blackout =
+    document.getElementById(
+        "blackout"
+    );
+
+
+let wineClicks = 0;
+
+
+const wineMessages = [
+
+    "Tonight is yours… so let yourself feel every little moment. ❤️",
+
+    "Some moments are meant to be remembered forever… ✨",
+
+    "Close your eyes… and just let the moment take you somewhere beautiful. 🌙",
+
+    "Because the best part of tonight… is still waiting for you. ❤️"
+
+];
+
+
+wineBottle.addEventListener(
+    "pointerup",
+    function () {
+
+        if (wineClicks >= 5) {
+            return;
+        }
+
+        wineClicks++;
+
+
+        /* ---------------------------------------------
+           WINE LEVEL
+        --------------------------------------------- */
+
+        const bottleLevel =
+            100 -
+            wineClicks * 20;
+
+        const glassLevel =
+            65 -
+            wineClicks * 13;
+
+        wineLiquid.style.height =
+            bottleLevel + "%";
+
+        glassLiquid.style.height =
+            Math.max(
+                glassLevel,
+                0
+            ) + "%";
+
+
+        /* ---------------------------------------------
+           TEXT
+        --------------------------------------------- */
+
+        wineText.classList.add(
+            "fade"
+        );
+
+        setTimeout(
+            function () {
+
+                if (wineClicks <= 4) {
+
+                    wineText.textContent =
+                        wineMessages[
+                            wineClicks - 1
+                        ];
+
+                }
+
+                wineText.classList.remove(
+                    "fade"
+                );
+
+            },
+            400
+        );
+
+
+        /* ---------------------------------------------
+           FOG
+        --------------------------------------------- */
+
+        if (wineClicks >= 2) {
+
+            wineFog.classList.add(
+                "active"
+            );
+
+        }
+
+
+        /* ---------------------------------------------
+           SCREEN MOVEMENT
+        --------------------------------------------- */
+
+        if (wineClicks >= 3) {
+
+            wineWorld.style.animation =
+                "screenSway 3s infinite ease-in-out";
+
+        }
+
+
+        /* ---------------------------------------------
+           FINAL CLICK
+        --------------------------------------------- */
+
+        if (wineClicks === 5) {
+
+            finishWine();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   WINE ENDING
+===================================================== */
+
+function finishWine() {
+
+    wineText.classList.add(
+        "fade"
+    );
+
+    wineFog.classList.add(
+        "active"
+    );
+
+
+    setTimeout(
+        function () {
+
+            finalWineMessage.classList.remove(
+                "hidden"
+            );
+
+        },
+        1800
+    );
+
+
+    setTimeout(
+        function () {
+
+            finalWineMessage.classList.add(
+                "hidden"
+            );
+
+        },
+        5000
+    );
+
+
+    setTimeout(
+        function () {
+
+            blackout.classList.add(
+                "show"
+            );
+
+        },
+        6500
+    );
+
+
+    /*
+       PAGE 3 CONNECTION
+
+       When Page 3 is ready, replace the
+       following comment with:
+
+       window.location.href = "page3.html";
+
+       Example:
+
+       setTimeout(function () {
+           window.location.href = "page3.html";
+       }, 8500);
+    */
 
         setTimeout(function () {
 
