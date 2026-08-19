@@ -16,9 +16,7 @@ document.addEventListener(
             document
                 .querySelectorAll(".page-section")
                 .forEach(function (section) {
-
                     section.classList.remove("active");
-
                 });
 
             setTimeout(function () {
@@ -34,36 +32,33 @@ document.addEventListener(
 
 
         /* =====================================================
-           AUDIO ELEMENTS
-        ====================================================== */
-
-        const cameraSound =
-            get("camera-sound");
-
-        const wineSound =
-            get("wine-sound");
-
-        const glassSound =
-            get("glass-sound");
-
-
-        /* =====================================================
-           WEB AUDIO ENGINE
-           Used for custom sounds + JAZZ BGM
+           AUDIO ENGINE
+           Android / Chrome friendly
+           No external audio files required
         ====================================================== */
 
         let audioContext = null;
+
         let masterGain = null;
         let musicGain = null;
         let effectGain = null;
+        let drunkGain = null;
 
-        let audioUnlocked = false;
-        let jazzPlaying = false;
-        let jazzMuted = false;
+        let audioReady = false;
+        let musicPlaying = false;
+        let musicMuted = false;
+        let drunkMode = false;
 
-        let jazzTimer = null;
-        let jazzStep = 0;
+        let musicTimer = null;
+        let musicStep = 0;
 
+        const musicButton =
+            get("music-button");
+
+
+        /* =====================================================
+           INITIALIZE AUDIO
+        ====================================================== */
 
         function initAudio() {
 
@@ -109,24 +104,24 @@ document.addEventListener(
                 effectGain =
                     audioContext.createGain();
 
-
-                masterGain.gain.value =
-                    0.78;
-
-                musicGain.gain.value =
-                    0.12;
-
-                effectGain.gain.value =
-                    0.30;
+                drunkGain =
+                    audioContext.createGain();
 
 
-                musicGain.connect(
-                    masterGain
-                );
+                masterGain.gain.value = 0.85;
 
-                effectGain.connect(
-                    masterGain
-                );
+                musicGain.gain.value = 0.18;
+
+                effectGain.gain.value = 0.42;
+
+                drunkGain.gain.value = 0.30;
+
+
+                musicGain.connect(masterGain);
+
+                effectGain.connect(masterGain);
+
+                drunkGain.connect(masterGain);
 
                 masterGain.connect(
                     audioContext.destination
@@ -135,18 +130,24 @@ document.addEventListener(
             }
 
 
-            audioUnlocked = true;
+            audioReady = true;
 
             return true;
         }
 
 
+        /* =====================================================
+           UNLOCK AUDIO
+        ====================================================== */
+
         function unlockAudio() {
 
-            initAudio();
+            if (!initAudio()) {
+                return;
+            }
+
 
             if (
-                audioContext &&
                 audioContext.state === "suspended"
             ) {
 
@@ -156,8 +157,13 @@ document.addEventListener(
             }
 
 
-            if (!jazzMuted) {
-                startJazzBGM();
+            if (
+                !musicMuted &&
+                !drunkMode
+            ) {
+
+                startRomanticBGM();
+
             }
 
         }
@@ -183,7 +189,7 @@ document.addEventListener(
 
 
         /* =====================================================
-           BASIC SYNTH TONE
+           BASIC TONE
         ====================================================== */
 
         function tone(
@@ -250,51 +256,10 @@ document.addEventListener(
             oscillator.start(start);
 
             oscillator.stop(
-                start + duration + 0.04
+                start +
+                duration +
+                0.05
             );
-
-        }
-
-
-        /* =====================================================
-           GENERIC AUDIO FILE PLAYER
-        ====================================================== */
-
-        function playSound(
-            audio,
-            volume
-        ) {
-
-            if (!audio) {
-                return;
-            }
-
-            try {
-
-                audio.pause();
-
-                audio.currentTime = 0;
-
-                audio.volume =
-                    volume || 0.5;
-
-                const promise =
-                    audio.play();
-
-                if (promise) {
-                    promise.catch(
-                        function () {}
-                    );
-                }
-
-            } catch (error) {
-
-                console.log(
-                    "Audio error:",
-                    error
-                );
-
-            }
 
         }
 
@@ -303,45 +268,21 @@ document.addEventListener(
            SOFT UI CLICK
         ====================================================== */
 
-        function uiClickSound() {
+        function uiClick() {
 
             tone(
-                660,
+                620,
                 0.07,
-                0.025,
+                0.035,
                 "sine"
             );
+
 
             tone(
                 880,
-                0.06,
-                0.018,
-                "sine",
-                effectGain,
-                0.035
-            );
-
-        }
-
-
-        /* =====================================================
-           CAMERA COUNTDOWN SOUND
-        ====================================================== */
-
-        function countdownBeep() {
-
-            tone(
-                520,
-                0.12,
-                0.055,
-                "sine"
-            );
-
-            tone(
-                780,
                 0.08,
-                0.025,
-                "triangle",
+                0.022,
+                "sine",
                 effectGain,
                 0.04
             );
@@ -350,191 +291,458 @@ document.addEventListener(
 
 
         /* =====================================================
-           CAMERA READY / SHUTTER SOUND
+           ROMANTIC CHIME
         ====================================================== */
 
-        function cameraReadySound() {
-
-            tone(
-                880,
-                0.08,
-                0.035,
-                "sine"
-            );
-
-            tone(
-                1174,
-                0.14,
-                0.045,
-                "triangle",
-                effectGain,
-                0.06
-            );
-
-        }
-
-
-        /* =====================================================
-           BOUQUET SHIMMER
-        ====================================================== */
-
-        function bouquetShimmerSound() {
-
-            tone(
-                659.25,
-                0.25,
-                0.035,
-                "sine"
-            );
-
-            tone(
-                783.99,
-                0.30,
-                0.032,
-                "sine",
-                effectGain,
-                0.08
-            );
-
-            tone(
-                1046.50,
-                0.42,
-                0.025,
-                "triangle",
-                effectGain,
-                0.17
-            );
-
-            tone(
-                1318.51,
-                0.45,
-                0.018,
-                "sine",
-                effectGain,
-                0.26
-            );
-
-        }
-
-
-        /* =====================================================
-           ENVELOPE OPENING SOUND
-        ====================================================== */
-
-        function envelopeOpenSound() {
-
-            tone(
-                392,
-                0.25,
-                0.025,
-                "sine"
-            );
+        function romanticChime() {
 
             tone(
                 523.25,
-                0.30,
-                0.030,
-                "sine",
-                effectGain,
-                0.08
+                0.32,
+                0.055,
+                "sine"
             );
+
 
             tone(
                 659.25,
                 0.38,
-                0.035,
-                "triangle",
+                0.045,
+                "sine",
                 effectGain,
-                0.16
+                0.09
             );
+
 
             tone(
                 783.99,
                 0.50,
-                0.025,
-                "sine",
+                0.035,
+                "triangle",
                 effectGain,
-                0.26
+                0.18
             );
 
         }
 
 
         /* =====================================================
-           WINE POUR
-           EXISTING MP3 + SOFT SYNTH LAYER
+           MAGICAL REVEAL
         ====================================================== */
 
-        function winePourEffect() {
-
-            playSound(
-                wineSound,
-                0.55
-            );
-
-
-            /*
-               Tiny musical sparkle on top
-               of the real pouring sound.
-            */
+        function magicalReveal() {
 
             tone(
-                392,
-                0.16,
-                0.018,
+                659.25,
+                0.25,
+                0.045,
                 "sine"
             );
 
+
             tone(
-                523.25,
-                0.18,
-                0.020,
+                783.99,
+                0.35,
+                0.045,
                 "sine",
                 effectGain,
                 0.08
             );
 
-        }
-
-
-        /* =====================================================
-           GLASS CLINK
-           EXISTING MP3 + SMALL CHIME
-        ====================================================== */
-
-        function glassClinkEffect() {
-
-            playSound(
-                glassSound,
-                0.65
-            );
-
 
             tone(
                 1046.50,
-                0.20,
-                0.030,
-                "sine"
-            );
-
-            tone(
-                1318.51,
-                0.28,
-                0.020,
+                0.60,
+                0.028,
                 "triangle",
                 effectGain,
-                0.07
+                0.18
             );
 
         }
 
 
         /* =====================================================
-           DIZZY / DRUNK SOUND
-           PROCEDURAL
+           SMOOTH ROMANTIC JAZZ BGM
+           Soft sax / warm piano / upright bass
+           Slightly sexy late-night vibe
         ====================================================== */
 
-        function dizzySound() {
+        function startRomanticBGM() {
+
+            if (
+                musicPlaying ||
+                musicMuted ||
+                drunkMode
+            ) {
+                return;
+            }
+
+
+            if (!initAudio()) {
+                return;
+            }
+
+
+            musicPlaying = true;
+
+            musicStep = 0;
+
+
+            if (musicButton) {
+                musicButton.textContent = "♫";
+            }
+
+
+            playJazzLoop();
+
+        }
+
+
+        function playJazzLoop() {
+
+            if (
+                !musicPlaying ||
+                musicMuted ||
+                drunkMode
+            ) {
+                return;
+            }
+
+
+            /*
+               Smooth jazz progression:
+
+               Am7
+               Dm7
+               G7
+               Cmaj7
+               Fmaj7
+               Bm7b5
+               E7
+               E7
+            */
+
+            const chords = [
+
+                [
+                    220.00,
+                    261.63,
+                    329.63,
+                    392.00
+                ],
+
+                [
+                    146.83,
+                    174.61,
+                    220.00,
+                    261.63
+                ],
+
+                [
+                    196.00,
+                    246.94,
+                    293.66,
+                    349.23
+                ],
+
+                [
+                    130.81,
+                    164.81,
+                    196.00,
+                    246.94
+                ],
+
+                [
+                    174.61,
+                    220.00,
+                    261.63,
+                    329.63
+                ],
+
+                [
+                    146.83,
+                    174.61,
+                    207.65,
+                    246.94
+                ],
+
+                [
+                    164.81,
+                    207.65,
+                    246.94,
+                    311.13
+                ],
+
+                [
+                    164.81,
+                    207.65,
+                    246.94,
+                    329.63
+                ]
+
+            ];
+
+
+            const chord =
+                chords[
+                    musicStep %
+                    chords.length
+                ];
+
+
+            /* =================================================
+               SOFT JAZZ CHORD
+            ================================================== */
+
+            chord.forEach(
+                function (note, index) {
+
+                    tone(
+                        note,
+                        1.15,
+                        0.010,
+                        "triangle",
+                        musicGain,
+                        index * 0.025
+                    );
+
+                }
+            );
+
+
+            /* =================================================
+               UPRIGHT BASS
+            ================================================== */
+
+            const bassNotes = [
+
+                110.00,
+                73.42,
+                98.00,
+                65.41,
+                87.31,
+                73.42,
+                82.41,
+                82.41
+
+            ];
+
+
+            tone(
+                bassNotes[
+                    musicStep %
+                    bassNotes.length
+                ],
+                0.75,
+                0.018,
+                "triangle",
+                musicGain
+            );
+
+
+            /* =================================================
+               SAX-LIKE MELODY
+            ================================================== */
+
+            const saxMelody = [
+
+                659.25,
+                698.46,
+                783.99,
+                698.46,
+
+                587.33,
+                659.25,
+                698.46,
+                659.25,
+
+                523.25,
+                587.33,
+                659.25,
+                783.99,
+
+                698.46,
+                659.25,
+                587.33,
+                523.25
+
+            ];
+
+
+            const melodyNote =
+                saxMelody[
+                    musicStep %
+                    saxMelody.length
+                ];
+
+
+            tone(
+                melodyNote,
+                0.72,
+                0.014,
+                "triangle",
+                musicGain,
+                0.08
+            );
+
+
+            /* =================================================
+               JAZZ TURNAROUND
+            ================================================== */
+
+            if (
+                musicStep % 4 === 3
+            ) {
+
+                tone(
+                    melodyNote * 1.5,
+                    0.25,
+                    0.007,
+                    "sine",
+                    musicGain,
+                    0.32
+                );
+
+            }
+
+
+            musicStep++;
+
+
+            if (
+                musicStep >=
+                saxMelody.length
+            ) {
+
+                musicStep = 0;
+
+            }
+
+
+            musicTimer =
+                setTimeout(
+                    playJazzLoop,
+                    650
+                );
+
+        }
+
+
+        /* =====================================================
+           STOP MUSIC
+        ====================================================== */
+
+        function stopRomanticBGM() {
+
+            musicPlaying = false;
+
+
+            if (musicTimer) {
+
+                clearTimeout(
+                    musicTimer
+                );
+
+                musicTimer = null;
+
+            }
+
+
+            if (musicButton) {
+                musicButton.textContent = "🔇";
+            }
+
+        }
+
+
+        /* =====================================================
+           MUSIC BUTTON
+        ====================================================== */
+
+        if (musicButton) {
+
+            musicButton.textContent = "♫";
+
+
+            musicButton.addEventListener(
+                "click",
+                function (event) {
+
+                    event.stopPropagation();
+
+                    initAudio();
+
+
+                    if (musicMuted) {
+
+                        musicMuted = false;
+
+                        startRomanticBGM();
+
+                    } else {
+
+                        musicMuted = true;
+
+                        stopRomanticBGM();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           COUNTDOWN CHIME
+        ====================================================== */
+
+        function countdownChime(number) {
+
+            if (number === 3) {
+
+                tone(
+                    523.25,
+                    0.20,
+                    0.045,
+                    "sine"
+                );
+
+            }
+
+
+            if (number === 2) {
+
+                tone(
+                    659.25,
+                    0.20,
+                    0.050,
+                    "sine"
+                );
+
+            }
+
+
+            if (number === 1) {
+
+                tone(
+                    783.99,
+                    0.25,
+                    0.055,
+                    "triangle"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           CAMERA SHUTTER
+        ====================================================== */
+
+        function cameraShutter() {
 
             if (!initAudio()) {
                 return;
@@ -553,42 +761,18 @@ document.addEventListener(
 
 
             oscillator.type =
-                "sine";
+                "square";
 
-
-            /*
-               Slow pitch wobble.
-               This gives the "woooooo"
-               dizzy feeling.
-            */
 
             oscillator.frequency.setValueAtTime(
-                220,
+                1800,
                 start
             );
 
 
             oscillator.frequency.exponentialRampToValueAtTime(
-                110,
-                start + 0.8
-            );
-
-
-            oscillator.frequency.exponentialRampToValueAtTime(
-                180,
-                start + 1.5
-            );
-
-
-            oscillator.frequency.exponentialRampToValueAtTime(
-                95,
-                start + 2.3
-            );
-
-
-            oscillator.frequency.exponentialRampToValueAtTime(
-                140,
-                start + 3.2
+                420,
+                start + 0.08
             );
 
 
@@ -599,192 +783,680 @@ document.addEventListener(
 
 
             gain.gain.exponentialRampToValueAtTime(
-                0.07,
-                start + 0.15
+                0.12,
+                start + 0.008
             );
 
 
             gain.gain.exponentialRampToValueAtTime(
                 0.0001,
-                start + 3.3
+                start + 0.12
             );
 
 
             oscillator.connect(gain);
 
-            gain.connect(
-                effectGain
-            );
+            gain.connect(effectGain);
 
 
             oscillator.start(start);
 
             oscillator.stop(
-                start + 3.4
+                start + 0.15
             );
 
 
-            /*
-               High dreamy wobble.
-            */
-
             tone(
-                440,
-                1.2,
-                0.018,
-                "triangle",
-                effectGain,
-                0.2
-            );
-
-            tone(
-                330,
-                1.5,
-                0.014,
+                1100,
+                0.08,
+                0.045,
                 "sine",
                 effectGain,
-                0.9
+                0.025
             );
 
         }
 
 
         /* =====================================================
-           JAZZ BGM
-           Cute / romantic / classy
+           PHOTO REVEAL
         ====================================================== */
 
-        function startJazzBGM() {
+        function photoReveal() {
 
-            if (
-                jazzPlaying ||
-                jazzMuted
-            ) {
-                return;
-            }
+            tone(
+                783.99,
+                0.30,
+                0.045,
+                "sine"
+            );
 
+
+            tone(
+                1046.50,
+                0.50,
+                0.035,
+                "sine",
+                effectGain,
+                0.10
+            );
+
+
+            tone(
+                1318.51,
+                0.60,
+                0.020,
+                "triangle",
+                effectGain,
+                0.20
+            );
+
+        }
+
+
+        /* =====================================================
+           PHOTO REVEAL CHEER
+           Soft celebration / applause
+        ====================================================== */
+
+        function photoCheer() {
 
             if (!initAudio()) {
                 return;
             }
 
 
-            jazzPlaying = true;
+            /*
+               Soft applause-like texture
+            */
 
-            jazzStep = 0;
+            for (
+                let i = 0;
+                i < 14;
+                i++
+            ) {
 
-            playJazzLoop();
+                const frequency =
+                    700 +
+                    Math.random() * 900;
+
+
+                tone(
+                    frequency,
+                    0.055,
+                    0.010,
+                    "square",
+                    effectGain,
+                    i * 0.055
+                );
+
+            }
+
+
+            /*
+               Warm celebratory melody
+            */
+
+            tone(
+                523.25,
+                0.28,
+                0.035,
+                "sine",
+                effectGain,
+                0.45
+            );
+
+
+            tone(
+                659.25,
+                0.35,
+                0.040,
+                "sine",
+                effectGain,
+                0.53
+            );
+
+
+            tone(
+                783.99,
+                0.55,
+                0.035,
+                "triangle",
+                effectGain,
+                0.62
+            );
 
         }
 
 
-        function playJazzLoop() {
+        /* =====================================================
+           FLOWER / BOUQUET SOUND
+        ====================================================== */
 
-            if (
-                !jazzPlaying ||
-                jazzMuted
-            ) {
+        function flowerMagic() {
+
+            tone(
+                523.25,
+                0.28,
+                0.045,
+                "sine"
+            );
+
+
+            tone(
+                659.25,
+                0.35,
+                0.040,
+                "sine",
+                effectGain,
+                0.07
+            );
+
+
+            tone(
+                987.77,
+                0.55,
+                0.030,
+                "triangle",
+                effectGain,
+                0.16
+            );
+
+
+            tone(
+                1318.51,
+                0.45,
+                0.018,
+                "sine",
+                effectGain,
+                0.28
+            );
+
+        }
+
+
+        /* =====================================================
+           ENVELOPE OPEN
+        ====================================================== */
+
+        function envelopeOpenSound() {
+
+            tone(
+                392.00,
+                0.18,
+                0.030,
+                "triangle"
+            );
+
+
+            tone(
+                523.25,
+                0.25,
+                0.040,
+                "sine",
+                effectGain,
+                0.08
+            );
+
+
+            tone(
+                783.99,
+                0.45,
+                0.030,
+                "sine",
+                effectGain,
+                0.17
+            );
+
+        }
+
+
+        /* =====================================================
+           PAGE / PAPER OPENING SOUND
+           Soft paper movement + elegant page turn
+        ====================================================== */
+
+        function pageOpeningSound() {
+
+            if (!initAudio()) {
                 return;
             }
 
 
+            const start =
+                audioContext.currentTime;
+
+
+            const duration =
+                0.85;
+
+
+            const buffer =
+                audioContext.createBuffer(
+                    1,
+                    Math.floor(
+                        audioContext.sampleRate *
+                        duration
+                    ),
+                    audioContext.sampleRate
+                );
+
+
+            const data =
+                buffer.getChannelData(0);
+
+
+            for (
+                let i = 0;
+                i < data.length;
+                i++
+            ) {
+
+                const noise =
+                    Math.random() * 2 - 1;
+
+
+                const progress =
+                    i / data.length;
+
+
+                const envelope =
+                    Math.sin(
+                        Math.PI *
+                        progress
+                    );
+
+
+                data[i] =
+                    noise *
+                    envelope *
+                    0.20;
+
+            }
+
+
+            const source =
+                audioContext.createBufferSource();
+
+
+            const filter =
+                audioContext.createBiquadFilter();
+
+
+            const gain =
+                audioContext.createGain();
+
+
+            source.buffer =
+                buffer;
+
+
+            filter.type =
+                "bandpass";
+
+
+            filter.frequency.value =
+                1900;
+
+
+            filter.Q.value =
+                0.8;
+
+
+            gain.gain.value =
+                0.035;
+
+
+            source.connect(filter);
+
+            filter.connect(gain);
+
+            gain.connect(effectGain);
+
+
+            source.start(start);
+
+
             /*
-               C major / Am7 inspired
-               cute lounge-jazz melody.
+               Elegant page-opening chime
             */
 
-            const melody = [
-
-                523.25,
-                659.25,
-                783.99,
-                659.25,
-
-                587.33,
-                698.46,
-                880.00,
-                698.46,
-
-                659.25,
-                783.99,
-                987.77,
-                783.99,
-
-                698.46,
-                659.25,
-                587.33,
-                523.25
-
-            ];
-
-
-            const note =
-                melody[jazzStep];
-
-
             tone(
-                note,
-                0.55,
-                0.018,
+                659.25,
+                0.30,
+                0.025,
                 "sine",
-                musicGain
+                effectGain,
+                0.18
             );
 
 
-            /*
-               Soft jazz chord tones.
-            */
-
-            if (
-                jazzStep % 4 === 0
-            ) {
-
-                tone(
-                    note / 2,
-                    0.75,
-                    0.009,
-                    "triangle",
-                    musicGain
-                );
-
-            }
+            tone(
+                783.99,
+                0.38,
+                0.025,
+                "sine",
+                effectGain,
+                0.28
+            );
 
 
-            jazzStep++;
-
-            if (
-                jazzStep >=
-                melody.length
-            ) {
-
-                jazzStep = 0;
-
-            }
-
-
-            jazzTimer =
-                setTimeout(
-                    playJazzLoop,
-                    430
-                );
+            tone(
+                1046.50,
+                0.55,
+                0.018,
+                "triangle",
+                effectGain,
+                0.38
+            );
 
         }
 
 
-        function stopJazzBGM() {
+        /* =====================================================
+           WINE POUR SOUND
+           Procedural soft liquid effect
+        ====================================================== */
 
-            jazzPlaying = false;
+        function winePourSound() {
+
+            if (!initAudio()) {
+                return;
+            }
 
 
-            if (jazzTimer) {
+            const start =
+                audioContext.currentTime;
 
-                clearTimeout(
-                    jazzTimer
+
+            const duration =
+                0.75;
+
+
+            const buffer =
+                audioContext.createBuffer(
+                    1,
+                    Math.floor(
+                        audioContext.sampleRate *
+                        duration
+                    ),
+                    audioContext.sampleRate
                 );
 
-                jazzTimer = null;
+
+            const data =
+                buffer.getChannelData(0);
+
+
+            for (
+                let i = 0;
+                i < data.length;
+                i++
+            ) {
+
+                const noise =
+                    Math.random() * 2 - 1;
+
+
+                const wave =
+                    Math.sin(
+                        i * 0.045
+                    );
+
+
+                const envelope =
+                    Math.sin(
+                        Math.PI *
+                        i /
+                        data.length
+                    );
+
+
+                data[i] =
+                    (
+                        noise * 0.38 +
+                        wave * 0.12
+                    ) *
+                    envelope;
 
             }
+
+
+            const source =
+                audioContext.createBufferSource();
+
+
+            const filter =
+                audioContext.createBiquadFilter();
+
+
+            const gain =
+                audioContext.createGain();
+
+
+            source.buffer =
+                buffer;
+
+
+            filter.type =
+                "lowpass";
+
+
+            filter.frequency.value =
+                1100;
+
+
+            filter.Q.value =
+                0.7;
+
+
+            gain.gain.value =
+                0.055;
+
+
+            source.connect(filter);
+
+            filter.connect(gain);
+
+            gain.connect(effectGain);
+
+
+            source.start(start);
+
+        }
+
+
+        /* =====================================================
+           WINE COMPLETION
+        ====================================================== */
+
+        function wineComplete() {
+
+            tone(
+                523.25,
+                0.25,
+                0.045,
+                "sine"
+            );
+
+
+            tone(
+                659.25,
+                0.30,
+                0.045,
+                "sine",
+                effectGain,
+                0.08
+            );
+
+
+            tone(
+                783.99,
+                0.45,
+                0.040,
+                "triangle",
+                effectGain,
+                0.16
+            );
+
+
+            tone(
+                1046.50,
+                0.65,
+                0.030,
+                "sine",
+                effectGain,
+                0.28
+            );
+
+        }
+
+
+        /* =====================================================
+           GLASS CLINK
+        ====================================================== */
+
+        function glassClink() {
+
+            tone(
+                1760,
+                0.18,
+                0.060,
+                "sine"
+            );
+
+
+            tone(
+                2349.32,
+                0.22,
+                0.045,
+                "sine",
+                effectGain,
+                0.035
+            );
+
+
+            tone(
+                2793.83,
+                0.28,
+                0.025,
+                "triangle",
+                effectGain,
+                0.08
+            );
+
+        }
+
+
+        /* =====================================================
+           DRUNK / DIZZY SOUND
+        ====================================================== */
+
+        function dizzySound() {
+
+            if (!initAudio()) {
+                return;
+            }
+
+
+            const start =
+                audioContext.currentTime;
+
+
+            const oscillator =
+                audioContext.createOscillator();
+
+
+            const gain =
+                audioContext.createGain();
+
+
+            oscillator.type =
+                "sine";
+
+
+            oscillator.frequency.setValueAtTime(
+                220,
+                start
+            );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                440,
+                start + 1.4
+            );
+
+
+            oscillator.frequency.exponentialRampToValueAtTime(
+                180,
+                start + 2.8
+            );
+
+
+            gain.gain.setValueAtTime(
+                0.0001,
+                start
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.055,
+                start + 0.15
+            );
+
+
+            gain.gain.exponentialRampToValueAtTime(
+                0.0001,
+                start + 3
+            );
+
+
+            oscillator.connect(gain);
+
+            gain.connect(drunkGain);
+
+
+            oscillator.start(start);
+
+            oscillator.stop(
+                start + 3.1
+            );
+
+        }
+
+
+        /* =====================================================
+           DRUNK POPUP CHIME
+        ====================================================== */
+
+        function drunkPopupSound() {
+
+            tone(
+                392,
+                0.20,
+                0.040,
+                "sine"
+            );
+
+
+            tone(
+                493.88,
+                0.25,
+                0.040,
+                "sine",
+                effectGain,
+                0.08
+            );
+
+
+            tone(
+                587.33,
+                0.40,
+                0.035,
+                "triangle",
+                effectGain,
+                0.16
+            );
 
         }
 
@@ -797,6 +1469,7 @@ document.addEventListener(
             document.querySelectorAll(
                 ".intro-card"
             );
+
 
         let introIndex = 0;
 
@@ -811,13 +1484,11 @@ document.addEventListener(
 
                         unlockAudio();
 
-                        uiClickSound();
+                        uiClick();
 
 
                         if (
-                            introCards[
-                                introIndex
-                            ]
+                            introCards[introIndex]
                         ) {
 
                             introCards[
@@ -847,6 +1518,9 @@ document.addEventListener(
                                         "active"
                                     );
 
+
+                                    romanticChime();
+
                                 }
 
                             },
@@ -875,7 +1549,8 @@ document.addEventListener(
 
                     unlockAudio();
 
-                    uiClickSound();
+                    uiClick();
+
 
                     showSection(
                         "camera-section"
@@ -894,14 +1569,18 @@ document.addEventListener(
         const camera =
             get("camera");
 
+
         const countdown =
             get("countdown");
+
 
         const countdownNumber =
             get("countdown-number");
 
+
         const flash =
             get("flash");
+
 
         const photoResult =
             get("photo-result");
@@ -916,13 +1595,16 @@ document.addEventListener(
                 "click",
                 function () {
 
+                    unlockAudio();
+
+
                     if (cameraUsed) {
                         return;
                     }
 
-                    unlockAudio();
 
                     cameraUsed = true;
+
 
                     startCountdown();
 
@@ -966,7 +1648,11 @@ document.addEventListener(
                     "countdownPop .9s ease";
 
 
-                countdownBeep();
+                countdownChime(
+                    Number(
+                        numbers[index]
+                    )
+                );
 
 
                 if (
@@ -1010,13 +1696,7 @@ document.addEventListener(
             );
 
 
-            cameraReadySound();
-
-
-            playSound(
-                cameraSound,
-                0.7
-            );
+            cameraShutter();
 
 
             flash.classList.add(
@@ -1029,6 +1709,24 @@ document.addEventListener(
 
                     photoResult.classList.add(
                         "show"
+                    );
+
+
+                    photoReveal();
+
+
+                    /*
+                       Soft celebration after
+                       the image appears.
+                    */
+
+                    setTimeout(
+                        function () {
+
+                            photoCheer();
+
+                        },
+                        120
                     );
 
                 },
@@ -1066,7 +1764,7 @@ document.addEventListener(
 
                     unlockAudio();
 
-                    uiClickSound();
+                    uiClick();
 
 
                     photoResult.classList.remove(
@@ -1080,6 +1778,9 @@ document.addEventListener(
                             showSection(
                                 "bouquet-section"
                             );
+
+
+                            romanticChime();
 
                         },
                         300
@@ -1098,6 +1799,7 @@ document.addEventListener(
         const bouquet =
             get("bouquet");
 
+
         const bouquetText =
             get("bouquet-text");
 
@@ -1111,12 +1813,13 @@ document.addEventListener(
                 "click",
                 function () {
 
+                    unlockAudio();
+
+
                     if (bouquetClicked) {
                         return;
                     }
 
-
-                    unlockAudio();
 
                     bouquetClicked = true;
 
@@ -1126,7 +1829,7 @@ document.addEventListener(
                     );
 
 
-                    bouquetShimmerSound();
+                    flowerMagic();
 
 
                     bouquetText.textContent =
@@ -1154,6 +1857,9 @@ document.addEventListener(
                                 "letter-section"
                             );
 
+
+                            magicalReveal();
+
                         },
                         3000
                     );
@@ -1163,6 +1869,10 @@ document.addEventListener(
 
         }
 
+
+        /* =====================================================
+           BOUQUET SPARKLES
+        ====================================================== */
 
         function createBouquetSparkles() {
 
@@ -1202,22 +1912,28 @@ document.addEventListener(
                 sparkle.style.left =
                     (
                         25 +
-                        Math.random() * 50
-                    ) + "%";
+                        Math.random() *
+                        50
+                    ) +
+                    "%";
 
 
                 sparkle.style.top =
                     (
                         25 +
-                        Math.random() * 40
-                    ) + "%";
+                        Math.random() *
+                        40
+                    ) +
+                    "%";
 
 
                 sparkle.style.fontSize =
                     (
                         12 +
-                        Math.random() * 15
-                    ) + "px";
+                        Math.random() *
+                        15
+                    ) +
+                    "px";
 
 
                 sparkle.style.color =
@@ -1239,14 +1955,17 @@ document.addEventListener(
 
                 const x =
                     (
-                        Math.random() - .5
-                    ) * 180;
+                        Math.random() -
+                        0.5
+                    ) *
+                    180;
 
 
                 const y =
                     -(
                         40 +
-                        Math.random() * 140
+                        Math.random() *
+                        140
                     );
 
 
@@ -1275,7 +1994,8 @@ document.addEventListener(
                     {
                         duration:
                             1000 +
-                            Math.random() * 700,
+                            Math.random() *
+                            700,
 
                         easing:
                             "ease-out"
@@ -1304,8 +2024,10 @@ document.addEventListener(
         const envelope =
             get("envelope");
 
+
         const postcard =
             get("postcard");
+
 
         const envelopeText =
             get("envelope-text");
@@ -1320,12 +2042,13 @@ document.addEventListener(
                 "click",
                 function () {
 
+                    unlockAudio();
+
+
                     if (envelopeOpened) {
                         return;
                     }
 
-
-                    unlockAudio();
 
                     envelopeOpened = true;
 
@@ -1335,11 +2058,22 @@ document.addEventListener(
                     );
 
 
+                    envelopeText.textContent =
+                        "Open it... it's just for you. ❤️";
+
+
+                    /*
+                       Existing envelope sound
+                    */
+
                     envelopeOpenSound();
 
 
-                    envelopeText.textContent =
-                        "Open it... it's just for you. ❤️";
+                    /*
+                       New paper/page opening sound
+                    */
+
+                    pageOpeningSound();
 
 
                     setTimeout(
@@ -1348,6 +2082,9 @@ document.addEventListener(
                             postcard.classList.add(
                                 "show"
                             );
+
+
+                            magicalReveal();
 
                         },
                         900
@@ -1375,7 +2112,7 @@ document.addEventListener(
 
                     unlockAudio();
 
-                    uiClickSound();
+                    uiClick();
 
 
                     postcard.classList.remove(
@@ -1395,6 +2132,9 @@ document.addEventListener(
                                 "wine-section"
                             );
 
+
+                            romanticChime();
+
                         },
                         400
                     );
@@ -1412,23 +2152,28 @@ document.addEventListener(
         const bottle =
             get("wine-bottle");
 
+
         const glasses =
             document.querySelectorAll(
                 ".wine-glass"
             );
+
 
         const bottleLiquid =
             document.querySelector(
                 ".bottle-liquid"
             );
 
+
         const glassWine =
             document.querySelectorAll(
                 ".glass-wine"
             );
 
+
         const wineCounter =
             get("wine-counter");
+
 
         const wineInstruction =
             get("wine-instruction");
@@ -1485,11 +2230,15 @@ document.addEventListener(
 
 
                     /*
-                       RESTORED WINE POUR SOUND
+                       EXISTING WINE POUR WHOOSH
                     */
 
-                    winePourEffect();
+                    winePourSound();
 
+
+                    /*
+                       BOTTLE LEVEL
+                    */
 
                     const bottleLevel =
                         100 -
@@ -1500,18 +2249,25 @@ document.addEventListener(
 
 
                     bottleLiquid.style.height =
-                        bottleLevel + "%";
+                        bottleLevel +
+                        "%";
 
+
+                    /*
+                       GLASSES FILL
+                    */
 
                     const glassLevel =
-                        pourCount * 20;
+                        pourCount *
+                        20;
 
 
                     glassWine.forEach(
                         function (wine) {
 
                             wine.style.height =
-                                glassLevel + "%";
+                                glassLevel +
+                                "%";
 
                         }
                     );
@@ -1542,6 +2298,9 @@ document.addEventListener(
 
                         wineCounter.textContent =
                             "CHEERS ❤️";
+
+
+                        wineComplete();
 
                     }
 
@@ -1575,17 +2334,24 @@ document.addEventListener(
                             wineInstruction.textContent =
                                 "Pour the wine first, sweetheart. ❤️";
 
+
+                            uiClick();
+
                             return;
 
                         }
 
 
                         /*
-                           RESTORED GLASS CLINK
+                           EXISTING GLASS CLINK
                         */
 
-                        glassClinkEffect();
+                        glassClink();
 
+
+                        /*
+                           EMPTY BOTH GLASSES
+                        */
 
                         glassWine.forEach(
                             function (wine) {
@@ -1636,15 +2402,11 @@ document.addEventListener(
 
         function startDrunkEnding() {
 
+            unlockAudio();
+
+
             const overlay =
                 get("drunk-overlay");
-
-
-            /*
-               RESTORED DIZZY SOUND
-            */
-
-            dizzySound();
 
 
             if (overlay) {
@@ -1654,6 +2416,23 @@ document.addEventListener(
                 );
 
             }
+
+
+            /*
+               Stop normal BGM
+               for dizzy sequence.
+            */
+
+            drunkMode = true;
+
+            stopRomanticBGM();
+
+
+            /*
+               EXISTING DIZZY SOUND
+            */
+
+            dizzySound();
 
 
             /*
@@ -1710,8 +2489,33 @@ document.addEventListener(
 
                     }
 
+
+                    drunkPopupSound();
+
                 },
                 4200
+            );
+
+
+            /*
+               Bring jazz BGM back
+               after drunk moment.
+            */
+
+            setTimeout(
+                function () {
+
+                    drunkMode = false;
+
+
+                    if (!musicMuted) {
+
+                        startRomanticBGM();
+
+                    }
+
+                },
+                6500
             );
 
         }
@@ -1733,7 +2537,7 @@ document.addEventListener(
 
                     unlockAudio();
 
-                    uiClickSound();
+                    uiClick();
 
 
                     setTimeout(
@@ -1753,13 +2557,13 @@ document.addEventListener(
 
 
         /* =====================================================
-           START JAZZ
+           START IN SILENCE
+           Audio begins safely after user interaction.
         ====================================================== */
 
-        /*
-           Do not force autoplay.
-           First user interaction unlocks it.
-        */
+        if (musicButton) {
+            musicButton.textContent = "♫";
+        }
 
     }
 );
