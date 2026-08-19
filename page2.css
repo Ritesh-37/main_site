@@ -1,0 +1,1317 @@
+/* =========================================
+   PAGE 2 - GENERAL SETTINGS
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    background: #160509;
+    color: white;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+}
+
+.scene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 1.2s ease;
+}
+
+.scene.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+
+/* =========================================
+   SECTION 01 - WELCOME
+========================================= */
+
+#welcomeScreen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, #7d2035 0%, #360914 55%, #160509 100%);
+}
+
+.welcome-card {
+    width: min(90%, 430px);
+    padding: 45px 30px;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.96);
+    color: #5c1728;
+
+    border-radius: 28px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.45);
+
+    animation: welcomeFloat 3s ease-in-out infinite;
+}
+
+.welcome-heart {
+    font-size: 50px;
+    margin-bottom: 15px;
+    animation: heartBeat 1.5s infinite;
+}
+
+.welcome-card h1 {
+    font-size: clamp(28px, 7vw, 42px);
+    margin-bottom: 18px;
+}
+
+.welcome-card p {
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.small-text {
+    margin-top: 8px;
+    opacity: 0.75;
+}
+
+.main-button {
+    margin-top: 28px;
+    padding: 15px 26px;
+
+    border-radius: 50px;
+
+    background: #8f2440;
+    color: white;
+
+    font-size: 16px;
+
+    box-shadow: 0 10px 30px rgba(143, 36, 64, 0.35);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.main-button:hover {
+    transform: translateY(-3px) scale(1.03);
+}
+
+.main-button:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================
+   SECTION 02 - PARTY
+========================================= */
+
+#partyScene {
+    background:
+        radial-gradient(circle at center top, #b73555 0%, #611329 35%, #210710 100%);
+    overflow: hidden;
+}
+
+.party-lights {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(circle at 10% 10%, rgba(255,255,255,.8) 0 3px, transparent 5px),
+        radial-gradient(circle at 30% 7%, rgba(255,255,255,.7) 0 3px, transparent 5px),
+        radial-gradient(circle at 50% 10%, rgba(255,255,255,.9) 0 3px, transparent 5px),
+        radial-gradient(circle at 70% 7%, rgba(255,255,255,.7) 0 3px, transparent 5px),
+        radial-gradient(circle at 90% 10%, rgba(255,255,255,.8) 0 3px, transparent 5px);
+
+    animation: lightsPulse 2s infinite alternate;
+}
+
+.party-title {
+    position: absolute;
+    top: 5%;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+
+    font-size: clamp(18px, 4vw, 25px);
+}
+
+
+/* =========================================
+   BALLOONS
+========================================= */
+
+#balloons {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.balloon {
+    position: absolute;
+
+    width: clamp(70px, 12vw, 110px);
+    height: clamp(90px, 15vw, 135px);
+
+    border-radius: 50% 50% 45% 45%;
+
+    background: linear-gradient(
+        145deg,
+        #ff8ba7,
+        #a91f45
+    );
+
+    box-shadow:
+        inset -12px -15px 20px rgba(0,0,0,.2),
+        0 15px 30px rgba(0,0,0,.2);
+
+    transition:
+        transform 0.4s ease,
+        opacity 0.5s ease;
+}
+
+.balloon::after {
+    content: "";
+    position: absolute;
+
+    width: 2px;
+    height: 90px;
+
+    background: rgba(255,255,255,.7);
+
+    left: 50%;
+    top: 98%;
+
+    transform-origin: top;
+}
+
+.balloon span {
+    position: absolute;
+
+    width: 15px;
+    height: 25px;
+
+    background: inherit;
+
+    left: 50%;
+    bottom: -8px;
+
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.balloon-1 {
+    left: 5%;
+    top: 22%;
+    animation: balloonFloat 3s infinite ease-in-out;
+}
+
+.balloon-2 {
+    left: 18%;
+    top: 8%;
+    animation: balloonFloat 3.4s infinite ease-in-out;
+}
+
+.balloon-3 {
+    left: 32%;
+    top: 18%;
+    animation: balloonFloat 3.2s infinite ease-in-out;
+}
+
+.balloon-4 {
+    right: 32%;
+    top: 18%;
+    animation: balloonFloat 3.5s infinite ease-in-out;
+}
+
+.balloon-5 {
+    right: 18%;
+    top: 8%;
+    animation: balloonFloat 3.1s infinite ease-in-out;
+}
+
+.balloon-6 {
+    right: 5%;
+    top: 22%;
+    animation: balloonFloat 3.6s infinite ease-in-out;
+}
+
+.balloon.popped {
+    animation: balloonPop 0.45s forwards;
+}
+
+
+/* =========================================
+   PARTY POPPERS
+========================================= */
+
+.party-popper {
+    position: absolute;
+    top: 48%;
+
+    width: clamp(70px, 13vw, 120px);
+    height: clamp(70px, 13vw, 120px);
+
+    background: transparent;
+
+    font-size: clamp(50px, 10vw, 90px);
+
+    z-index: 20;
+
+    transition: transform 0.2s ease;
+}
+
+.left-popper {
+    left: 1%;
+}
+
+.right-popper {
+    right: 1%;
+}
+
+.party-popper.pop {
+    animation: popperBlast 0.8s ease;
+}
+
+
+/* =========================================
+   CAKE
+========================================= */
+
+#cakeContainer {
+    position: absolute;
+
+    left: 50%;
+    top: 53%;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 15;
+}
+
+.cake {
+    position: relative;
+
+    width: clamp(190px, 45vw, 310px);
+    height: 210px;
+
+    transition:
+        transform 0.3s ease;
+}
+
+.cake:hover {
+    transform: scale(1.03);
+}
+
+.cake-base {
+    position: absolute;
+
+    bottom: 0;
+    left: 5%;
+
+    width: 90%;
+    height: 30px;
+
+    background: #6b2430;
+    border-radius: 12px;
+}
+
+.cake-body {
+    position: absolute;
+
+    bottom: 25px;
+    left: 10%;
+
+    width: 80%;
+    height: 105px;
+
+    background: linear-gradient(
+        to bottom,
+        #fff0e8,
+        #f7c8bd
+    );
+
+    border-radius: 15px 15px 20px 20px;
+}
+
+.cake-top {
+    position: absolute;
+
+    bottom: 115px;
+    left: 8%;
+
+    width: 84%;
+    height: 40px;
+
+    background: #fff5ed;
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 5px 10px rgba(0,0,0,.15);
+}
+
+.cake-cream {
+    position: absolute;
+
+    width: 35px;
+    height: 35px;
+
+    border-radius: 50%;
+
+    background: #fff5ed;
+
+    bottom: 8px;
+}
+
+.cream-one {
+    left: 20%;
+}
+
+.cream-two {
+    right: 20%;
+}
+
+
+/* =========================================
+   CANDLES
+========================================= */
+
+.cake-candles {
+    position: absolute;
+
+    bottom: 145px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 75%;
+
+    display: flex;
+    justify-content: space-between;
+
+    z-index: 5;
+}
+
+.candle {
+    position: relative;
+
+    width: 15px;
+    height: 50px;
+
+    border-radius: 5px;
+
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #fff,
+            #fff 5px,
+            #e9a0ad 5px,
+            #e9a0ad 10px
+        );
+
+    cursor: pointer;
+}
+
+.flame {
+    position: absolute;
+
+    width: 17px;
+    height: 25px;
+
+    left: 50%;
+    top: -27px;
+
+    transform: translateX(-50%);
+
+    background:
+        radial-gradient(
+            ellipse at center bottom,
+            #fff 0 15%,
+            #ffd447 35%,
+            #ff6b35 70%,
+            transparent 72%
+        );
+
+    animation: flameMove 0.5s infinite alternate;
+}
+
+.candle.extinguished .flame {
+    display: none;
+}
+
+.candle.extinguished::after {
+    content: "☁";
+    position: absolute;
+
+    top: -30px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    color: rgba(255,255,255,.7);
+
+    animation: smokeRise 1s ease forwards;
+}
+
+
+/* =========================================
+   WISH MESSAGE
+========================================= */
+
+.message-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,.25);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: 0.8s ease;
+
+    z-index: 100;
+}
+
+.message-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.message-card {
+    width: min(88%, 430px);
+
+    padding: 35px 25px;
+
+    text-align: center;
+
+    background: rgba(255,255,255,.96);
+    color: #67182c;
+
+    border-radius: 25px;
+
+    box-shadow: 0 25px 80px rgba(0,0,0,.45);
+
+    animation: messageAppear 0.8s ease;
+}
+
+.message-icon {
+    font-size: 40px;
+}
+
+.message-card h2 {
+    font-size: clamp(25px, 6vw, 38px);
+    line-height: 1.3;
+    margin: 12px 0;
+}
+
+.message-card p {
+    line-height: 1.5;
+}
+
+.cake-prompt {
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+
+/* =========================================
+   SECTION 03 - LETTER
+========================================= */
+
+#letterScene {
+    background:
+        radial-gradient(
+            circle at 50% 25%,
+            #7a4935,
+            #382018 60%,
+            #180b08
+        );
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+}
+
+.wooden-table {
+    position: relative;
+
+    width: min(90%, 850px);
+    height: 48%;
+
+    margin-top: 15%;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #70452d,
+            #70452d 12px,
+            #633b27 13px,
+            #633b27 24px
+        );
+
+    border-radius: 25px;
+
+    box-shadow:
+        0 -20px 70px rgba(0,0,0,.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+
+/* =========================================
+   BOUQUET
+========================================= */
+
+.bouquet {
+    position: relative;
+
+    width: 260px;
+    height: 280px;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding-top: 30px;
+}
+
+.flower {
+    position: absolute;
+
+    font-size: 55px;
+
+    filter: drop-shadow(
+        0 10px 10px rgba(0,0,0,.25)
+    );
+}
+
+.flower-one {
+    left: 65px;
+    top: 20px;
+}
+
+.flower-two {
+    left: 115px;
+    top: 0;
+}
+
+.flower-three {
+    left: 160px;
+    top: 25px;
+}
+
+.flower-four {
+    left: 90px;
+    top: 65px;
+}
+
+.flower-five {
+    left: 145px;
+    top: 70px;
+}
+
+.leaves {
+    position: absolute;
+
+    top: 120px;
+
+    font-size: 50px;
+    letter-spacing: -15px;
+}
+
+.bouquet-paper {
+    position: absolute;
+
+    bottom: 5px;
+
+    width: 170px;
+    height: 120px;
+
+    background: #f2dfcc;
+
+    clip-path: polygon(
+        15% 0,
+        85% 0,
+        100% 100%,
+        0 100%
+    );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #703043;
+    font-size: 15px;
+}
+
+
+/* =========================================
+   LETTER
+========================================= */
+
+.letter {
+    background: transparent;
+    width: 300px;
+    height: 200px;
+
+    perspective: 800px;
+}
+
+.envelope {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    background: #f5dfc7;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.35);
+
+    overflow: hidden;
+
+    transition: transform .3s ease;
+}
+
+.letter:hover .envelope {
+    transform: translateY(-8px) rotate(-1deg);
+}
+
+.envelope-flap {
+    position: absolute;
+
+    inset: 0;
+
+    background: #ecd1b3;
+
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        50% 55%
+    );
+
+    z-index: 2;
+}
+
+.envelope-front {
+    position: absolute;
+
+    bottom: 20px;
+
+    width: 100%;
+
+    text-align: center;
+
+    color: #6c2837;
+
+    font-size: 20px;
+
+    z-index: 3;
+}
+
+
+/* =========================================
+   LETTER CONTENT
+========================================= */
+
+.letter-content {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(0,0,0,.7);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .8s ease;
+
+    z-index: 200;
+}
+
+.letter-content.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.letter-paper {
+    position: relative;
+
+    width: min(90%, 600px);
+    max-height: 85%;
+
+    overflow-y: auto;
+
+    padding: 45px 35px;
+
+    background: #fff4df;
+
+    color: #4d2a21;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.5);
+
+    line-height: 1.7;
+
+    animation: paperOpen .8s ease;
+}
+
+.letter-paper p {
+    margin-bottom: 18px;
+}
+
+.letter-heading {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.letter-ending {
+    font-weight: bold;
+    margin-top: 25px;
+}
+
+.signature {
+    text-align: right;
+    font-style: italic;
+}
+
+.close-letter {
+    position: absolute;
+
+    top: 10px;
+    right: 15px;
+
+    background: transparent;
+
+    color: #6c2837;
+
+    font-size: 30px;
+}
+
+
+/* =========================================
+   SECTION 04 - WINE
+========================================= */
+
+#wineScene {
+    background:
+        radial-gradient(
+            circle at center,
+            #38202a,
+            #10070b 70%
+        );
+
+    overflow: hidden;
+}
+
+.wine-world {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    transition: transform 1s ease;
+}
+
+.wine-heading {
+    margin-bottom: 30px;
+
+    font-size: 20px;
+    opacity: .8;
+}
+
+
+/* =========================================
+   WINE BOTTLE
+========================================= */
+
+.wine-bottle {
+    position: relative;
+
+    width: 120px;
+    height: 330px;
+
+    background: transparent;
+
+    transform-origin: bottom center;
+
+    transition: transform .6s ease;
+}
+
+.bottle-neck {
+    position: absolute;
+
+    left: 35px;
+    top: 0;
+
+    width: 50px;
+    height: 95px;
+
+    background: #32191e;
+
+    border-radius: 10px 10px 4px 4px;
+}
+
+.bottle-body {
+    position: absolute;
+
+    bottom: 0;
+    left: 5px;
+
+    width: 110px;
+    height: 260px;
+
+    background: #32191e;
+
+    border-radius: 20px 20px 35px 35px;
+
+    overflow: hidden;
+
+    box-shadow:
+        inset -15px 0 20px rgba(0,0,0,.4),
+        0 25px 50px rgba(0,0,0,.4);
+}
+
+.wine-liquid {
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+    height: 85%;
+
+    background:
+        linear-gradient(
+            to top,
+            #511225,
+            #7e1e38
+        );
+
+    transition:
+        height 1s ease;
+}
+
+.bottle-label {
+    position: absolute;
+
+    left: 15px;
+    right: 15px;
+    top: 100px;
+
+    padding: 20px 5px;
+
+    background: #f1dfc5;
+
+    color: #5b2733;
+
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    z-index: 2;
+}
+
+.bottle-label strong {
+    font-size: 20px;
+}
+
+
+/* =========================================
+   WINE GLASS
+========================================= */
+
+.wine-glass {
+    position: absolute;
+
+    right: 15%;
+
+    bottom: 20%;
+
+    width: 80px;
+    height: 130px;
+
+    border: 2px solid rgba(255,255,255,.55);
+
+    border-radius: 10px 10px 35px 35px;
+
+    overflow: hidden;
+}
+
+.wine-glass::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: -65px;
+    left: 50%;
+
+    width: 2px;
+    height: 70px;
+
+    background: rgba(255,255,255,.5);
+}
+
+.wine-glass-liquid {
+    position: absolute;
+
+    bottom: 0;
+
+    width: 100%;
+    height: 65%;
+
+    background: #702039;
+
+    transition: height 1s ease;
+}
+
+
+/* =========================================
+   WINE TEXT
+========================================= */
+
+.wine-text {
+    margin-top: 30px;
+
+    width: min(90%, 600px);
+
+    text-align: center;
+
+    font-size: clamp(18px, 4vw, 27px);
+
+    line-height: 1.5;
+
+    min-height: 70px;
+
+    transition:
+        opacity .8s ease,
+        transform .8s ease;
+}
+
+.wine-text.fade {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+
+/* =========================================
+   FOG
+========================================= */
+
+.wine-fog {
+    position: absolute;
+
+    inset: -20%;
+
+    background:
+        radial-gradient(
+            ellipse,
+            rgba(255,255,255,.3),
+            rgba(255,255,255,0) 65%
+        );
+
+    opacity: 0;
+
+    filter: blur(25px);
+
+    pointer-events: none;
+
+    transition: opacity 2s ease;
+
+    z-index: 10;
+}
+
+.wine-fog.active {
+    opacity: .85;
+    animation: fogMove 7s infinite alternate ease-in-out;
+}
+
+
+/* =========================================
+   FINAL WINE MESSAGE
+========================================= */
+
+.final-wine-message {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    background: rgba(0,0,0,.2);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: 2s ease;
+
+    z-index: 30;
+}
+
+.final-wine-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.final-wine-message p {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.final-wine-message h2 {
+    font-size: clamp(28px, 7vw, 48px);
+}
+
+
+/* =========================================
+   BLACKOUT
+========================================= */
+
+#blackout {
+    position: absolute;
+
+    inset: 0;
+
+    background: #000;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition: opacity 2s ease;
+
+    z-index: 1000;
+}
+
+#blackout.show {
+    opacity: 1;
+}
+
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes welcomeFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes heartBeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+@keyframes lightsPulse {
+    from {
+        opacity: .5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes balloonFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-18px) rotate(2deg);
+    }
+}
+
+@keyframes balloonPop {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.4);
+        opacity: .7;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes popperBlast {
+    0% {
+        transform: scale(1) rotate(0);
+    }
+
+    30% {
+        transform: scale(1.4) rotate(-10deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes flameMove {
+    from {
+        transform: translateX(-50%) scale(1);
+    }
+
+    to {
+        transform: translateX(-50%) scale(1.12);
+    }
+}
+
+@keyframes smokeRise {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -35px) scale(1.5);
+    }
+}
+
+@keyframes messageAppear {
+    from {
+        transform: scale(.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes paperOpen {
+    from {
+        transform: scale(.7) rotateX(20deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) rotateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fogMove {
+    from {
+        transform: translateX(-5%);
+    }
+
+    to {
+        transform: translateX(5%);
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .party-title {
+        top: 3%;
+    }
+
+    .balloon {
+        transform: scale(.8);
+    }
+
+    .balloon-1 {
+        left: -2%;
+    }
+
+    .balloon-6 {
+        right: -2%;
+    }
+
+    .party-popper {
+        top: 55%;
+    }
+
+    .wooden-table {
+        height: 55%;
+        margin-top: 25%;
+    }
+
+    .bouquet {
+        transform: scale(.65);
+        margin-right: -40px;
+    }
+
+    .letter {
+        transform: scale(.75);
+        margin-left: -40px;
+    }
+
+    .wine-glass {
+        right: 5%;
+        bottom: 18%;
+        transform: scale(.8);
+    }
+  }
