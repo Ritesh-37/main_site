@@ -1,0 +1,3704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>The Memory Test ❤️</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #70172f;
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            #fffdfd 0%,
+            #fff3f5 34%,
+            #ffe5ea 68%,
+            #ffd0da 100%
+        );
+
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+
+/* =========================================================
+   MAIN BACKGROUND
+========================================================= */
+
+.background {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            #fffefe 0%,
+            #fff4f6 35%,
+            #ffe5ea 70%,
+            #ffd3dd 100%
+        );
+
+    transition:
+        background 1.5s ease,
+        transform 1s ease;
+}
+
+.background::before {
+    content: "";
+    position: absolute;
+
+    width: 70vw;
+    height: 70vw;
+
+    max-width: 800px;
+    max-height: 800px;
+
+    left: 50%;
+    top: 45%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background: rgba(150, 27, 62, 0.10);
+
+    filter: blur(100px);
+}
+
+.background::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(
+            rgba(125, 22, 50, 0.06) 1px,
+            transparent 1px
+        );
+
+    background-size: 28px 28px;
+
+    opacity: 0.55;
+}
+
+
+/* =========================================================
+   FLOATING HEARTS
+========================================================= */
+
+.hearts {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.hearts span {
+    position: absolute;
+
+    color: #9e2447;
+    opacity: 0.13;
+
+    font-size: 22px;
+
+    animation:
+        floatingHeart 5s ease-in-out infinite;
+}
+
+.hearts span:nth-child(1) {
+    left: 8%;
+    top: 20%;
+}
+
+.hearts span:nth-child(2) {
+    left: 18%;
+    top: 72%;
+    animation-delay: 0.8s;
+}
+
+.hearts span:nth-child(3) {
+    left: 36%;
+    top: 14%;
+    animation-delay: 1.5s;
+}
+
+.hearts span:nth-child(4) {
+    left: 65%;
+    top: 76%;
+    animation-delay: 2s;
+}
+
+.hearts span:nth-child(5) {
+    left: 82%;
+    top: 22%;
+    animation-delay: 0.5s;
+}
+
+.hearts span:nth-child(6) {
+    left: 91%;
+    top: 58%;
+    animation-delay: 2.4s;
+}
+
+@keyframes floatingHeart {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0deg);
+    }
+
+    50% {
+        transform:
+            translateY(-18px)
+            rotate(8deg);
+    }
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.intro {
+    position: fixed;
+    inset: 0;
+
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 25px;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(255,255,255,0.82),
+            rgba(255,230,236,0.76)
+        );
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.intro.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.intro-content {
+    max-width: 650px;
+}
+
+.eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 4px;
+
+    color: #8c2946;
+
+    margin-bottom: 20px;
+
+    opacity: 0.7;
+}
+
+.intro h1 {
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(48px, 10vw, 82px);
+
+    font-weight: 500;
+
+    line-height: 0.95;
+
+    color: #72162f;
+}
+
+.intro h1 span {
+    display: block;
+
+    color: #a3264a;
+
+    font-style: italic;
+}
+
+.intro p {
+    margin-top: 22px;
+
+    color: #673040;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+
+    opacity: 0.78;
+}
+
+.start-button {
+    margin-top: 28px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 170px;
+
+    padding: 14px 24px;
+
+    border: 1px solid rgba(112, 23, 47, 0.25);
+
+    border-radius: 30px;
+
+    background:
+        rgba(255,255,255,0.45);
+
+    color: #72162f;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.start-button:hover {
+    transform: translateY(-3px);
+
+    background:
+        rgba(255,255,255,0.7);
+
+    box-shadow:
+        0 12px 30px rgba(112,23,47,0.12);
+}
+
+
+/* =========================================================
+   QUIZ AREA
+========================================================= */
+
+.quiz {
+    position: fixed;
+    inset: 0;
+
+    z-index: 10;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.quiz.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.top-bar {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 82px;
+
+    padding:
+        24px
+        clamp(20px, 6vw, 70px);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    z-index: 30;
+}
+
+.test-label {
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+    color: #85223e;
+
+    opacity: 0.7;
+}
+
+.counter {
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #85223e;
+
+    opacity: 0.7;
+}
+
+.progress {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 2px;
+
+    background:
+        rgba(112,23,47,0.08);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #7b1835,
+            #c14668
+        );
+
+    transition:
+        width 0.7s ease;
+}
+
+
+/* =========================================================
+   WONDER STAGE
+========================================================= */
+
+.wonder-stage {
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+.wonder {
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0;
+
+    transform:
+        scale(1.08);
+
+    transition:
+        opacity 1.2s ease,
+        transform 1.4s ease;
+
+    pointer-events: none;
+}
+
+.wonder.active {
+    opacity: 1;
+
+    transform:
+        scale(1);
+}
+
+
+/* =========================================================
+   WONDER LABEL
+========================================================= */
+
+.wonder-info {
+    position: absolute;
+
+    left: 24px;
+    bottom: 22px;
+
+    z-index: 20;
+
+    max-width: 250px;
+
+    text-align: left;
+}
+
+.wonder-name {
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 19px;
+
+    color: #751932;
+
+    letter-spacing: 0.5px;
+}
+
+.wonder-year {
+    margin-top: 5px;
+
+    font-size: 8px;
+
+    line-height: 1.5;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    color: #72162f;
+
+    opacity: 0.58;
+}
+
+
+/* =========================================================
+   WONDER 1 — GREAT WALL
+========================================================= */
+
+.great-wall {
+    position: absolute;
+
+    left: -5%;
+    right: -5%;
+
+    bottom: 13%;
+
+    height: 18%;
+
+    background:
+        linear-gradient(
+            165deg,
+            transparent 0 15%,
+            rgba(112,53,48,0.25) 16% 30%,
+            rgba(90,38,38,0.30) 31% 100%
+        );
+
+    clip-path:
+        polygon(
+            0 80%,
+            8% 68%,
+            16% 72%,
+            25% 52%,
+            33% 58%,
+            42% 39%,
+            51% 45%,
+            60% 25%,
+            68% 34%,
+            76% 18%,
+            85% 25%,
+            100% 5%,
+            100% 100%,
+            0 100%
+        );
+
+    filter: blur(0.5px);
+}
+
+.great-wall::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 35% 0 0;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 26px,
+            rgba(76,31,35,0.13) 27px 30px
+        );
+}
+
+
+/* =========================================================
+   WONDER 2 — COLOSSEUM
+========================================================= */
+
+.colosseum {
+    position: absolute;
+
+    width: min(72vw, 620px);
+    height: min(42vw, 350px);
+
+    left: 50%;
+    bottom: 13%;
+
+    transform:
+        translateX(-50%);
+
+    border-radius:
+        50% 50% 8% 8%;
+
+    border:
+        12px solid
+        rgba(105,51,48,0.26);
+
+    border-bottom-width: 25px;
+
+    box-shadow:
+        inset 0 0 0 8px rgba(255,255,255,0.08);
+}
+
+.colosseum::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 12px;
+
+    border-radius:
+        48% 48% 6% 6%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 27px,
+            rgba(95,40,42,0.18) 28px 40px
+        );
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            100% 100%,
+            0 100%
+        );
+}
+
+.colosseum::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 10%;
+
+    transform:
+        translateX(-50%);
+
+    width: 40%;
+    height: 75%;
+
+    border:
+        9px solid
+        rgba(96,39,41,0.25);
+
+    border-bottom: 0;
+
+    border-radius:
+        50% 50% 0 0;
+}
+
+
+/* =========================================================
+   WONDER 3 — CHRIST THE REDEEMER
+========================================================= */
+
+.christ {
+    position: absolute;
+
+    left: 50%;
+    bottom: 17%;
+
+    transform:
+        translateX(-50%);
+
+    width: 80px;
+    height: 210px;
+
+    background:
+        rgba(90,46,50,0.28);
+
+    clip-path:
+        polygon(
+            42% 0,
+            58% 0,
+            63% 24%,
+            100% 30%,
+            100% 37%,
+            64% 34%,
+            65% 77%,
+            82% 100%,
+            18% 100%,
+            35% 77%,
+            36% 34%,
+            0 37%,
+            0 30%,
+            37% 24%
+        );
+}
+
+.christ::after {
+    content: "";
+
+    position: absolute;
+
+    width: 300px;
+    height: 70px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        rgba(94,45,50,0.15);
+
+    filter: blur(35px);
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   WONDER 4 — PETRA
+========================================================= */
+
+.petra {
+    position: absolute;
+
+    width: min(72vw, 600px);
+    height: min(50vw, 390px);
+
+    left: 50%;
+    bottom: 12%;
+
+    transform:
+        translateX(-50%);
+
+    background:
+        rgba(135,74,55,0.25);
+
+    clip-path:
+        polygon(
+            0 100%,
+            10% 0,
+            90% 0,
+            100% 100%
+        );
+
+    opacity: 0.9;
+}
+
+.petra::before {
+    content: "";
+
+    position: absolute;
+
+    left: 15%;
+    right: 15%;
+    top: 22%;
+
+    height: 45%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(93,47,39,0.20) 0 12px,
+            transparent 13px 36px
+        );
+
+    border:
+        10px solid
+        rgba(99,48,40,0.20);
+
+    clip-path:
+        polygon(
+            0 100%,
+            0 20%,
+            25% 20%,
+            35% 0,
+            65% 0,
+            75% 20%,
+            100% 20%,
+            100% 100%
+        );
+}
+
+
+/* =========================================================
+   WONDER 5 — MACHU PICCHU
+========================================================= */
+
+.machu {
+    position: absolute;
+
+    inset: auto 0 10% 0;
+
+    height: 45%;
+
+    background:
+        linear-gradient(
+            145deg,
+            transparent 0 20%,
+            rgba(68,74,56,0.24) 21% 48%,
+            transparent 49%
+        );
+
+    clip-path:
+        polygon(
+            0 100%,
+            18% 40%,
+            32% 58%,
+            50% 8%,
+            67% 54%,
+            80% 25%,
+            100% 100%
+        );
+}
+
+.machu::after {
+    content: "";
+
+    position: absolute;
+
+    left: 20%;
+    right: 20%;
+    bottom: 10%;
+
+    height: 30%;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(72,61,44,0.20) 0 16px,
+            transparent 17px 30px
+        );
+}
+
+
+/* =========================================================
+   WONDER 6 — CHICHEN ITZA
+========================================================= */
+
+.chichen {
+    position: absolute;
+
+    left: 50%;
+    bottom: 13%;
+
+    transform:
+        translateX(-50%);
+
+    width: min(68vw, 540px);
+    height: min(45vw, 360px);
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent 0 10%,
+            rgba(91,61,48,0.24) 11% 100%
+        );
+
+    clip-path:
+        polygon(
+            50% 0,
+            100% 100%,
+            0 100%
+        );
+}
+
+.chichen::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    transform:
+        translateX(-50%);
+
+    width: 27%;
+    height: 75%;
+
+    background:
+        repeating-linear-gradient(
+            180deg,
+            rgba(84,55,45,0.18) 0 13px,
+            transparent 14px 28px
+        );
+
+    clip-path:
+        polygon(
+            50% 0,
+            100% 100%,
+            0 100%
+        );
+}
+
+
+/* =========================================================
+   WONDER 7 — TAJ MAHAL
+========================================================= */
+
+.taj {
+    position: absolute;
+
+    left: 50%;
+    bottom: 12%;
+
+    transform:
+        translateX(-50%);
+
+    width: min(72vw, 620px);
+    height: min(52vw, 410px);
+}
+
+
+/* central building */
+
+.taj-body {
+    position: absolute;
+
+    left: 50%;
+    bottom: 0;
+
+    transform:
+        translateX(-50%);
+
+    width: 48%;
+    height: 62%;
+
+    background:
+        rgba(103,44,55,0.28);
+
+    clip-path:
+        polygon(
+            18% 100%,
+            18% 34%,
+            30% 18%,
+            50% 0,
+            70% 18%,
+            82% 34%,
+            82% 100%
+        );
+}
+
+
+/* central dome */
+
+.taj-dome {
+    position: absolute;
+
+    left: 50%;
+    bottom: 49%;
+
+    transform:
+        translateX(-50%);
+
+    width: 26%;
+    height: 24%;
+
+    background:
+        rgba(103,44,55,0.28);
+
+    border-radius:
+        50% 50% 0 0;
+}
+
+
+/* minarets */
+
+.taj-minaret {
+    position: absolute;
+
+    bottom: 0;
+
+    width: 5%;
+    height: 75%;
+
+    background:
+        rgba(103,44,55,0.25);
+
+    border-radius:
+        8px 8px 3px 3px;
+}
+
+.taj-minaret::before {
+    content: "";
+
+    position: absolute;
+
+    top: -5%;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width: 130%;
+    height: 8%;
+
+    border-radius: 50%;
+
+    background:
+        rgba(103,44,55,0.27);
+}
+
+.taj-minaret:nth-child(3) {
+    left: 12%;
+}
+
+.taj-minaret:nth-child(4) {
+    right: 12%;
+}
+
+.taj-minaret:nth-child(5) {
+    left: 28%;
+    height: 64%;
+}
+
+.taj-minaret:nth-child(6) {
+    right: 28%;
+    height: 64%;
+}
+
+
+/* =========================================================
+   QUESTION CARD
+========================================================= */
+
+.question-area {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width:
+        min(90%, 650px);
+
+    z-index: 25;
+
+    text-align: center;
+}
+
+.question-number {
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+    color: #85223e;
+
+    opacity: 0.62;
+
+    margin-bottom: 14px;
+}
+
+.question {
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(28px, 5.7vw, 52px);
+
+    line-height: 1.08;
+
+    font-weight: 500;
+
+    color: #6e1730;
+
+    text-shadow:
+        0 8px 28px
+        rgba(93,18,40,0.13);
+
+    min-height: 65px;
+
+    transition:
+        opacity .4s ease,
+        transform .4s ease;
+}
+
+.question.emoji {
+    font-style: normal;
+}
+
+
+/* =========================================================
+   ANSWERS
+========================================================= */
+
+.answers {
+    margin-top: 28px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+
+    width: min(100%, 540px);
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.answer {
+    min-height: 58px;
+
+    border:
+        1px solid
+        rgba(112,23,47,0.16);
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.48);
+
+    backdrop-filter:
+        blur(10px);
+
+    color: #6f2036;
+
+    padding:
+        12px 14px;
+
+    font:
+        600 11px/1.35 Arial;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px
+        rgba(112,23,47,0.06);
+
+    transition:
+        transform .25s ease,
+        background .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.answer:hover {
+    transform:
+        translateY(-3px);
+
+    background:
+        rgba(255,255,255,0.72);
+
+    border-color:
+        rgba(112,23,47,0.28);
+
+    box-shadow:
+        0 13px 30px
+        rgba(112,23,47,0.10);
+}
+
+.answer.correct {
+    background:
+        rgba(132,39,66,0.92);
+
+    color:
+        white;
+
+    border-color:
+        rgba(255,255,255,0.35);
+
+    animation:
+        correctPulse .65s ease;
+}
+
+.answer.wrong {
+    background:
+        rgba(155,35,57,0.16);
+
+    border-color:
+        rgba(155,35,57,0.48);
+
+    color:
+        #a51e42;
+
+    animation:
+        wrongShake .48s ease;
+}
+
+.answer.disabled {
+    pointer-events: none;
+}
+
+@keyframes correctPulse {
+
+    0% {
+        transform: scale(1);
+        box-shadow:
+            0 0 0 rgba(112,23,47,0);
+    }
+
+    50% {
+        transform: scale(1.04);
+        box-shadow:
+            0 0 35px rgba(151,38,74,0.35);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes wrongShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-8px);
+    }
+
+    40% {
+        transform: translateX(8px);
+    }
+
+    60% {
+        transform: translateX(-5px);
+    }
+
+    80% {
+        transform: translateX(4px);
+    }
+}
+
+
+/* =========================================================
+   QUESTION CHANGE
+========================================================= */
+
+.question-area.changing {
+    animation:
+        questionOut .5s ease;
+}
+
+@keyframes questionOut {
+
+    0% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -48%)
+            scale(.97);
+    }
+}
+
+
+/* =========================================================
+   CORRECT FLASH
+========================================================= */
+
+.correct-flash {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 40;
+
+    pointer-events: none;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,.55),
+            transparent 45%
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity .2s ease;
+}
+
+.correct-flash.active {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   FINAL SEQUENCE
+========================================================= */
+
+.final-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #fff5f7,
+            #ffdfe6 58%,
+            #efb9c8 100%
+        );
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.final-screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.final-content {
+    width: min(90%, 650px);
+}
+
+.final-taj {
+    font-size: 58px;
+
+    opacity: .18;
+
+    margin-bottom: 18px;
+}
+
+.final-content h2 {
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(42px, 9vw, 76px);
+
+    font-weight: 500;
+
+    color: #751932;
+
+    line-height: .95;
+}
+
+.final-content h2 span {
+    display: block;
+
+    color: #a3264a;
+
+    font-style: italic;
+}
+
+.final-content p {
+    margin-top: 20px;
+
+    font-size: 13px;
+
+    color: #683040;
+
+    line-height: 1.7;
+
+    opacity: .78;
+}
+
+
+/* =========================================================
+   POPUP
+========================================================= */
+
+.popup-layer {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 150;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(55,7,20,0.20);
+
+    backdrop-filter:
+        blur(8px);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity .7s ease,
+        visibility .7s ease;
+}
+
+.popup-layer.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup {
+    width: min(88%, 470px);
+
+    padding: 32px 25px;
+
+    text-align: center;
+
+    border:
+        1px solid
+        rgba(112,23,47,0.15);
+
+    border-radius: 28px;
+
+    background:
+        rgba(255,249,250,0.88);
+
+    box-shadow:
+        0 30px 80px
+        rgba(76,8,30,0.20);
+
+    transform:
+        translateY(25px)
+        scale(.95);
+
+    transition:
+        transform .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.popup-layer.active .popup {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.popup-emoji {
+    font-size: 36px;
+
+    margin-bottom: 15px;
+}
+
+.popup h3 {
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(25px, 6vw, 38px);
+
+    font-weight: 500;
+
+    color: #751932;
+}
+
+.popup p {
+    margin-top: 13px;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    color: #653040;
+
+    opacity: .8;
+}
+
+.popup-button {
+    margin-top: 22px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        12px 23px;
+
+    border:
+        1px solid
+        rgba(112,23,47,.25);
+
+    border-radius: 30px;
+
+    background:
+        #781934;
+
+    color:
+        white;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(112,23,47,.20);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+.popup-button:hover {
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 15px 32px
+        rgba(112,23,47,.28);
+}
+
+
+/* =========================================================
+   GIFT SCREEN
+========================================================= */
+
+.gift-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 200;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 38%,
+            #65132c,
+            #3a0919 55%,
+            #19030b 100%
+        );
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+}
+
+.gift-screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.gift-title {
+    position: absolute;
+
+    top: 13%;
+
+    color: #f7d8df;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(28px, 6vw, 45px);
+
+    font-weight: 500;
+}
+
+.gift-subtitle {
+    position: absolute;
+
+    top: 22%;
+
+    color: #eabac8;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    opacity: .75;
+}
+
+
+/* =========================================================
+   CSS GIFT BOX
+========================================================= */
+
+.gift-box {
+    position: relative;
+
+    width: 210px;
+    height: 170px;
+
+    margin-top: 50px;
+
+    cursor: pointer;
+
+    transform:
+        translateY(60px)
+        scale(.7);
+
+    opacity: 0;
+
+    transition:
+        transform 1s cubic-bezier(.2,.8,.2,1),
+        opacity 1s ease;
+}
+
+.gift-screen.active .gift-box {
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity: 1;
+}
+
+.box-body {
+    position: absolute;
+
+    left: 10px;
+    right: 10px;
+    bottom: 0;
+
+    height: 120px;
+
+    border-radius:
+        5px 5px 16px 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8e1c3d,
+            #5c0e28
+        );
+
+    box-shadow:
+        0 30px 60px
+        rgba(0,0,0,.45);
+}
+
+.box-body::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 0;
+    bottom: 0;
+
+    transform:
+        translateX(-50%);
+
+    width: 25px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #d8a05e,
+            #f0c982,
+            #b8793e
+        );
+}
+
+.box-lid {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 22px;
+
+    height: 38px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #a22449,
+            #68102d
+        );
+
+    box-shadow:
+        0 10px 20px
+        rgba(0,0,0,.3);
+
+    z-index: 3;
+
+    transition:
+        transform 1s cubic-bezier(.2,.8,.2,1);
+}
+
+.box-lid::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 0;
+    bottom: 0;
+
+    transform:
+        translateX(-50%);
+
+    width: 25px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #d8a05e,
+            #f0c982,
+            #b8793e
+        );
+}
+
+.gift-ribbon {
+    position: absolute;
+
+    left: 50%;
+    top: -14px;
+
+    transform:
+        translateX(-50%);
+
+    width: 58px;
+    height: 40px;
+
+    z-index: 5;
+}
+
+.gift-ribbon::before,
+.gift-ribbon::after {
+    content: "";
+
+    position: absolute;
+
+    width: 35px;
+    height: 28px;
+
+    border:
+        6px solid
+        #d8a05e;
+
+    border-radius:
+        50% 50% 50% 10%;
+}
+
+.gift-ribbon::before {
+    left: 0;
+
+    transform:
+        rotate(-28deg);
+}
+
+.gift-ribbon::after {
+    right: 0;
+
+    transform:
+        scaleX(-1)
+        rotate(-28deg);
+}
+
+.gift-screen.opening .box-lid {
+    transform:
+        translateY(-80px)
+        rotate(-7deg);
+}
+
+.gift-screen.opening .gift-box {
+    animation:
+        giftGlow 1.4s ease;
+}
+
+@keyframes giftGlow {
+
+    0% {
+        filter:
+            drop-shadow(
+                0 0 0 rgba(245,198,111,0)
+            );
+    }
+
+    40% {
+        filter:
+            drop-shadow(
+                0 0 45px rgba(245,198,111,.85)
+            );
+    }
+
+    100% {
+        filter:
+            drop-shadow(
+                0 0 15px rgba(245,198,111,.25)
+            );
+    }
+}
+
+.open-gift-text {
+    margin-top: 25px;
+
+    color: #e9beca;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    text-transform: uppercase;
+
+    animation:
+        giftHint 2s ease-in-out infinite;
+}
+
+@keyframes giftHint {
+
+    50% {
+        opacity: .45;
+    }
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+.particles {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+        #efc77f;
+
+    box-shadow:
+        0 0 12px
+        #efc77f;
+
+    animation:
+        particleRise 3s ease-out forwards;
+}
+
+@keyframes particleRise {
+
+    from {
+        transform:
+            translateY(30px)
+            scale(.5);
+
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    to {
+        transform:
+            translateY(-160px)
+            scale(0);
+
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .answers {
+        grid-template-columns:
+            1fr;
+        gap: 9px;
+    }
+
+    .answer {
+        min-height: 48px;
+        padding: 10px 13px;
+    }
+
+    .question {
+        font-size:
+            clamp(25px, 7vw, 38px);
+    }
+
+    .question-area {
+        top: 48%;
+    }
+
+    .wonder-info {
+        bottom: 13px;
+        left: 17px;
+    }
+
+    .wonder-name {
+        font-size: 15px;
+    }
+
+    .wonder-year {
+        font-size: 7px;
+    }
+
+    .gift-box {
+        transform:
+            scale(.82);
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+
+        transition-duration:
+            .01ms !important;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     BACKGROUND
+======================================================= -->
+
+<div class="background">
+
+    <div class="hearts">
+
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     INTRO
+======================================================= -->
+
+<section
+    class="intro"
+    id="intro"
+>
+
+    <div class="intro-content">
+
+        <div class="eyebrow">
+            A LITTLE MEMORY GAME
+        </div>
+
+        <h1>
+            The
+            <span>Memory Test.</span>
+        </h1>
+
+        <p>
+            Seven little questions about us.<br>
+            Let's see how much you actually remember...
+            👀❤️
+        </p>
+
+        <button
+            class="start-button"
+            id="startButton"
+        >
+            I'm Ready →
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     QUIZ
+======================================================= -->
+
+<main
+    class="quiz"
+    id="quiz"
+>
+
+
+    <!-- TOP -->
+
+    <div class="top-bar">
+
+        <div class="test-label">
+            MEMORY TEST
+        </div>
+
+        <div
+            class="counter"
+            id="counter"
+        >
+            01 / 07
+        </div>
+
+        <div class="progress">
+
+            <div
+                class="progress-fill"
+                id="progressFill"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- WONDERS -->
+
+    <div
+        class="wonder-stage"
+        id="wonderStage"
+    >
+
+
+        <!-- WONDER 1 -->
+
+        <div
+            class="wonder"
+            id="wonder1"
+        >
+
+            <div class="great-wall"></div>
+
+        </div>
+
+
+        <!-- WONDER 2 -->
+
+        <div
+            class="wonder"
+            id="wonder2"
+        >
+
+            <div class="colosseum"></div>
+
+        </div>
+
+
+        <!-- WONDER 3 -->
+
+        <div
+            class="wonder"
+            id="wonder3"
+        >
+
+            <div class="christ"></div>
+
+        </div>
+
+
+        <!-- WONDER 4 -->
+
+        <div
+            class="wonder"
+            id="wonder4"
+        >
+
+            <div class="petra"></div>
+
+        </div>
+
+
+        <!-- WONDER 5 -->
+
+        <div
+            class="wonder"
+            id="wonder5"
+        >
+
+            <div class="machu"></div>
+
+        </div>
+
+
+        <!-- WONDER 6 -->
+
+        <div
+            class="wonder"
+            id="wonder6"
+        >
+
+            <div class="chichen"></div>
+
+        </div>
+
+
+        <!-- WONDER 7 -->
+
+        <div
+            class="wonder"
+            id="wonder7"
+        >
+
+            <div class="taj">
+
+                <div class="taj-body"></div>
+
+                <div class="taj-dome"></div>
+
+                <div class="taj-minaret"></div>
+                <div class="taj-minaret"></div>
+                <div class="taj-minaret"></div>
+                <div class="taj-minaret"></div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- WONDER INFORMATION -->
+
+    <div
+        class="wonder-info"
+        id="wonderInfo"
+    >
+
+        <div
+            class="wonder-name"
+            id="wonderName"
+        >
+            GREAT WALL OF CHINA
+        </div>
+
+        <div
+            class="wonder-year"
+            id="wonderYear"
+        >
+            7th century BC — Qin dynasty and later dynasties
+        </div>
+
+    </div>
+
+
+    <!-- QUESTION -->
+
+    <div
+        class="question-area"
+        id="questionArea"
+    >
+
+        <div
+            class="question-number"
+            id="questionNumber"
+        >
+            QUESTION 01
+        </div>
+
+        <div
+            class="question"
+            id="question"
+        >
+            What is my year of birth? 🎂
+        </div>
+
+        <div
+            class="answers"
+            id="answers"
+        ></div>
+
+    </div>
+
+
+</main>
+
+
+<!-- =======================================================
+     FLASH
+======================================================= -->
+
+<div
+    class="correct-flash"
+    id="correctFlash"
+></div>
+
+
+<!-- =======================================================
+     FINAL SCREEN
+======================================================= -->
+
+<section
+    class="final-screen"
+    id="finalScreen"
+>
+
+    <div class="final-content">
+
+        <div class="final-taj">
+            🕌
+        </div>
+
+        <h2>
+            You
+            <span>remembered. ❤️</span>
+        </h2>
+
+        <p>
+            Every little detail.
+            Even the ones I thought you'd forget.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     POPUP
+======================================================= -->
+
+<div
+    class="popup-layer"
+    id="popupLayer"
+>
+
+    <div class="popup">
+
+        <div
+            class="popup-emoji"
+            id="popupEmoji"
+        >
+            😏
+        </div>
+
+        <h3
+            id="popupTitle"
+        >
+            Oh hooo...
+        </h3>
+
+        <p
+            id="popupText"
+        >
+            I underestimated you, girl. ❤️
+        </p>
+
+        <button
+            class="popup-button"
+            id="popupButton"
+        >
+            Tap →
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     GIFT SCREEN
+======================================================= -->
+
+<section
+    class="gift-screen"
+    id="giftScreen"
+>
+
+    <div class="gift-title">
+        A little something for you ❤️
+    </div>
+
+    <div class="gift-subtitle">
+        YOU EARNED THIS
+    </div>
+
+
+    <div
+        class="gift-box"
+        id="giftBox"
+    >
+
+        <div class="gift-ribbon"></div>
+
+        <div class="box-lid"></div>
+
+        <div class="box-body"></div>
+
+    </div>
+
+
+    <div
+        class="open-gift-text"
+        id="openGiftText"
+    >
+        Tap the gift
+    </div>
+
+
+    <div
+        class="particles"
+        id="particles"
+    ></div>
+
+</section>
+
+
+<script>
+
+/* =========================================================
+   AUDIO ENGINE
+========================================================= */
+
+let audioContext = null;
+
+let masterGain = null;
+
+let musicGain = null;
+
+let effectGain = null;
+
+let musicInterval = null;
+
+let audioUnlocked = false;
+
+
+/* =========================================================
+   AUDIO INITIALIZATION
+========================================================= */
+
+function initAudio() {
+
+    if (audioContext) {
+        return true;
+    }
+
+    const AudioContextClass =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        return false;
+    }
+
+    audioContext =
+        new AudioContextClass();
+
+    masterGain =
+        audioContext.createGain();
+
+    musicGain =
+        audioContext.createGain();
+
+    effectGain =
+        audioContext.createGain();
+
+
+    masterGain.gain.value = 0.72;
+
+    musicGain.gain.value = 0.20;
+
+    effectGain.gain.value = 0.45;
+
+
+    musicGain.connect(masterGain);
+
+    effectGain.connect(masterGain);
+
+    masterGain.connect(
+        audioContext.destination
+    );
+
+    return true;
+}
+
+
+/* =========================================================
+   AUDIO UNLOCK
+========================================================= */
+
+async function unlockAudio() {
+
+    if (!initAudio()) {
+        return false;
+    }
+
+    try {
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            await audioContext.resume();
+
+        }
+
+        audioUnlocked = true;
+
+        return true;
+
+    } catch (error) {
+
+        console.warn(
+            "Audio unavailable:",
+            error
+        );
+
+        return false;
+    }
+}
+
+
+/* =========================================================
+   SYNTH TONE
+========================================================= */
+
+function tone(
+    frequency,
+    duration,
+    type,
+    volume,
+    destination,
+    delay = 0
+) {
+
+    if (!audioContext) {
+        return;
+    }
+
+    const now =
+        audioContext.currentTime +
+        delay;
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+
+    oscillator.type =
+        type || "sine";
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        now
+    );
+
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        Math.max(
+            volume || 0.03,
+            0.0001
+        ),
+        now + 0.025
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        now + duration
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        destination || effectGain
+    );
+
+
+    oscillator.start(now);
+
+    oscillator.stop(
+        now + duration + 0.05
+    );
+}
+
+
+/* =========================================================
+   PAGE 2 STYLE BGM
+========================================================= */
+
+function startBGM() {
+
+    if (
+        !audioUnlocked ||
+        musicInterval
+    ) {
+        return;
+    }
+
+
+    const melody = [
+
+        523.25,
+        659.25,
+        783.99,
+        659.25,
+
+        587.33,
+        698.46,
+        880.00,
+        698.46,
+
+        523.25,
+        659.25,
+        783.99,
+        987.77,
+
+        880.00,
+        783.99,
+        659.25,
+        587.33
+
+    ];
+
+
+    let index = 0;
+
+
+    function playNote() {
+
+        const frequency =
+            melody[
+                index %
+                melody.length
+            ];
+
+
+        tone(
+            frequency,
+            0.34,
+            "sine",
+            0.035,
+            musicGain
+        );
+
+
+        tone(
+            frequency / 2,
+            0.42,
+            "triangle",
+            0.012,
+            musicGain,
+            0.02
+        );
+
+
+        index++;
+    }
+
+
+    playNote();
+
+
+    musicInterval =
+        setInterval(
+            playNote,
+            390
+        );
+}
+
+
+/* =========================================================
+   SOUND EFFECTS
+========================================================= */
+
+function clickSound() {
+
+    if (!audioUnlocked) {
+        return;
+    }
+
+    tone(
+        880,
+        0.06,
+        "sine",
+        0.04,
+        effectGain
+    );
+}
+
+
+function correctSound() {
+
+    if (!audioUnlocked) {
+        return;
+    }
+
+    tone(
+        659.25,
+        0.13,
+        "sine",
+        0.055,
+        effectGain
+    );
+
+    tone(
+        783.99,
+        0.16,
+        "sine",
+        0.05,
+        effectGain,
+        0.08
+    );
+
+    tone(
+        1046.50,
+        0.25,
+        "sine",
+        0.04,
+        effectGain,
+        0.16
+    );
+}
+
+
+function wrongSound() {
+
+    if (!audioUnlocked) {
+        return;
+    }
+
+    tone(
+        220,
+        0.12,
+        "sawtooth",
+        0.035,
+        effectGain
+    );
+
+    tone(
+        165,
+        0.16,
+        "sawtooth",
+        0.025,
+        effectGain,
+        0.07
+    );
+}
+
+
+function transitionSound() {
+
+    if (!audioUnlocked) {
+        return;
+    }
+
+    tone(
+        392,
+        0.32,
+        "sine",
+        0.035,
+        effectGain
+    );
+
+    tone(
+        523.25,
+        0.42,
+        "sine",
+        0.03,
+        effectGain,
+        0.10
+    );
+
+    tone(
+        659.25,
+        0.52,
+        "sine",
+        0.025,
+        effectGain,
+        0.20
+    );
+}
+
+
+function giftSound() {
+
+    if (!audioUnlocked) {
+        return;
+    }
+
+    tone(
+        392,
+        0.35,
+        "sine",
+        0.035,
+        effectGain
+    );
+
+    tone(
+        523.25,
+        0.40,
+        "sine",
+        0.04,
+        effectGain,
+        0.12
+    );
+
+    tone(
+        659.25,
+        0.45,
+        "sine",
+        0.045,
+        effectGain,
+        0.24
+    );
+
+    tone(
+        783.99,
+        0.65,
+        "sine",
+        0.04,
+        effectGain,
+        0.36
+    );
+}
+
+
+/* =========================================================
+   QUESTIONS
+========================================================= */
+
+const questions = [
+
+    {
+        question:
+            "What is my year of birth? 🎂",
+
+        answers: [
+            "1999",
+            "2001",
+            "2002",
+            "2003"
+        ],
+
+        correct: 1,
+
+        wonder:
+            "GREAT WALL OF CHINA",
+
+        year:
+            "7th century BC — Qin dynasty and later dynasties"
+    },
+
+
+    {
+        question:
+            "What were you wearing when we first met? 🤎",
+
+        answers: [
+            "Black top, Blue Jeans & White heels",
+            "Brown top, Blue Jeans & White heels",
+            "White top, Black Jeans & Sneakers",
+            "Brown top, Black Jeans & Heels"
+        ],
+
+        correct: 1,
+
+        wonder:
+            "COLOSSEUM",
+
+        year:
+            "80 AD — Emperor Vespasian & Titus"
+    },
+
+
+    {
+        question:
+            "What bouquet did I give you when we first met? 🌹",
+
+        answers: [
+            "Red roses 🌹",
+            "White lilies 🤍",
+            "White & Pink roses 🌹🩷",
+            "Sunflowers 🌻"
+        ],
+
+        correct: 2,
+
+        wonder:
+            "CHRIST THE REDEEMER",
+
+        year:
+            "1931 — Paul Landowski & Heitor da Silva Costa"
+    },
+
+
+    {
+        question:
+            "In which sport did I used to wear jersey number 10? ⚽",
+
+        answers: [
+            "Cricket 🏏",
+            "Basketball 🏀",
+            "Football ⚽",
+            "Volleyball 🏐"
+        ],
+
+        correct: 2,
+
+        wonder:
+            "PETRA",
+
+        year:
+            "c. 1st century BC — Nabataean Kingdom"
+    },
+
+
+    {
+        question:
+            "Tell me the name of my hostel in IIT ISM? 🎓",
+
+        answers: [
+            "Diamond Hostel 💎",
+            "Ruby Hostel ❤️",
+            "Emerald Hostel 💚",
+            "Sapphire Hostel 💙"
+        ],
+
+        correct: 3,
+
+        wonder:
+            "MACHU PICCHU",
+
+        year:
+            "c. 1450 — Inca civilization"
+    },
+
+
+    {
+        question:
+            "Which engineering course did I pursue? ⚡",
+
+        answers: [
+            "Mechanical Engineering",
+            "Civil Engineering",
+            "Computer Science Engineering",
+            "Electrical Engineering ⚡"
+        ],
+
+        correct: 3,
+
+        wonder:
+            "CHICHÉN ITZÁ",
+
+        year:
+            "c. 8th–12th century — Maya civilization"
+    },
+
+
+    {
+        question:
+            "When did we have our first kiss? 💋",
+
+        answers: [
+            "12th July",
+            "13th July ❤️",
+            "14th July",
+            "15th July"
+        ],
+
+        correct: 1,
+
+        wonder:
+            "TAJ MAHAL",
+
+        year:
+            "1632–1653 — commissioned by Shah Jahan"
+    }
+
+];
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
+
+const intro =
+    document.getElementById(
+        "intro"
+    );
+
+const startButton =
+    document.getElementById(
+        "startButton"
+    );
+
+const quiz =
+    document.getElementById(
+        "quiz"
+    );
+
+const counter =
+    document.getElementById(
+        "counter"
+    );
+
+const progressFill =
+    document.getElementById(
+        "progressFill"
+    );
+
+const questionNumber =
+    document.getElementById(
+        "questionNumber"
+    );
+
+const question =
+    document.getElementById(
+        "question"
+    );
+
+const answers =
+    document.getElementById(
+        "answers"
+    );
+
+const questionArea =
+    document.getElementById(
+        "questionArea"
+    );
+
+const wonderName =
+    document.getElementById(
+        "wonderName"
+    );
+
+const wonderYear =
+    document.getElementById(
+        "wonderYear"
+    );
+
+const wonders =
+    document.querySelectorAll(
+        ".wonder"
+    );
+
+const correctFlash =
+    document.getElementById(
+        "correctFlash"
+    );
+
+const finalScreen =
+    document.getElementById(
+        "finalScreen"
+    );
+
+const popupLayer =
+    document.getElementById(
+        "popupLayer"
+    );
+
+const popupEmoji =
+    document.getElementById(
+        "popupEmoji"
+    );
+
+const popupTitle =
+    document.getElementById(
+        "popupTitle"
+    );
+
+const popupText =
+    document.getElementById(
+        "popupText"
+    );
+
+const popupButton =
+    document.getElementById(
+        "popupButton"
+    );
+
+const giftScreen =
+    document.getElementById(
+        "giftScreen"
+    );
+
+const giftBox =
+    document.getElementById(
+        "giftBox"
+    );
+
+const openGiftText =
+    document.getElementById(
+        "openGiftText"
+    );
+
+const particles =
+    document.getElementById(
+        "particles"
+    );
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentQuestion = 0;
+
+let answering = false;
+
+let popupStep = 0;
+
+
+/* =========================================================
+   SHOW QUESTION
+========================================================= */
+
+function showQuestion(index) {
+
+    const data =
+        questions[index];
+
+
+    questionArea.classList.remove(
+        "changing"
+    );
+
+
+    void questionArea.offsetWidth;
+
+
+    questionArea.classList.add(
+        "changing"
+    );
+
+
+    setTimeout(
+        function() {
+
+            questionNumber.textContent =
+                "QUESTION " +
+                String(index + 1)
+                    .padStart(2, "0");
+
+
+            counter.textContent =
+                String(index + 1)
+                    .padStart(2, "0") +
+                " / 07";
+
+
+            progressFill.style.width =
+                (
+                    ((index + 1) / 7) *
+                    100
+                ) +
+                "%";
+
+
+            question.textContent =
+                data.question;
+
+
+            wonderName.textContent =
+                data.wonder;
+
+
+            wonderYear.textContent =
+                data.year;
+
+
+            wonders.forEach(
+                function(wonder, wonderIndex) {
+
+                    wonder.classList.toggle(
+                        "active",
+                        wonderIndex === index
+                    );
+
+                }
+            );
+
+
+            answers.innerHTML = "";
+
+
+            data.answers.forEach(
+                function(answerText, answerIndex) {
+
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    button.className =
+                        "answer";
+
+
+                    button.textContent =
+                        answerText;
+
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            chooseAnswer(
+                                button,
+                                answerIndex
+                            );
+
+                        }
+                    );
+
+
+                    answers.appendChild(
+                        button
+                    );
+
+                }
+            );
+
+
+            questionArea.classList.remove(
+                "changing"
+            );
+
+        },
+        350
+    );
+}
+
+
+/* =========================================================
+   START QUIZ
+========================================================= */
+
+startButton.addEventListener(
+    "click",
+    async function() {
+
+        await unlockAudio();
+
+        startBGM();
+
+        clickSound();
+
+        intro.classList.add(
+            "hidden"
+        );
+
+        setTimeout(
+            function() {
+
+                quiz.classList.add(
+                    "active"
+                );
+
+                showQuestion(
+                    0
+                );
+
+            },
+            700
+        );
+
+    }
+);
+
+
+/* =========================================================
+   ANSWER
+========================================================= */
+
+function chooseAnswer(
+    button,
+    selectedIndex
+) {
+
+    if (answering) {
+        return;
+    }
+
+    answering = true;
+
+
+    const data =
+        questions[currentQuestion];
+
+
+    const allButtons =
+        document.querySelectorAll(
+            ".answer"
+        );
+
+
+    allButtons.forEach(
+        function(item) {
+
+            item.classList.add(
+                "disabled"
+            );
+
+        }
+    );
+
+
+    if (
+        selectedIndex ===
+        data.correct
+    ) {
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        correctSound();
+
+
+        correctFlash.classList.add(
+            "active"
+        );
+
+
+        setTimeout(
+            function() {
+
+                correctFlash.classList.remove(
+                    "active"
+                );
+
+            },
+            220
+        );
+
+
+        setTimeout(
+            function() {
+
+                if (
+                    currentQuestion ===
+                    questions.length - 1
+                ) {
+
+                    finishQuiz();
+
+                } else {
+
+                    currentQuestion++;
+
+                    answering = false;
+
+                    showQuestion(
+                        currentQuestion
+                    );
+
+                }
+
+            },
+            900
+        );
+
+
+    } else {
+
+        button.classList.add(
+            "wrong"
+        );
+
+
+        wrongSound();
+
+
+        setTimeout(
+            function() {
+
+                /*
+                   Re-enable only the
+                   answer buttons.
+                */
+
+                allButtons.forEach(
+                    function(item) {
+
+                        item.classList.remove(
+                            "disabled"
+                        );
+
+                    }
+                );
+
+
+                button.classList.remove(
+                    "wrong"
+                );
+
+
+                answering = false;
+
+            },
+            550
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   FINISH QUIZ
+========================================================= */
+
+function finishQuiz() {
+
+    transitionSound();
+
+
+    quiz.classList.remove(
+        "active"
+    );
+
+
+    setTimeout(
+        function() {
+
+            finalScreen.classList.add(
+                "active"
+            );
+
+        },
+        500
+    );
+
+
+    setTimeout(
+        function() {
+
+            showPopup(
+                0
+            );
+
+        },
+        2500
+    );
+
+}
+
+
+/* =========================================================
+   POPUPS
+========================================================= */
+
+const popupData = [
+
+    {
+        emoji:
+            "😏",
+
+        title:
+            "Oh hooo...",
+
+        text:
+            "I underestimated you, girl. ❤️",
+
+        button:
+            "Tap →"
+    },
+
+
+    {
+        emoji:
+            "🥹❤️",
+
+        title:
+            "But you know what...",
+
+        text:
+            "I still get flashbacks of our moments...",
+
+        button:
+            "Tap →"
+    },
+
+
+    {
+        emoji:
+            "🎁",
+
+        title:
+            "You remembered...",
+
+        text:
+            "Since you remembered all those little details, I'll reward you. ❤️",
+
+        button:
+            "REWARD"
+    }
+
+];
+
+
+function showPopup(step) {
+
+    popupStep = step;
+
+
+    const data =
+        popupData[step];
+
+
+    popupEmoji.textContent =
+        data.emoji;
+
+    popupTitle.textContent =
+        data.title;
+
+    popupText.textContent =
+        data.text;
+
+    popupButton.textContent =
+        data.button;
+
+
+    popupLayer.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   POPUP BUTTON
+========================================================= */
+
+popupButton.addEventListener(
+    "click",
+    function() {
+
+        clickSound();
+
+
+        popupLayer.classList.remove(
+            "active"
+        );
+
+
+        setTimeout(
+            function() {
+
+                if (
+                    popupStep <
+                    popupData.length - 1
+                ) {
+
+                    showPopup(
+                        popupStep + 1
+                    );
+
+                } else {
+
+                    showGift();
+
+                }
+
+            },
+            650
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SHOW GIFT
+========================================================= */
+
+function showGift() {
+
+    transitionSound();
+
+
+    giftScreen.classList.add(
+        "active"
+    );
+
+
+    setTimeout(
+        function() {
+
+            giftSound();
+
+            createParticles();
+
+        },
+        900
+    );
+
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function createParticles() {
+
+    for (
+        let i = 0;
+        i < 28;
+        i++
+    ) {
+
+        setTimeout(
+            function() {
+
+                const particle =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                particle.className =
+                    "particle";
+
+
+                particle.style.left =
+                    (
+                        20 +
+                        Math.random() * 60
+                    ) +
+                    "%";
+
+
+                particle.style.top =
+                    (
+                        58 +
+                        Math.random() * 15
+                    ) +
+                    "%";
+
+
+                particle.style.animationDuration =
+                    (
+                        2.2 +
+                        Math.random() * 1.8
+                    ) +
+                    "s";
+
+
+                particles.appendChild(
+                    particle
+                );
+
+
+                setTimeout(
+                    function() {
+
+                        particle.remove();
+
+                    },
+                    4500
+                );
+
+            },
+            i * 80
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   GIFT CLICK
+========================================================= */
+
+giftBox.addEventListener(
+    "click",
+    function() {
+
+        giftScreen.classList.add(
+            "opening"
+        );
+
+
+        openGiftText.textContent =
+            "Opening... ❤️";
+
+
+        giftSound();
+
+
+        createParticles();
+
+
+        setTimeout(
+            function() {
+
+                window.location.href =
+                    "gift.html";
+
+            },
+            1900
+        );
+
+    }
+);
+
+
+/* =========================================================
+   START AUDIO ON FIRST TOUCH
+========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    async function() {
+
+        await unlockAudio();
+
+        startBGM();
+
+    },
+    {
+        once: true
+    }
+);
+
+
+/* =========================================================
+   PREVENT DOUBLE CLICK SELECTION
+========================================================= */
+
+document.addEventListener(
+    "dblclick",
+    function(event) {
+
+        event.preventDefault();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
