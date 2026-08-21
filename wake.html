@@ -1,0 +1,3193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Wake Up Baby ❤️</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+}
+
+body{
+
+    overflow:hidden;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            #fffafa 0%,
+            #fff1f4 35%,
+            #ffe4e9 68%,
+            #ffd1db 100%
+        );
+
+    color:#7b1834;
+
+    user-select:none;
+
+    -webkit-tap-highlight-color:transparent;
+
+}
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.background{
+
+    position:fixed;
+
+    inset:0;
+
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            #fffdfd 0%,
+            #fff4f6 35%,
+            #ffe6eb 70%,
+            #ffd3dc 100%
+        );
+
+    transform-origin:center;
+
+    transition:
+        transform .5s ease;
+
+}
+
+.background::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:65vw;
+    height:65vw;
+
+    max-width:700px;
+    max-height:700px;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        rgba(255,92,132,.12);
+
+    filter:
+        blur(100px);
+
+}
+
+.background::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+        radial-gradient(
+            rgba(145,30,60,.07) 1px,
+            transparent 1px
+        );
+
+    background-size:28px 28px;
+
+    opacity:.55;
+
+}
+
+
+/* =========================================================
+   FLOATING HEARTS
+========================================================= */
+
+.hearts{
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+}
+
+.hearts span{
+
+    position:absolute;
+
+    color:#b72b50;
+
+    opacity:.13;
+
+    font-size:22px;
+
+    animation:
+        floatingHeart 5s ease-in-out infinite;
+
+}
+
+.hearts span:nth-child(1){
+    left:8%;
+    top:20%;
+}
+
+.hearts span:nth-child(2){
+    left:18%;
+    top:72%;
+    animation-delay:.8s;
+}
+
+.hearts span:nth-child(3){
+    left:36%;
+    top:14%;
+    animation-delay:1.5s;
+}
+
+.hearts span:nth-child(4){
+    left:65%;
+    top:76%;
+    animation-delay:2s;
+}
+
+.hearts span:nth-child(5){
+    left:82%;
+    top:22%;
+    animation-delay:.5s;
+}
+
+.hearts span:nth-child(6){
+    left:91%;
+    top:58%;
+    animation-delay:2.4s;
+}
+
+@keyframes floatingHeart{
+
+    0%,
+    100%{
+        transform:
+            translateY(0)
+            rotate(0);
+    }
+
+    50%{
+        transform:
+            translateY(-18px)
+            rotate(8deg);
+    }
+
+}
+
+
+/* =========================================================
+   DIZZY RINGS
+========================================================= */
+
+.dizzy-layer{
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    opacity:.75;
+
+    transition:
+        opacity 1.5s ease;
+
+}
+
+.dizzy-layer.calm{
+
+    opacity:0;
+
+}
+
+.dizzy-ring{
+
+    position:absolute;
+
+    width:78vmin;
+    height:78vmin;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border:
+        1px solid
+        rgba(145,30,60,.15);
+
+    border-radius:50%;
+
+    animation:
+        dizzyRotation 11s linear infinite;
+
+}
+
+.dizzy-ring::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:9%;
+
+    border:
+        1px solid
+        rgba(145,30,60,.12);
+
+    border-radius:50%;
+
+}
+
+.dizzy-ring::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:20%;
+
+    border:
+        1px dashed
+        rgba(145,30,60,.10);
+
+    border-radius:50%;
+
+}
+
+@keyframes dizzyRotation{
+
+    from{
+        transform:
+            translate(-50%,-50%)
+            rotate(0deg);
+    }
+
+    to{
+        transform:
+            translate(-50%,-50%)
+            rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   DIZZY TAP LEVELS
+========================================================= */
+
+body.dizzy1 .background{
+
+    transform:
+        scale(1.04)
+        rotate(1deg);
+
+}
+
+body.dizzy2 .background{
+
+    transform:
+        scale(1.09)
+        rotate(-2deg);
+
+}
+
+body.dizzy3 .background{
+
+    transform:
+        scale(1.15)
+        rotate(3deg);
+
+}
+
+body.dizzy1 .dizzy-ring{
+
+    animation-duration:5s;
+
+}
+
+body.dizzy2 .dizzy-ring{
+
+    animation-duration:3s;
+
+}
+
+body.dizzy3 .dizzy-ring{
+
+    animation-duration:1.5s;
+
+}
+
+body.dizzy3{
+
+    animation:
+        screenShake .7s ease;
+
+}
+
+@keyframes screenShake{
+
+    0%{
+        transform:rotate(0);
+    }
+
+    20%{
+        transform:rotate(-1deg);
+    }
+
+    40%{
+        transform:rotate(1.5deg);
+    }
+
+    60%{
+        transform:rotate(-1deg);
+    }
+
+    80%{
+        transform:rotate(.6deg);
+    }
+
+    100%{
+        transform:rotate(0);
+    }
+
+}
+
+
+/* =========================================================
+   BLURRED OPENING
+========================================================= */
+
+.wake-blur{
+
+    position:absolute;
+
+    inset:-30px;
+
+    z-index:5;
+
+    background:
+        rgba(255,246,248,.34);
+
+    backdrop-filter:
+        blur(25px);
+
+    -webkit-backdrop-filter:
+        blur(25px);
+
+    transition:
+        opacity 3.5s ease;
+
+}
+
+.wake-blur.clear{
+
+    opacity:0;
+
+}
+
+
+/* =========================================================
+   DIALOGUES
+========================================================= */
+
+.dialogue-layer{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:20;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    pointer-events:none;
+
+}
+
+.dialogue{
+
+    position:absolute;
+
+    width:min(92%,700px);
+
+    text-align:center;
+
+    padding:25px;
+
+    opacity:0;
+
+    filter:blur(10px);
+
+    transform:
+        translateY(20px)
+        scale(.97);
+
+    transition:
+        opacity 1s ease,
+        filter 1s ease,
+        transform 1s ease;
+
+}
+
+.dialogue.show{
+
+    opacity:1;
+
+    filter:blur(0);
+
+    transform:
+        translateY(0)
+        scale(1);
+
+}
+
+.dialogue.hide{
+
+    opacity:0;
+
+    filter:blur(7px);
+
+    transform:
+        translateY(-15px)
+        scale(.98);
+
+}
+
+.dialogue h1{
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(34px,7vw,64px);
+
+    font-weight:500;
+
+    line-height:1.1;
+
+    color:#791933;
+
+    text-shadow:
+        0 8px 30px
+        rgba(100,20,40,.12);
+
+}
+
+.emoji{
+
+    display:inline-block;
+
+    animation:
+        emojiFloat 1.8s ease-in-out infinite;
+
+}
+
+@keyframes emojiFloat{
+
+    0%,
+    100%{
+        transform:
+            translateY(0)
+            rotate(0);
+    }
+
+    50%{
+        transform:
+            translateY(-6px)
+            rotate(5deg);
+    }
+
+}
+
+
+/* =========================================================
+   PHONE STAGE
+========================================================= */
+
+.phone-stage{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:100;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:
+        opacity 1s ease,
+        visibility 1s ease;
+
+}
+
+.phone-stage.visible{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+
+/* =========================================================
+   IPHONE
+========================================================= */
+
+.iphone{
+
+    position:relative;
+
+    width:min(335px,83vw);
+
+    height:min(690px,86vh);
+
+    padding:9px;
+
+    border-radius:46px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #e5e5e5,
+            #777 22%,
+            #111 52%,
+            #555 82%,
+            #d5d5d5
+        );
+
+    box-shadow:
+
+        0 35px 80px
+        rgba(100,15,40,.28),
+
+        0 12px 30px
+        rgba(100,15,40,.18);
+
+    transform:
+        translateY(60px)
+        scale(.88);
+
+    opacity:0;
+
+    transition:
+        transform 1s cubic-bezier(.2,.8,.2,1),
+        opacity 1s ease;
+
+}
+
+.phone-stage.visible .iphone{
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    opacity:1;
+
+}
+
+.iphone::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:3px;
+
+    border-radius:43px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.65);
+
+    pointer-events:none;
+
+    z-index:50;
+
+}
+
+
+/* =========================================================
+   PHONE SCREEN
+========================================================= */
+
+.phone-screen{
+
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    border-radius:38px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #6f1831,
+            #370d1b 55%,
+            #17050b
+        );
+
+    color:white;
+
+}
+
+
+/* =========================================================
+   DYNAMIC ISLAND
+========================================================= */
+
+.dynamic-island{
+
+    position:absolute;
+
+    top:12px;
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    width:94px;
+    height:28px;
+
+    border-radius:30px;
+
+    background:#050505;
+
+    z-index:30;
+
+}
+
+
+/* =========================================================
+   STATUS BAR
+========================================================= */
+
+.status-bar{
+
+    position:absolute;
+
+    top:17px;
+    left:22px;
+    right:22px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    color:white;
+
+    font:
+        600 10px Arial;
+
+    z-index:31;
+
+}
+
+
+/* =========================================================
+   LOCK SCREEN
+========================================================= */
+
+.lock-screen{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    padding-top:105px;
+
+    transition:
+        opacity .6s ease,
+        transform .6s ease;
+
+}
+
+.lock-screen.opened{
+
+    opacity:0;
+
+    transform:
+        scale(1.05);
+
+    pointer-events:none;
+
+}
+
+.lock-time{
+
+    font:
+        300
+        clamp(50px,13vw,72px)
+        Arial;
+
+    letter-spacing:-3px;
+
+}
+
+.lock-date{
+
+    margin-top:5px;
+
+    font:
+        500 13px Arial;
+
+    opacity:.82;
+
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.notification{
+
+    position:absolute;
+
+    left:15px;
+    right:15px;
+
+    top:44%;
+
+    padding:15px;
+
+    border-radius:22px;
+
+    background:
+        rgba(35,18,25,.72);
+
+    border:
+        1px solid
+        rgba(255,255,255,.15);
+
+    backdrop-filter:
+        blur(22px);
+
+    -webkit-backdrop-filter:
+        blur(22px);
+
+    box-shadow:
+        0 18px 40px
+        rgba(0,0,0,.28);
+
+    opacity:0;
+
+    transform:
+        translateY(25px)
+        scale(.97);
+
+    transition:
+        opacity .7s ease,
+        transform .7s ease;
+
+    cursor:pointer;
+
+}
+
+.notification.show{
+
+    opacity:1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+}
+
+.notification-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+}
+
+.notification-avatar{
+
+    width:34px;
+    height:34px;
+
+    border-radius:50%;
+
+    display:grid;
+
+    place-items:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e75a7c,
+            #78102f
+        );
+
+    font-size:15px;
+
+}
+
+.notification-name{
+
+    font:
+        600 13px Arial;
+
+}
+
+.notification-time{
+
+    margin-left:auto;
+
+    font:
+        10px Arial;
+
+    opacity:.5;
+
+}
+
+.notification-body{
+
+    margin-top:9px;
+
+    font:
+        400 13px/1.4 Arial;
+
+}
+
+.notification-hint{
+
+    position:absolute;
+
+    bottom:32px;
+
+    left:0;
+    right:0;
+
+    text-align:center;
+
+    font:
+        600 9px Arial;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    opacity:.55;
+
+    animation:
+        hintPulse 2s ease-in-out infinite;
+
+}
+
+@keyframes hintPulse{
+
+    50%{
+        opacity:.9;
+    }
+
+}
+
+
+/* =========================================================
+   PHONE RING
+========================================================= */
+
+.phone-ring{
+
+    animation:
+        phoneShake .18s ease-in-out 0s 4;
+
+}
+
+@keyframes phoneShake{
+
+    0%{
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    25%{
+        transform:
+            translateX(-4px)
+            scale(1);
+    }
+
+    50%{
+        transform:
+            translateX(4px)
+            scale(1);
+    }
+
+    75%{
+        transform:
+            translateX(-3px)
+            scale(1);
+    }
+
+    100%{
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================================================
+   CHAT SCREEN
+========================================================= */
+
+.chat-screen{
+
+    position:absolute;
+
+    inset:0;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:
+        translateX(20px);
+
+    transition:
+        opacity .7s ease,
+        transform .7s ease,
+        visibility .7s;
+
+}
+
+.chat-screen.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:
+        translateX(0);
+
+}
+
+.chat-background{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        radial-gradient(
+            circle at 20% 15%,
+            rgba(255,100,140,.16),
+            transparent 28%
+        ),
+
+        radial-gradient(
+            circle at 80% 75%,
+            rgba(255,100,140,.12),
+            transparent 30%
+        ),
+
+        linear-gradient(
+            145deg,
+            #461020,
+            #210811 70%,
+            #100308
+        );
+
+}
+
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.chat-header{
+
+    position:absolute;
+
+    top:0;
+    left:0;
+    right:0;
+
+    height:76px;
+
+    padding:
+        34px
+        17px
+        8px;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:9px;
+
+    background:
+        rgba(25,6,13,.72);
+
+    backdrop-filter:
+        blur(20px);
+
+    z-index:10;
+
+}
+
+.chat-back{
+
+    font-size:25px;
+
+}
+
+.chat-avatar{
+
+    width:30px;
+    height:30px;
+
+    display:grid;
+
+    place-items:center;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e45a7b,
+            #78102f
+        );
+
+    font-size:13px;
+
+}
+
+.chat-name{
+
+    color:white;
+
+    font:
+        700 12px Arial;
+
+}
+
+.chat-online{
+
+    color:#9ee6b0;
+
+    font:
+        500 8px Arial;
+
+}
+
+
+/* =========================================================
+   CHAT BODY
+========================================================= */
+
+.chat-body{
+
+    position:absolute;
+
+    top:76px;
+    bottom:65px;
+
+    left:0;
+    right:0;
+
+    padding:
+        18px 14px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-end;
+
+    gap:9px;
+
+    overflow:hidden;
+
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.message{
+
+    max-width:78%;
+
+    padding:
+        10px 13px;
+
+    font:
+        400 12px/1.45 Arial;
+
+    box-shadow:
+        0 6px 18px
+        rgba(0,0,0,.16);
+
+    animation:
+        messageAppear .45s
+        cubic-bezier(.2,.8,.2,1);
+
+}
+
+.message.ritesh{
+
+    align-self:flex-start;
+
+    border-radius:
+        18px 18px 18px 5px;
+
+    background:#f4eef1;
+
+    color:#2c1b22;
+
+}
+
+.message.tisha{
+
+    align-self:flex-end;
+
+    border-radius:
+        18px 18px 5px 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d94f70,
+            #9b2447
+        );
+
+    color:white;
+
+}
+
+@keyframes messageAppear{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(12px)
+            scale(.96);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   TYPING
+========================================================= */
+
+.typing{
+
+    display:none;
+
+    align-self:flex-start;
+
+    padding:
+        9px 13px;
+
+    border-radius:
+        18px 18px 18px 5px;
+
+    background:
+        rgba(255,255,255,.13);
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    font:
+        11px Arial;
+
+}
+
+.typing.show{
+
+    display:block;
+
+}
+
+.typing-dots span{
+
+    display:inline-block;
+
+    animation:
+        typingDot 1.1s infinite;
+
+}
+
+.typing-dots span:nth-child(2){
+
+    animation-delay:.15s;
+
+}
+
+.typing-dots span:nth-child(3){
+
+    animation-delay:.3s;
+
+}
+
+@keyframes typingDot{
+
+    0%,
+    60%,
+    100%{
+
+        transform:
+            translateY(0);
+
+        opacity:.4;
+
+    }
+
+    30%{
+
+        transform:
+            translateY(-3px);
+
+        opacity:1;
+
+    }
+
+}
+
+
+/* =========================================================
+   CHAT INPUT
+========================================================= */
+
+.chat-input{
+
+    position:absolute;
+
+    bottom:0;
+    left:0;
+    right:0;
+
+    height:65px;
+
+    padding:
+        10px 13px;
+
+    display:flex;
+
+    align-items:center;
+
+    background:
+        rgba(20,5,12,.82);
+
+    z-index:10;
+
+}
+
+.fake-input{
+
+    flex:1;
+
+    height:40px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:
+        0 14px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.13);
+
+    border-radius:22px;
+
+    background:
+        rgba(255,255,255,.08);
+
+    color:
+        rgba(255,255,255,.4);
+
+    font:
+        11px Arial;
+
+}
+
+.send-button{
+
+    width:40px;
+    height:40px;
+
+    margin-left:8px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d94f70,
+            #8c1537
+        );
+
+    color:white;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+}
+
+.send-button:active{
+
+    transform:scale(.88);
+
+}
+
+.chat-hint{
+
+    position:absolute;
+
+    bottom:76px;
+
+    left:0;
+    right:0;
+
+    text-align:center;
+
+    font:
+        600 9px Arial;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    color:#f3a6ba;
+
+    opacity:.65;
+
+    animation:
+        hintPulse 2s ease-in-out infinite;
+
+    pointer-events:none;
+
+}
+
+
+/* =========================================================
+   FINAL MEMORY TEST TRANSITION
+========================================================= */
+
+.quiz-transition{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:500;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            #fff7f8,
+            #ffdde5 65%,
+            #f7bdcc 100%
+        );
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transform:
+        scale(1.04);
+
+    transition:
+        opacity 1s ease,
+        transform 1s ease,
+        visibility 1s ease;
+
+}
+
+.quiz-transition.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+    transform:
+        scale(1);
+
+}
+
+.quiz-content{
+
+    width:min(90%,650px);
+
+    padding:30px;
+
+}
+
+.quiz-eyebrow{
+
+    font:
+        700 10px Arial;
+
+    letter-spacing:4px;
+
+    color:#8b2945;
+
+    margin-bottom:18px;
+
+    opacity:.7;
+
+}
+
+.quiz-content h2{
+
+    font:
+        500
+        clamp(48px,9vw,76px)
+        Georgia,
+        serif;
+
+    line-height:.9;
+
+    color:#7d1834;
+
+}
+
+.quiz-content h2 span{
+
+    display:block;
+
+    color:#a92549;
+
+    font-style:italic;
+
+}
+
+.quiz-content p{
+
+    margin:
+        20px auto 0;
+
+    max-width:470px;
+
+    color:#633040;
+
+    font:
+        400 13px/1.7 Arial;
+
+    opacity:.8;
+
+}
+
+.quiz-ready{
+
+    margin-top:25px;
+
+    display:inline-block;
+
+    padding:
+        13px 22px;
+
+    border:
+        1px solid
+        rgba(125,24,52,.25);
+
+    border-radius:30px;
+
+    color:#7d1834;
+
+    background:
+        rgba(255,255,255,.35);
+
+    font:
+        700 10px Arial;
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.quiz-ready:hover{
+
+    transform:
+        translateY(-2px);
+
+    background:
+        rgba(255,255,255,.55);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:420px){
+
+    .iphone{
+
+        width:min(320px,84vw);
+
+        height:min(670px,86vh);
+
+    }
+
+    .dialogue h1{
+
+        font-size:
+            clamp(31px,8vw,48px);
+
+    }
+
+    .message{
+
+        font-size:11.5px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     BACKGROUND
+======================================================= -->
+
+<div class="background">
+
+    <div class="hearts">
+
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+        <span>♡</span>
+
+    </div>
+
+
+    <div
+        class="dizzy-layer"
+        id="dizzyLayer"
+    >
+
+        <div class="dizzy-ring"></div>
+
+    </div>
+
+
+    <div
+        class="wake-blur"
+        id="wakeBlur"
+    ></div>
+
+</div>
+
+
+<!-- =======================================================
+     WAKE-UP DIALOGUES
+======================================================= -->
+
+<div class="dialogue-layer">
+
+
+    <div
+        class="dialogue"
+        id="dialogue1"
+    >
+
+        <h1>
+            Oh God.... I'm still dizzy...
+            <span class="emoji">😵‍💫</span>
+        </h1>
+
+    </div>
+
+
+    <div
+        class="dialogue"
+        id="dialogue2"
+    >
+
+        <h1>
+            Riteshhh... Babeeeee!!
+            <span class="emoji">🥺</span>
+        </h1>
+
+    </div>
+
+
+    <div
+        class="dialogue"
+        id="dialogue3"
+    >
+
+        <h1>
+            Babe.... Where are you?
+            <span class="emoji">🥺❤️</span>
+        </h1>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     PHONE
+======================================================= -->
+
+<div
+    class="phone-stage"
+    id="phoneStage"
+>
+
+    <div
+        class="iphone"
+        id="iphone"
+    >
+
+        <div class="phone-screen">
+
+
+            <div class="dynamic-island"></div>
+
+
+            <div class="status-bar">
+
+                <span>
+                    12:37
+                </span>
+
+                <span>
+                    ▮▮▮ ◉
+                </span>
+
+            </div>
+
+
+            <!-- LOCK SCREEN -->
+
+            <div
+                class="lock-screen"
+                id="lockScreen"
+            >
+
+                <div class="lock-time">
+                    12:37
+                </div>
+
+                <div class="lock-date">
+                    Wednesday, September 3
+                </div>
+
+            </div>
+
+
+            <!-- NOTIFICATION -->
+
+            <div
+                class="notification"
+                id="notification"
+            >
+
+                <div class="notification-header">
+
+                    <div class="notification-avatar">
+                        R
+                    </div>
+
+                    <div>
+
+                        <div class="notification-name">
+                            Ritesh ❤️
+                        </div>
+
+                    </div>
+
+                    <div class="notification-time">
+                        now
+                    </div>
+
+                </div>
+
+
+                <div class="notification-body">
+                    Hi baby ❤️
+                </div>
+
+            </div>
+
+
+            <div
+                class="notification-hint"
+                id="notificationHint"
+            >
+                Tap notification
+            </div>
+
+
+            <!-- CHAT -->
+
+            <div
+                class="chat-screen"
+                id="chatScreen"
+            >
+
+                <div class="chat-background"></div>
+
+
+                <div class="chat-header">
+
+                    <div class="chat-back">
+                        ‹
+                    </div>
+
+                    <div class="chat-avatar">
+                        R
+                    </div>
+
+                    <div>
+
+                        <div class="chat-name">
+                            Ritesh ❤️
+                        </div>
+
+                        <div class="chat-online">
+                            ● online
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="chat-body"
+                    id="chatBody"
+                >
+
+                    <div
+                        class="typing"
+                        id="typing"
+                    >
+
+                        typing
+
+                        <span class="typing-dots">
+                            <span>•</span>
+                            <span>•</span>
+                            <span>•</span>
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="chat-hint"
+                    id="chatHint"
+                >
+                    Tap to read
+                </div>
+
+
+                <div class="chat-input">
+
+                    <div class="fake-input">
+                        Message
+                    </div>
+
+                    <button
+                        class="send-button"
+                        id="sendButton"
+                    >
+                        ↑
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     QUIZ TRANSITION
+======================================================= -->
+
+<div
+    class="quiz-transition"
+    id="quizTransition"
+>
+
+    <div class="quiz-content">
+
+        <div class="quiz-eyebrow">
+            THE MEMORY TEST
+        </div>
+
+        <h2>
+            Seven Wonders
+            <span>of us.</span>
+        </h2>
+
+        <p>
+            You remember him.
+            You remember everything.
+            Now let's see just how sharp that birthday girl's
+            memory really is...
+        </p>
+
+        <div
+            class="quiz-ready"
+            id="quizReady"
+        >
+            Memory Test →
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   AUDIO VARIABLES
+========================================================= */
+
+let audioContext = null;
+
+let masterGain = null;
+
+let musicGain = null;
+
+let effectGain = null;
+
+let musicInterval = null;
+
+let audioUnlocked = false;
+
+
+/* =========================================================
+   INITIALIZE AUDIO
+========================================================= */
+
+function initAudio(){
+
+    if(audioContext){
+        return true;
+    }
+
+    const AudioContextClass =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+    if(!AudioContextClass){
+        return false;
+    }
+
+    audioContext =
+        new AudioContextClass();
+
+    masterGain =
+        audioContext.createGain();
+
+    musicGain =
+        audioContext.createGain();
+
+    effectGain =
+        audioContext.createGain();
+
+
+    masterGain.gain.value =
+        .72;
+
+    musicGain.gain.value =
+        .20;
+
+    effectGain.gain.value =
+        .45;
+
+
+    musicGain.connect(
+        masterGain
+    );
+
+    effectGain.connect(
+        masterGain
+    );
+
+    masterGain.connect(
+        audioContext.destination
+    );
+
+    return true;
+
+}
+
+
+/* =========================================================
+   UNLOCK AUDIO
+========================================================= */
+
+async function unlockAudio(){
+
+    if(!initAudio()){
+        return false;
+    }
+
+    try{
+
+        if(
+            audioContext.state ===
+            "suspended"
+        ){
+
+            await audioContext.resume();
+
+        }
+
+        audioUnlocked = true;
+
+        return true;
+
+    }catch(error){
+
+        console.warn(
+            "Audio could not start:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   OSCILLATOR TONE
+========================================================= */
+
+function tone(
+    frequency,
+    duration,
+    type,
+    volume,
+    destination,
+    delay = 0
+){
+
+    if(!audioContext){
+        return;
+    }
+
+    const now =
+        audioContext.currentTime +
+        delay;
+
+    const oscillator =
+        audioContext.createOscillator();
+
+    const gain =
+        audioContext.createGain();
+
+
+    oscillator.type =
+        type || "sine";
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        now
+    );
+
+
+    gain.gain.setValueAtTime(
+        0.0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        Math.max(
+            volume || .03,
+            .0001
+        ),
+        now + .025
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        now + duration
+    );
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        destination || effectGain
+    );
+
+
+    oscillator.start(now);
+
+    oscillator.stop(
+        now +
+        duration +
+        .05
+    );
+
+}
+
+
+/* =========================================================
+   PAGE 2 STYLE CUTE BGM
+========================================================= */
+
+function startCuteBGM(){
+
+    if(
+        !audioUnlocked ||
+        musicInterval
+    ){
+        return;
+    }
+
+
+    const melody = [
+
+        523.25,
+        659.25,
+        783.99,
+        659.25,
+
+        587.33,
+        698.46,
+        880.00,
+        698.46,
+
+        523.25,
+        659.25,
+        783.99,
+        987.77,
+
+        880.00,
+        783.99,
+        659.25,
+        587.33
+
+    ];
+
+
+    let index = 0;
+
+
+    function playMusicNote(){
+
+        const frequency =
+            melody[
+                index %
+                melody.length
+            ];
+
+
+        tone(
+            frequency,
+            .34,
+            "sine",
+            .035,
+            musicGain
+        );
+
+
+        tone(
+            frequency / 2,
+            .42,
+            "triangle",
+            .012,
+            musicGain,
+            .02
+        );
+
+
+        index++;
+
+    }
+
+
+    playMusicNote();
+
+
+    musicInterval =
+        setInterval(
+            playMusicNote,
+            390
+        );
+
+}
+
+
+/* =========================================================
+   EFFECTS
+========================================================= */
+
+function clickSound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        880,
+        .06,
+        "sine",
+        .04,
+        effectGain
+    );
+
+}
+
+
+function notificationSound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        659.25,
+        .13,
+        "sine",
+        .06,
+        effectGain
+    );
+
+    tone(
+        987.77,
+        .18,
+        "sine",
+        .045,
+        effectGain,
+        .10
+    );
+
+}
+
+
+function messageSound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        783.99,
+        .10,
+        "sine",
+        .055,
+        effectGain
+    );
+
+    tone(
+        987.77,
+        .16,
+        "sine",
+        .04,
+        effectGain,
+        .08
+    );
+
+}
+
+
+function typingSound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        740,
+        .035,
+        "sine",
+        .012,
+        effectGain
+    );
+
+}
+
+
+function dizzySound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        240,
+        .25,
+        "sine",
+        .025,
+        effectGain
+    );
+
+    tone(
+        320,
+        .28,
+        "sine",
+        .018,
+        effectGain,
+        .08
+    );
+
+}
+
+
+function transitionSound(){
+
+    if(!audioUnlocked){
+        return;
+    }
+
+    tone(
+        392,
+        .35,
+        "sine",
+        .035,
+        effectGain
+    );
+
+    tone(
+        523.25,
+        .42,
+        "sine",
+        .03,
+        effectGain,
+        .10
+    );
+
+    tone(
+        659.25,
+        .55,
+        "sine",
+        .025,
+        effectGain,
+        .20
+    );
+
+}
+
+
+/* =========================================================
+   DOM ELEMENTS
+========================================================= */
+
+const wakeBlur =
+    document.getElementById(
+        "wakeBlur"
+    );
+
+const dizzyLayer =
+    document.getElementById(
+        "dizzyLayer"
+    );
+
+const dialogue1 =
+    document.getElementById(
+        "dialogue1"
+    );
+
+const dialogue2 =
+    document.getElementById(
+        "dialogue2"
+    );
+
+const dialogue3 =
+    document.getElementById(
+        "dialogue3"
+    );
+
+const phoneStage =
+    document.getElementById(
+        "phoneStage"
+    );
+
+const iphone =
+    document.getElementById(
+        "iphone"
+    );
+
+const notification =
+    document.getElementById(
+        "notification"
+    );
+
+const notificationHint =
+    document.getElementById(
+        "notificationHint"
+    );
+
+const lockScreen =
+    document.getElementById(
+        "lockScreen"
+    );
+
+const chatScreen =
+    document.getElementById(
+        "chatScreen"
+    );
+
+const chatBody =
+    document.getElementById(
+        "chatBody"
+    );
+
+const typing =
+    document.getElementById(
+        "typing"
+    );
+
+const chatHint =
+    document.getElementById(
+        "chatHint"
+    );
+
+const sendButton =
+    document.getElementById(
+        "sendButton"
+    );
+
+const quizTransition =
+    document.getElementById(
+        "quizTransition"
+    );
+
+const quizReadyButton =
+    document.getElementById(
+        "quizReady"
+    );
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let dizzyTaps = 0;
+
+let messageIndex = 0;
+
+let messageBusy = false;
+
+let quizUnlocked = false;
+
+
+/* =========================================================
+   START AUDIO ON FIRST INTERACTION
+========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    async function(){
+
+        await unlockAudio();
+
+        startCuteBGM();
+
+    },
+    {
+        once:true
+    }
+);
+
+
+/* =========================================================
+   FIRST THREE DIZZY TAPS
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            phoneStage.classList.contains(
+                "visible"
+            )
+        ){
+            return;
+        }
+
+
+        if(
+            dizzyTaps >= 3
+        ){
+            return;
+        }
+
+
+        dizzyTaps++;
+
+
+        dizzySound();
+
+
+        document.body.classList.remove(
+            "dizzy1",
+            "dizzy2",
+            "dizzy3"
+        );
+
+
+        void document.body.offsetWidth;
+
+
+        document.body.classList.add(
+            "dizzy" + dizzyTaps
+        );
+
+
+        if(
+            dizzyTaps === 3
+        ){
+
+            setTimeout(
+                function(){
+
+                    dizzyLayer.classList.add(
+                        "calm"
+                    );
+
+                },
+                800
+            );
+
+        }
+
+    },
+    true
+);
+
+
+/* =========================================================
+   OPENING CINEMATIC
+========================================================= */
+
+setTimeout(
+    function(){
+
+        wakeBlur.classList.add(
+            "clear"
+        );
+
+    },
+    900
+);
+
+
+/* =========================================================
+   DIALOGUE 1
+========================================================= */
+
+setTimeout(
+    function(){
+
+        dialogue1.classList.add(
+            "show"
+        );
+
+    },
+    1800
+);
+
+
+setTimeout(
+    function(){
+
+        dialogue1.classList.remove(
+            "show"
+        );
+
+        dialogue1.classList.add(
+            "hide"
+        );
+
+    },
+    4400
+);
+
+
+/* =========================================================
+   DIALOGUE 2
+========================================================= */
+
+setTimeout(
+    function(){
+
+        dialogue2.classList.add(
+            "show"
+        );
+
+    },
+    4850
+);
+
+
+setTimeout(
+    function(){
+
+        dialogue2.classList.remove(
+            "show"
+        );
+
+        dialogue2.classList.add(
+            "hide"
+        );
+
+    },
+    6900
+);
+
+
+/* =========================================================
+   DIALOGUE 3
+========================================================= */
+
+setTimeout(
+    function(){
+
+        dialogue3.classList.add(
+            "show"
+        );
+
+    },
+    7350
+);
+
+
+setTimeout(
+    function(){
+
+        dialogue3.classList.remove(
+            "show"
+        );
+
+        dialogue3.classList.add(
+            "hide"
+        );
+
+    },
+    9700
+);
+
+
+/* =========================================================
+   PHONE APPEARS
+========================================================= */
+
+setTimeout(
+    function(){
+
+        phoneStage.classList.add(
+            "visible"
+        );
+
+
+        setTimeout(
+            function(){
+
+                iphone.classList.add(
+                    "phone-ring"
+                );
+
+                notificationSound();
+
+                setTimeout(
+                    function(){
+
+                        iphone.classList.remove(
+                            "phone-ring"
+                        );
+
+                    },
+                    900
+                );
+
+            },
+            800
+        );
+
+
+        setTimeout(
+            function(){
+
+                notification.classList.add(
+                    "show"
+                );
+
+            },
+            1250
+        );
+
+    },
+    10000
+);
+
+
+/* =========================================================
+   NOTIFICATION CLICK
+========================================================= */
+
+notification.addEventListener(
+    "click",
+    async function(event){
+
+        event.stopPropagation();
+
+
+        await unlockAudio();
+
+        startCuteBGM();
+
+        clickSound();
+
+
+        notification.classList.remove(
+            "show"
+        );
+
+
+        notificationHint.style.display =
+            "none";
+
+
+        lockScreen.classList.add(
+            "opened"
+        );
+
+
+        setTimeout(
+            function(){
+
+                chatScreen.classList.add(
+                    "active"
+                );
+
+                chatHint.textContent =
+                    "Tap to read";
+
+            },
+            450
+        );
+
+    }
+);
+
+
+/* =========================================================
+   CHAT DATA
+========================================================= */
+
+const messages = [
+
+    {
+        type:"R",
+        text:"Hi babe ❤️"
+    },
+
+    {
+        type:"T",
+        text:"Babe where are you? 🥺"
+    },
+
+    {
+        type:"R",
+        text:"Don't worry im close 😌"
+    },
+
+    {
+        type:"T",
+        text:"Come to me 🥺❤️"
+    },
+
+    {
+        type:"R",
+        text:"Ahn Ahn... not so easily... 😏"
+    },
+
+    {
+        type:"T",
+        text:"Why?????? 🥺"
+    },
+
+    {
+        type:"R",
+        text:"I want to know something... ❤️"
+    },
+
+    {
+        type:"T",
+        text:"What?????? 👀"
+    },
+
+    {
+        type:"R",
+        text:"How much do you remember us??? 🥰"
+    }
+
+];
+
+
+/* =========================================================
+   SHOW NEXT MESSAGE
+========================================================= */
+
+function showNextMessage(){
+
+    if(messageBusy){
+        return;
+    }
+
+
+    if(
+        messageIndex >=
+        messages.length
+    ){
+        return;
+    }
+
+
+    messageBusy = true;
+
+
+    const currentMessage =
+        messages[
+            messageIndex
+        ];
+
+
+    clickSound();
+
+
+    /*
+       Position typing bubble
+       according to speaker.
+    */
+
+    if(
+        currentMessage.type === "T"
+    ){
+
+        typing.style.alignSelf =
+            "flex-end";
+
+        typing.style.borderRadius =
+            "18px 18px 5px 18px";
+
+    }else{
+
+        typing.style.alignSelf =
+            "flex-start";
+
+        typing.style.borderRadius =
+            "18px 18px 18px 5px";
+
+    }
+
+
+    typing.classList.add(
+        "show"
+    );
+
+
+    typingSound();
+
+    setTimeout(
+        typingSound,
+        160
+    );
+
+    setTimeout(
+        typingSound,
+        320
+    );
+
+
+    /*
+       Message appears after typing.
+    */
+
+    setTimeout(
+        function(){
+
+            typing.classList.remove(
+                "show"
+            );
+
+
+            const message =
+                document.createElement(
+                    "div"
+                );
+
+
+            message.className =
+                "message " +
+                (
+                    currentMessage.type === "R"
+                    ? "ritesh"
+                    : "tisha"
+                );
+
+
+            message.textContent =
+                currentMessage.text;
+
+
+            chatBody.insertBefore(
+                message,
+                typing
+            );
+
+
+            messageSound();
+
+
+            messageIndex++;
+
+
+            /*
+               More messages remain.
+            */
+
+            if(
+                messageIndex <
+                messages.length
+            ){
+
+                messageBusy =
+                    false;
+
+                chatHint.style.opacity =
+                    ".65";
+
+                chatHint.textContent =
+                    "Tap to read";
+
+            }
+
+
+            /*
+               Last message reached.
+            */
+
+            else{
+
+                messageBusy =
+                    false;
+
+                quizUnlocked =
+                    true;
+
+                chatHint.textContent =
+                    "Tap to continue";
+
+                chatHint.style.opacity =
+                    ".8";
+
+            }
+
+        },
+        1450
+    );
+
+}
+
+
+/* =========================================================
+   CHAT SCREEN CLICK
+========================================================= */
+
+chatScreen.addEventListener(
+    "click",
+    function(event){
+
+        /*
+           Don't process the
+           input button twice.
+        */
+
+        if(
+            event.target.closest(
+                "#sendButton"
+            )
+        ){
+            return;
+        }
+
+
+        /*
+           After final message:
+           go to memory transition.
+        */
+
+        if(
+            quizUnlocked &&
+            !messageBusy
+        ){
+
+            goToQuiz();
+
+            return;
+
+        }
+
+
+        /*
+           Otherwise reveal
+           next message.
+        */
+
+        if(
+            !messageBusy &&
+            messageIndex <
+            messages.length
+        ){
+
+            showNextMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SEND BUTTON
+========================================================= */
+
+sendButton.addEventListener(
+    "click",
+    function(event){
+
+        event.stopPropagation();
+
+
+        if(
+            quizUnlocked &&
+            !messageBusy
+        ){
+
+            goToQuiz();
+
+            return;
+
+        }
+
+
+        if(
+            !messageBusy &&
+            messageIndex <
+            messages.length
+        ){
+
+            showNextMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   GO TO MEMORY TEST
+========================================================= */
+
+function goToQuiz(){
+
+    if(!quizUnlocked){
+        return;
+    }
+
+
+    quizUnlocked =
+        false;
+
+
+    transitionSound();
+
+
+    chatScreen.style.transition =
+        "opacity .7s ease, transform .7s ease";
+
+    chatScreen.style.opacity =
+        "0";
+
+    chatScreen.style.transform =
+        "scale(.97)";
+
+
+    iphone.style.transition =
+        "opacity .8s ease, transform .8s ease";
+
+    iphone.style.opacity =
+        "0";
+
+    iphone.style.transform =
+        "scale(.94)";
+
+
+    setTimeout(
+        function(){
+
+            quizTransition.classList.add(
+                "active"
+            );
+
+        },
+        650
+    );
+
+}
+
+
+/* =========================================================
+   MEMORY TEST BUTTON
+========================================================= */
+
+quizReadyButton.addEventListener(
+    "click",
+    function(){
+
+        window.location.href =
+            "quiz.html";
+
+    }
+);
+
+
+/* =========================================================
+   PREVENT DOUBLE CLICK
+========================================================= */
+
+document.addEventListener(
+    "dblclick",
+    function(event){
+
+        event.preventDefault();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
