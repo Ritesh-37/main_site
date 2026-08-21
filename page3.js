@@ -2412,7 +2412,7 @@ document.addEventListener(
                         function () {
 
                             window.location.href =
-                                "page4.html";
+                                "wake.html";
 
                         },
                         120
